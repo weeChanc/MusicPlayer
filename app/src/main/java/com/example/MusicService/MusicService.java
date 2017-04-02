@@ -23,6 +23,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Exchanger;
 
 /**
  * Created by 铖哥 on 2017/3/30.
@@ -32,7 +33,7 @@ public class MusicService extends Service {
 
     private static MediaPlayer mediaPlayer = new MediaPlayer();
     private ArrayList<Map<String, String>> data = new ArrayList<>();
-    private int play_mode = 1;  // 1 顺序播放 2 随机播放 0 单曲循环
+    private char play_mode = 'o';  // o 顺序播放 r 随机播放 l 单曲循环
     private boolean ispause = false;
     private boolean status = true; // 战士无用
     private MBind mbind = new MBind();
@@ -75,7 +76,7 @@ public class MusicService extends Service {
             }
 
             if (intent.getAction().equals("com.example.LocalMusic.MODE")) {
-                play_mode = intent.getIntExtra("MODE", 0);
+                play_mode = intent.getCharExtra("MODE",'o');
             }
 
             if(intent.getAction().equals("com.example.MainActivity.ISSEEKBARTOUCH")){
@@ -101,6 +102,12 @@ public class MusicService extends Service {
         arraylistIntent.putExtra("ARRAY", data);
         sendBroadcast(arraylistIntent);            //将歌曲信息列表传给其他活动！
 
+        try {
+            SharedPreferences share = getSharedPreferences("data", MODE_PRIVATE);
+            play_mode = share.getString("MODE","orl").charAt(2);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
@@ -132,7 +139,6 @@ public class MusicService extends Service {
     @Override
     public void onDestroy() {
         Log.e("info", "destory");
-        mediaPlayer.reset();
         unregisterReceiver(musicReceiver);
         super.onDestroy();
     }
@@ -147,6 +153,11 @@ public class MusicService extends Service {
                         if(!isseekbartouch) {
                             intent.putExtra("PROGRESS", mediaPlayer.getCurrentPosition());
                             sendBroadcast(intent);
+                            try {
+                                Thread.sleep(1000);
+                            }catch(Exception e){
+                                e.printStackTrace();
+                            }
                         }
                 }
             }
@@ -173,6 +184,7 @@ public class MusicService extends Service {
             mediaPlayer.setDataSource(file.getPath());
             mediaPlayer.prepare();
         } catch (Exception e) {
+            e.printStackTrace();
         }
 
         mediaPlayer.start();
@@ -204,10 +216,10 @@ public class MusicService extends Service {
 
     public int setPosition() {
 
-        if (play_mode == 1) {
+        if (play_mode == 'o') {
             position++;
             mediaPlayer.reset();          //根据模式选择下一首播放歌曲的位置
-        } else if (play_mode == 2) {
+        } else if (play_mode == 'r') {
             position = (int) (Math.rint(Math.random() * data.size()));
         }
 

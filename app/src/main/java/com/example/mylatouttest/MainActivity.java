@@ -41,6 +41,7 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private VolumnChangeReceiver volumnChangeReceiver;
+    private MessageReceiver messageReceiver;
 
 
     int position;
@@ -56,9 +57,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     ImageButton main_next_bt;
     TextView main_fulltitle_tv;
     TextView main_count_tv;
-    int count;
-    String title;
+
     ArrayList<Map<String, String>> mapArrayList = null;
+
 
     private ServiceConnection connection = new ServiceConnection() {
         @Override
@@ -104,10 +105,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.musicplayer_main);
 
-
                 readytoplay();
-
-
 
         seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -132,7 +130,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onStopTrackingTouch(SeekBar seekBar) {
 
                 Intent intent2 = new Intent("com.example.MainActivity.STARTMUSIC");
-                intent2.putExtra("PROGRESS", seekBar.getProgress());
+                intent2.putExtra("PROGRESS", seekBar.getProgress()-1);
                 intent2.putExtra("SEEK", true);
                 sendBroadcast(intent2);
 
@@ -144,29 +142,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         });
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(2000);
-                    SharedPreferences share = getSharedPreferences("data", MODE_PRIVATE);
-                    int mode = share.getInt("MODE", 0);
-                    Intent intent = new Intent("com.example.LocalMusic.MODE");
-                    intent.putExtra("MODE", mode);
-                    sendBroadcast(intent);
-                    Log.e("mode",mode+"");
-                } catch (Exception e) {
-                    Log.e("mode","wrong");
-                    e.printStackTrace();
-                }
-            }
-        }).start();
 
     }
 
     @Override
     protected void onDestroy() {
         unregisterReceiver(volumnChangeReceiver);
+        unregisterReceiver(messageReceiver);
         musicService.stopSelf();
         super.onDestroy();
     }
@@ -228,7 +210,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         volumnChangeReceiver = new VolumnChangeReceiver();
         registerReceiver(volumnChangeReceiver, intentFilter); //注册广播
 
-        MessageReceiver messageReceiver = new MessageReceiver();
+        messageReceiver = new MessageReceiver();
 
         intentFilter.addAction("com.example.MusicService.PROGRESS");
         intentFilter.addAction("com.example.MusicService.DETIAL");
@@ -324,7 +306,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         while (!checkPermission()) {
             sleep(500);
         }
-        ;
+
 
         Intent intent = new Intent(MainActivity.this, MusicService.class);
         bindService(intent, connection, BIND_AUTO_CREATE);

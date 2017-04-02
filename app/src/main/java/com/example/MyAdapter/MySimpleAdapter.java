@@ -96,7 +96,7 @@ public class MySimpleAdapter extends BaseAdapter {
                     intent.putExtra("POSITION", true);                             //下面的方法找不到对应的position只能放上来
                     context.sendBroadcast(intent);
 
-                    Intent intent1 = new Intent("com.example.LocalMusic.PLAY");
+                    Intent intent1 = new Intent("com.example.LocalMusic.PLAY"); //点击后通知主界面更新图标
                     context.sendBroadcast(intent1);
                 }
             });

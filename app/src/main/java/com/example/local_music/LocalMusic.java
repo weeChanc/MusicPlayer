@@ -22,7 +22,7 @@ import java.util.Map;
 
 public class LocalMusic extends AppCompatActivity implements View.OnClickListener {
 
-    int  mode = 1;
+    String mode = "orl";
     ArrayList<Map<String, String>> musicdata = null;
     ImageButton local_mode_bt;
     ArrayList<Map<String, Object>> data;
@@ -44,10 +44,9 @@ public class LocalMusic extends AppCompatActivity implements View.OnClickListene
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.localmusic);
-        RelativeLayout a = (RelativeLayout)findViewById(R.id.local_layout);
+        RelativeLayout a = (RelativeLayout) findViewById(R.id.local_layout);
 
         musicdata = (ArrayList<Map<String, String>>) getIntent().getSerializableExtra("arrayList");
-
         local_mode_bt = (ImageButton) findViewById(R.id.local_mode_bt);
         local_mode_bt.setOnClickListener(this);
         insertDesign();
@@ -57,20 +56,21 @@ public class LocalMusic extends AppCompatActivity implements View.OnClickListene
          */
         try {
             SharedPreferences sharedPreferences = getSharedPreferences("data", MODE_PRIVATE);
-            mode = sharedPreferences.getInt("MODE", 0);
-            if(mode == 1)local_mode_bt.setImageResource((R.drawable.orderplay));
-            if(mode == 2)local_mode_bt.setImageResource((R.drawable.randomblue));
-            if(mode == 0)local_mode_bt.setImageResource((R.drawable.loopplaybule));
+            mode = sharedPreferences.getString("MODE", "orl");
+            if (mode.charAt(2) == 'o') local_mode_bt.setImageResource((R.drawable.orderplay));
+            if (mode.charAt(2) == 'r') local_mode_bt.setImageResource((R.drawable.randomblue));
+            if (mode.charAt(2) == 'l') local_mode_bt.setImageResource((R.drawable.loopplaybule));
+
             Intent modeintent = new Intent("com.example.LocalMusic.MODE");
-            modeintent.putExtra("MODE",mode);
+            modeintent.putExtra("MODE", mode.charAt(2));
             sendBroadcast(modeintent);
 
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
-            Log.e("info","didnt' find");
+            Log.e("info", "didnt' find");
         }
 
-        Log.e("mode",mode+"");
+        Log.e("mode", mode + "");
 
 //        DataReceiver dataReceiver = new DataReceiver();
 //        IntentFilter intentFilter = new IntentFilter();
@@ -92,8 +92,8 @@ public class LocalMusic extends AppCompatActivity implements View.OnClickListene
     @Override
     protected void onDestroy() {
 
-        SharedPreferences.Editor editor = this.getSharedPreferences("data",MODE_PRIVATE).edit();
-        editor.putInt("MODE",mode);
+        SharedPreferences.Editor editor = this.getSharedPreferences("data", MODE_PRIVATE).edit();
+        editor.putString("MODE", mode);
         editor.apply();
 
         super.onDestroy();
@@ -109,26 +109,31 @@ public class LocalMusic extends AppCompatActivity implements View.OnClickListene
 
     }
 
-    void setMode(){
+    void setMode() {
         Intent modeintent = new Intent("com.example.LocalMusic.MODE");
-        if (mode==0) {
+        if (mode.charAt(0) == 'o') {
             local_mode_bt.setImageResource(R.drawable.orderplay);
-            modeintent.putExtra("MODE",0);
+            modeintent.putExtra("MODE", 'o');
             sendBroadcast(modeintent);
-            mode ++;
-        } else if (mode == 1) {
+            mode = mode.substring(1);
+            mode = mode + 'o';
+        } else if (mode.charAt(0) == 'r') {
             local_mode_bt.setImageResource((R.drawable.randomblue));
-            modeintent.putExtra("MODE", 1);
+            modeintent.putExtra("MODE", 'r');
             sendBroadcast(modeintent);
-            mode ++;
-        } else if(mode ==2) {
+            mode = mode.substring(1);
+            mode = mode + 'r';
+        } else if (mode.charAt(0) == 'l') {
             local_mode_bt.setImageResource((R.drawable.loopplaybule));
-            modeintent.putExtra("MODE", 2);
-            sendBroadcast(modeintent);;
-            mode=0;
+            modeintent.putExtra("MODE", 'l');
+            sendBroadcast(modeintent);
+            mode = mode.substring(1);
+            mode = mode + 'l';
         }
 
+
     }
+
     private void insertDesign() {
         if (Build.VERSION.SDK_INT >= 21) {
             View decorView = getWindow().getDecorView();
