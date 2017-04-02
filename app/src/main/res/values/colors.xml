@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3f51b5</color>
+    <color name="colorPrimaryDark">#03a9f4</color>
+    <color name="colorAccent">#00ff4081</color>
+    <color name="colorWhite">#ffffff</color>
+    <color name="colortoolbarBlue">#1976d2</color>
+    <color name="colorbuttomBlue">#03a9f4</color>
+    <color name="clr_normal">#00ffffff</color>
+    <color name="clr_pressed">#99E5FE</color>
+    <color name="item_normally">#00ffffff</color>
+    <color name="item_pressed">#15f1f1f1</color>
+</resources>
