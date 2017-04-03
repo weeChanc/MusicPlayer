@@ -83,7 +83,7 @@ public class LocalMusic extends AppCompatActivity implements View.OnClickListene
         ListView listView = (ListView) findViewById(R.id.local_music_listview);
 
         data = new ArrayList<>();
-        MySimpleAdapter simpleAdapter = new MySimpleAdapter(this, musicdata, R.layout.listview2,
+        MySimpleAdapter simpleAdapter = new MySimpleAdapter(this, musicdata, R.layout.listitem,
                 new String[]{"title","singer"}, new int[]{R.id.local_list_title,R.id.local_SingerName});
         listView.setAdapter(simpleAdapter);
     }
