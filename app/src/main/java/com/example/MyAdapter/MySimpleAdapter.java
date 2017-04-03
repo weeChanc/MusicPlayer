@@ -37,7 +37,6 @@ public class MySimpleAdapter extends BaseAdapter {
     private String[] from;
     private int[] to;
     private LayoutInflater inflater;
-    private int position;
 
 
     public MySimpleAdapter(Context context, List<Map<String, String>> resource, int layoutID, String[] from, int[] to) {
@@ -69,7 +68,6 @@ public class MySimpleAdapter extends BaseAdapter {
 
         View view;
         ViewHolder viewHolder;
-        this.position = position;
 
         if (convertView == null) {
 
@@ -77,8 +75,8 @@ public class MySimpleAdapter extends BaseAdapter {
             viewHolder = new ViewHolder();
 
 
-                    viewHolder.title_tv = (TextView) view.findViewById(to[0]);
-                    viewHolder.singer_tv = (TextView) view.findViewById(to[1]);
+                    viewHolder.title_tv = (TextView) view.findViewById(R.id.local_list_title);
+                    viewHolder.singer_tv = (TextView) view.findViewById(R.id.local_SingerName);
                     viewHolder.bt1 = (ImageButton)view.findViewById(R.id.local_list_add);
                     viewHolder.bt2 = (ImageButton)view.findViewById(R.id.local_list_like);
                     viewHolder.bt3 = (ImageButton)view.findViewById(R.id.local_list_del);
@@ -87,9 +85,22 @@ public class MySimpleAdapter extends BaseAdapter {
 
                     viewHolder.title_tv.setText(resource.get(position).get("title"));
                     viewHolder.singer_tv.setText(resource.get(position).get("singer"));
-                    addListener(view);
+                    addListener(viewHolder);
 
                     view.setTag(viewHolder);
+
+            viewHolder.bt4.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.e("info", "play");
+                    Intent intent = new Intent("com.example.MainActivity.STARTMUSIC");
+                    intent.putExtra("LOCATION", position);
+                    intent.putExtra("POSITION", true);                             //下面的方法找不到对应的position只能放上来
+                    context.sendBroadcast(intent);
+                    Intent intent1 = new Intent("com.example.LocalMusic.PLAY"); //点击后通知主界面更新图标
+                    context.sendBroadcast(intent1);
+                }
+            });
 
 
         }
@@ -102,6 +113,19 @@ public class MySimpleAdapter extends BaseAdapter {
             viewHolder.title_tv.setText(resource.get(position).get("title"));
 
             addListener(viewHolder);
+
+            viewHolder.bt4.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.e("info", "play");
+                    Intent intent = new Intent("com.example.MainActivity.STARTMUSIC");
+                    intent.putExtra("LOCATION", position);
+                    intent.putExtra("POSITION", true);                             //下面的方法找不到对应的position只能放上来
+                    context.sendBroadcast(intent);
+                    Intent intent1 = new Intent("com.example.LocalMusic.PLAY"); //点击后通知主界面更新图标
+                    context.sendBroadcast(intent1);
+                }
+            });
 
         }
 
@@ -173,18 +197,7 @@ public class MySimpleAdapter extends BaseAdapter {
                 }
             });
 
-            viewHolder.bt4.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.e("info", "play");
-                    Intent intent = new Intent("com.example.MainActivity.STARTMUSIC");
-                    intent.putExtra("LOCATION", position);
-                    intent.putExtra("POSITION", true);                             //下面的方法找不到对应的position只能放上来
-                    context.sendBroadcast(intent);
-                    Intent intent1 = new Intent("com.example.LocalMusic.PLAY"); //点击后通知主界面更新图标
-                    context.sendBroadcast(intent1);
-                }
-            });
+
     }
 
 
