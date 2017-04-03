@@ -6,8 +6,10 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
@@ -50,6 +52,12 @@ public class LocalMusic extends AppCompatActivity implements View.OnClickListene
         local_mode_bt = (ImageButton) findViewById(R.id.local_mode_bt);
         local_mode_bt.setOnClickListener(this);
         insertDesign();
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.local_toolbar);
+        ActionBar actionBar;
+        setSupportActionBar(toolbar);
+        actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
         /**
          * 文件 储存 恢复 操作

@@ -1,6 +1,9 @@
 package com.example.mylatouttest;
 
 import android.Manifest;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -12,13 +15,16 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.IBinder;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.RemoteViews;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -116,12 +122,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Intent intent = new Intent("com.example.MainActivity.ISSEEKBARTOUCH");
                 intent.putExtra("ISSEEKBARTOUCH", true);
                 sendBroadcast(intent);
-
             }
-
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-
                 Intent intent2 = new Intent("com.example.MainActivity.STARTMUSIC");
                 intent2.putExtra("PROGRESS", seekBar.getProgress()-1);
                 intent2.putExtra("SEEK", true);
@@ -129,11 +132,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 Intent intent = new Intent("com.example.MainActivity.ISSEEKBARTOUCH");
                 sendBroadcast(intent);
-
             }
-
-
         });
+
+//        NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+//        RemoteViews contentView = new RemoteViews(getPackageName(),R.layout.notification);
+//        Notification notification = new NotificationCompat.Builder(this).setWhen(System.currentTimeMillis()).build();
+//        notificationManager.notify(1,notification);
 
 
     }
@@ -276,7 +281,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void getView() {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        ActionBar actionBar;
         setSupportActionBar(toolbar);
+        actionBar = getSupportActionBar();
+
         main_list_bt = (ImageButton) findViewById(R.id.main_list_bt);
         main_play_pause_bt = (ImageButton) findViewById(R.id.main_play_pause_bt);
         main_like_bt = (ImageButton) findViewById(R.id.main_like_bt);
