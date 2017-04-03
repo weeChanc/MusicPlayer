@@ -15,9 +15,12 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import com.example.mylatouttest.R;
+
+import org.w3c.dom.Text;
 
 import java.util.List;
 import java.util.Map;
@@ -34,6 +37,7 @@ public class MySimpleAdapter extends BaseAdapter {
     private String[] from;
     private int[] to;
     private LayoutInflater inflater;
+    private int position;
 
 
     public MySimpleAdapter(Context context, List<Map<String, String>> resource, int layoutID, String[] from, int[] to) {
@@ -63,46 +67,56 @@ public class MySimpleAdapter extends BaseAdapter {
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
 
-        View view = inflater.inflate(layoutID, parent, false);
+        View view;
+        ViewHolder viewHolder;
+        this.position = position;
 
-        if (convertView != null) {
-            for (int i = 0; i < from.length; i++) {
-                if (view.findViewById(to[i]) instanceof TextView) {
-                    TextView tv = (TextView) view.findViewById(to[i]);
-                    TextView local_singername = (TextView) view.findViewById(R.id.local_SingerName);
+        if (convertView == null) {
 
-                    local_singername.setText(resource.get(position).get("singer"));
-                    tv.setText(resource.get(position).get("title"));
+            view = inflater.inflate(layoutID, parent, false);
+            viewHolder = new ViewHolder();
 
-//                if (Build.VERSION.SDK_INT >= 21) {
-//                    tv.setBackgroundColor(Color.WHITE);
-//                    RelativeLayout relativeLayout = (RelativeLayout) view.findViewById(R.id.elevation);
-//                    relativeLayout.setBackgroundColor(Color.WHITE);
-//                }
-                } else {
-                    view = convertView;
-                }
-            }
+
+                    viewHolder.title_tv = (TextView) view.findViewById(to[0]);
+                    viewHolder.singer_tv = (TextView) view.findViewById(to[1]);
+                    viewHolder.bt1 = (ImageButton)view.findViewById(R.id.local_list_add);
+                    viewHolder.bt2 = (ImageButton)view.findViewById(R.id.local_list_like);
+                    viewHolder.bt3 = (ImageButton)view.findViewById(R.id.local_list_del);
+                    viewHolder.bt4 = (Button)view.findViewById(R.id.local_list__button_play);
+
+
+                    viewHolder.title_tv.setText(resource.get(position).get("title"));
+                    viewHolder.singer_tv.setText(resource.get(position).get("singer"));
+                    addListener(view);
+
+                    view.setTag(viewHolder);
+
+
         }
+        else {
+            view = convertView;
 
-            addListener(view);
+            viewHolder = (ViewHolder) view.getTag();
 
-            ((Button) view.findViewById(R.id.local_list__button_play)).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.e("info", "play");
-                    Intent intent = new Intent("com.example.MainActivity.STARTMUSIC");
-                    intent.putExtra("LOCATION", position);
-                    intent.putExtra("POSITION", true);                             //下面的方法找不到对应的position只能放上来
-                    context.sendBroadcast(intent);
+            viewHolder.singer_tv.setText(resource.get(position).get("singer"));
+            viewHolder.title_tv.setText(resource.get(position).get("title"));
 
-                    Intent intent1 = new Intent("com.example.LocalMusic.PLAY"); //点击后通知主界面更新图标
-                    context.sendBroadcast(intent1);
-                }
-            });
+            addListener(viewHolder);
+
+        }
 
             return view;
-        }
+    }
+
+
+    class ViewHolder{
+        TextView title_tv;
+        TextView singer_tv;
+        ImageButton bt1;
+        ImageButton bt2;
+        ImageButton bt3;
+        Button bt4;
+    }
 
     private void addListener(View view) {
 
@@ -127,7 +141,51 @@ public class MySimpleAdapter extends BaseAdapter {
             }
         });
 
+        view.findViewById(R.id.local_list__button_play).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.e("info","play");
+            }
+        });
+
 
     }
+
+        private void addListener (ViewHolder viewHolder){
+            viewHolder.bt1.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.e("info", "add");
+                }
+            });
+
+            viewHolder.bt2.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.e("info", "love");
+                }
+            });
+
+            viewHolder.bt3.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.e("info", "delete");
+                }
+            });
+
+            viewHolder.bt4.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.e("info", "play");
+                    Intent intent = new Intent("com.example.MainActivity.STARTMUSIC");
+                    intent.putExtra("LOCATION", position);
+                    intent.putExtra("POSITION", true);                             //下面的方法找不到对应的position只能放上来
+                    context.sendBroadcast(intent);
+                    Intent intent1 = new Intent("com.example.LocalMusic.PLAY"); //点击后通知主界面更新图标
+                    context.sendBroadcast(intent1);
+                }
+            });
+    }
+
 
 }

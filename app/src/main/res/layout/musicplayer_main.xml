@@ -174,7 +174,7 @@
                 app:srcCompat="@drawable/add" />
 
             <ImageButton
-                android:id="@+id/main_stop_bt"
+                android:id="@+id/STOP"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_margin="8dp"
@@ -191,7 +191,7 @@
                 app:srcCompat="@drawable/stopblue" />
 
             <ImageButton
-                android:id="@+id/main_next_bt"
+                android:id="@+id/PLAY"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_marginBottom="8dp"
@@ -200,13 +200,13 @@
                 android:background="@drawable/click"
                 android:scaleType="centerInside"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintRight_toLeftOf="@+id/main_stop_bt"
+                app:layout_constraintRight_toLeftOf="@+id/STOP"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="1.0"
                 app:srcCompat="@drawable/nextbule" />
 
             <TextView
-                android:id="@+id/main_fulltitle_tv"
+                android:id="@+id/tv"
                 android:layout_width="164dp"
                 android:layout_height="49dp"
                 android:layout_marginBottom="16dp"
@@ -217,7 +217,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintHorizontal_bias="0.944"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toLeftOf="@+id/main_next_bt"
+                app:layout_constraintRight_toLeftOf="@+id/PLAY"
                 app:layout_constraintTop_toBottomOf="@+id/seekBar"
                 app:layout_constraintVertical_bias="0.0"
                 tools:text="fulldata" />
@@ -239,5 +239,8 @@
 
 
     </LinearLayout>
+
+    <include layout="@layout/bottomplayer"
+        />
 
 </LinearLayout>

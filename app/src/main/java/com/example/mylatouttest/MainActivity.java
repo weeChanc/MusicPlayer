@@ -1,23 +1,16 @@
 package com.example.mylatouttest;
 
 import android.Manifest;
-import android.app.IntentService;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.media.AudioManager;
-import android.media.Image;
-import android.media.MediaPlayer;
 import android.os.Build;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -190,7 +183,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Toast.makeText(this, "recent", Toast.LENGTH_SHORT).show();
                 break;
 
-            case R.id.main_next_bt:
+            case R.id.PLAY:
                 seekbar.setProgress(0);
                 Intent intentnext = new Intent("com.example.MainActivity.STARTMUSIC");
                 intentnext.putExtra("NEXT", true);
@@ -288,8 +281,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         main_play_pause_bt = (ImageButton) findViewById(R.id.main_play_pause_bt);
         main_like_bt = (ImageButton) findViewById(R.id.main_like_bt);
         main_recent_bt = (ImageButton) findViewById(R.id.main_recent_bt);
-        main_next_bt = (ImageButton) findViewById(R.id.main_next_bt);
-        main_fulltitle_tv = (TextView) findViewById(R.id.main_fulltitle_tv);
+        main_next_bt = (ImageButton) findViewById(R.id.PLAY);
+        main_fulltitle_tv = (TextView) findViewById(R.id.tv);
         main_count_tv = (TextView) findViewById(R.id.main_count_tv);
         seekbar = (SeekBar) findViewById(R.id.seekBar);
 
