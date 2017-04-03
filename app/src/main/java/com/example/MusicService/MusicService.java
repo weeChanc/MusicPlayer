@@ -27,9 +27,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by 铖哥 on 2017/3/30.
- */
 
 public class MusicService extends Service {
 
@@ -60,6 +57,7 @@ public class MusicService extends Service {
                 Log.e("info", "get");
 
                 if (intent.getBooleanExtra("NEXT", false)) {
+                    Log.e("info","getnext");
                     setPosition();
                     mediaPlayer.reset();
                 }
@@ -102,10 +100,6 @@ public class MusicService extends Service {
                     notification = builder.setContent(contentView).build();
                     startForeground(1, notification);
 
-                    Intent intentchangeicon = new Intent("com.example.MusicService.ISPLAY");
-                    intentchangeicon.putExtra("ISPLAY",false);
-                    sendBroadcast(intentchangeicon);
-
                     Intent intentchangeMain = new Intent("com.example.MusicService.ISPLAY");
                     intentchangeMain.putExtra("ISPLAY",false);
                     sendBroadcast(intentchangeMain);
@@ -120,13 +114,22 @@ public class MusicService extends Service {
                     Intent intentstartmusic = new Intent ("com.example.MainActivity.STARTMUSIC");
                     sendBroadcast(intentstartmusic);
 
-                    Intent intentchangeicon = new Intent("com.example.MusicService.ISPLAY");
-                            intentchangeicon.putExtra("ISPLAY",true);
-                    sendBroadcast(intentchangeicon);
-
                     Intent intentchangeMain = new Intent("com.example.MusicService.ISPLAY");
                     intentchangeMain.putExtra("ISPLAY",true);
                     sendBroadcast(intentchangeMain);
+                }
+            }
+
+            if(intent.getAction().equals("com.example.MusicService.NOTIFI")){
+                if(intent.getBooleanExtra("PLAY",false)){
+                    contentView.setImageViewResource(R.id.play_image,R.drawable.pause);
+                    notification = builder.setContent(contentView).build();
+                    startForeground(1, notification);
+                }else
+                {
+                    contentView.setImageViewResource(R.id.play_image,R.drawable.playdark);
+                    notification = builder.setContent(contentView).build();
+                    startForeground(1, notification);
                 }
             }
 
@@ -306,13 +309,11 @@ public class MusicService extends Service {
         intentFilter.addAction("com.example.LocalMusic.MODE");
         intentFilter.addAction("com.example.MainActivity.ISSEEKBARTOUCH");
         intentFilter.addAction("CHANGESELF");
+        intentFilter.addAction("com.example.MusicService.NOTIFI");
         registerReceiver(musicReceiver, intentFilter);
     }
 
     void initNotification(){
-        Intent intent = new Intent("CHANGESELF");
-        PendingIntent changependingIntent = PendingIntent.getBroadcast(MusicService.this,0,intent,0); //点击事件
-        contentView.setOnClickPendingIntent(R.id.play_image,changependingIntent);
 
         contentView = new RemoteViews(getPackageName(), R.layout.notification);
         contentView.setTextViewText(R.id.title_tv,data.get(position).get("title"));
@@ -321,6 +322,16 @@ public class MusicService extends Service {
         contentView.setImageViewResource(R.id.lyric_image,R.drawable.lyric);
         contentView.setImageViewResource(R.id.head_image,R.drawable.music);
         contentView.setImageViewResource(R.id.play_image,R.drawable.playdark);
+
+        Intent intent = new Intent("CHANGESELF");
+        PendingIntent changependingIntent = PendingIntent.getBroadcast(MusicService.this,0,intent,0); //点击事件
+        contentView.setOnClickPendingIntent(R.id.play_image,changependingIntent);
+
+        Intent intentnext = new Intent("com.example.MainActivity.STARTMUSIC");
+        intentnext.putExtra("NEXT",true);
+        contentView.setOnClickPendingIntent(R.id.next_image,PendingIntent.getBroadcast(this,0,intentnext,0));
+
+
 
         Intent intentstartactivity = new Intent(MusicService.this, MainActivity.class);
         pendingIntent = PendingIntent.getActivity(MusicService.this, 0, intentstartactivity, 0);

@@ -17,7 +17,7 @@
         android:layout_alignParentStart="true" />
 
     <ImageButton
-        android:id="@+id/PLAY"
+        android:id="@+id/NEXT"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_alignBottom="@+id/tv"
@@ -45,7 +45,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.944"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/PLAY"
+        app:layout_constraintRight_toLeftOf="@+id/NEXT"
         app:layout_constraintTop_toBottomOf="@+id/seekBar"
         app:layout_constraintVertical_bias="0.0" />
 
@@ -67,9 +67,9 @@
         android:id="@+id/STOP"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_alignTop="@+id/PLAY"
-        android:layout_toEndOf="@+id/PLAY"
-        android:layout_toRightOf="@+id/PLAY"
+        android:layout_alignTop="@+id/NEXT"
+        android:layout_toEndOf="@+id/NEXT"
+        android:layout_toRightOf="@+id/NEXT"
         android:layout_weight="1"
         android:background="@color/colorWhite"
         android:foreground="?android:attr/selectableItemBackground"

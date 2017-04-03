@@ -1,9 +1,6 @@
 package com.example.mylatouttest;
 
 import android.Manifest;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -12,11 +9,9 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.media.Image;
 import android.os.Build;
 import android.os.IBinder;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -25,7 +20,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.RemoteViews;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -103,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     if( intent.getBooleanExtra("ISPLAY",false) )
                     main_play_pause_bt.setImageResource(R.drawable.pausewhite);
                     else
-                        main_play_pause_bt.setImageResource(R.drawable.playdark);
+                        main_play_pause_bt.setImageResource(R.drawable.startwhite);
             }
 
         }
@@ -178,13 +172,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.main_play_pause_bt:
                 Toast.makeText(this, "play", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent("com.example.MainActivity.STARTMUSIC");
+                Intent intentnotify1 = new Intent("com.example.MusicService.NOTIFI");
                 if (ispause) {
                     intent.putExtra("ISPAUSE", true);
                     sendBroadcast(intent);
+                    intentnotify1.putExtra("PLAY",true);
+                    sendBroadcast(intentnotify1);
                     main_play_pause_bt.setImageResource(R.drawable.pausewhite);
                     ispause = false;
                 } else {
                     musicService.pauseMusic();
+                    sendBroadcast(intentnotify1);
                     ispause = true;
                     main_play_pause_bt.setImageResource(R.drawable.startwhite);
                 }
@@ -201,11 +199,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Toast.makeText(this, "recent", Toast.LENGTH_SHORT).show();
                 break;
 
-            case R.id.PLAY:
+            case R.id.NEXT:
                 seekbar.setProgress(0);
                 Intent intentnext = new Intent("com.example.MainActivity.STARTMUSIC");
                 intentnext.putExtra("NEXT", true);
                 sendBroadcast(intentnext);
+
+                Intent intentnotify = new Intent("com.example.MusicService.NOTIFI");
+                intentnotify.putExtra("PLAY",true);
+                sendBroadcast(intentnotify);
+
                 main_play_pause_bt.setImageResource(R.drawable.pausewhite);
                 ispause = false;
                 break;
@@ -309,7 +312,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         main_play_pause_bt = (ImageButton) findViewById(R.id.main_play_pause_bt);
         main_like_bt = (ImageButton) findViewById(R.id.main_like_bt);
         main_recent_bt = (ImageButton) findViewById(R.id.main_recent_bt);
-        main_next_bt = (ImageButton) findViewById(R.id.PLAY);
+        main_next_bt = (ImageButton) findViewById(R.id.NEXT);
         main_fulltitle_tv = (TextView) findViewById(R.id.tv);
         main_count_tv = (TextView) findViewById(R.id.main_count_tv);
         seekbar = (SeekBar) findViewById(R.id.seekBar);
