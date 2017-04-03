@@ -93,7 +93,6 @@ public class MusicService extends Service {
 
             if(intent.getAction().equals("CHANGESELF")){
                 if(mediaPlayer.isPlaying()){
-
                     mediaPlayer.pause();
                     Log.e("info","isplaying");
                     contentView.setImageViewResource(R.id.play_image,R.drawable.playdark);
@@ -120,6 +119,19 @@ public class MusicService extends Service {
                 }
             }
 
+            if(intent.getAction().equals("CHANGENEXT")){
+                Log.e("info","CHANGENEXT");
+                Intent intentchangeMain = new Intent("com.example.MusicService.ISPLAY");
+                intentchangeMain.putExtra("ISPLAY",true);
+                sendBroadcast(intentchangeMain);
+                Intent intentplay = new Intent("com.example.MainActivity.STARTMUSIC");
+                intentplay.putExtra("NEXT",true);
+                sendBroadcast(intentplay);
+                contentView.setImageViewResource(R.id.play_image,R.drawable.pause);
+                notification = builder.setContent(contentView).build();
+                startForeground(1, notification);
+            }
+
             if(intent.getAction().equals("com.example.MusicService.NOTIFI")){
                 if(intent.getBooleanExtra("PLAY",false)){
                     contentView.setImageViewResource(R.id.play_image,R.drawable.pause);
@@ -132,6 +144,7 @@ public class MusicService extends Service {
                     startForeground(1, notification);
                 }
             }
+
 
 
 
@@ -309,6 +322,7 @@ public class MusicService extends Service {
         intentFilter.addAction("com.example.LocalMusic.MODE");
         intentFilter.addAction("com.example.MainActivity.ISSEEKBARTOUCH");
         intentFilter.addAction("CHANGESELF");
+        intentFilter.addAction("CHANGENEXT");
         intentFilter.addAction("com.example.MusicService.NOTIFI");
         registerReceiver(musicReceiver, intentFilter);
     }
@@ -324,13 +338,11 @@ public class MusicService extends Service {
         contentView.setImageViewResource(R.id.play_image,R.drawable.playdark);
 
         Intent intent = new Intent("CHANGESELF");
-        PendingIntent changependingIntent = PendingIntent.getBroadcast(MusicService.this,0,intent,0); //点击事件
+        PendingIntent changependingIntent = PendingIntent.getBroadcast(MusicService.this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT); //点击事件
         contentView.setOnClickPendingIntent(R.id.play_image,changependingIntent);
 
-        Intent intentnext = new Intent("com.example.MainActivity.STARTMUSIC");
-        intentnext.putExtra("NEXT",true);
-        contentView.setOnClickPendingIntent(R.id.next_image,PendingIntent.getBroadcast(this,0,intentnext,0));
-
+        Intent intent2 = new Intent("CHANGENEXT");
+        contentView.setOnClickPendingIntent(R.id.next_image,PendingIntent.getBroadcast(this,0,intent2,PendingIntent.FLAG_UPDATE_CURRENT));
 
 
         Intent intentstartactivity = new Intent(MusicService.this, MainActivity.class);
