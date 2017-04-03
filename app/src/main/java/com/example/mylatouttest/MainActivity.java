@@ -12,6 +12,7 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.media.Image;
 import android.os.Build;
 import android.os.IBinder;
 import android.support.v4.app.ActivityCompat;
@@ -54,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     ImageButton main_like_bt;
     ImageButton main_recent_bt;
     ImageButton main_next_bt;
+    ImageButton STOP;
     TextView main_fulltitle_tv;
     TextView main_count_tv;
 
@@ -95,12 +97,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 ispause = false;
                 main_play_pause_bt.setImageResource(R.drawable.pausewhite);
             }
+
+            if(intent.getAction().equals("com.example.MusicService.ISPLAY")){
+
+                    if( intent.getBooleanExtra("ISPLAY",false) )
+                    main_play_pause_bt.setImageResource(R.drawable.pausewhite);
+                    else
+                        main_play_pause_bt.setImageResource(R.drawable.playdark);
+            }
+
         }
     }
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.e("info","MainAcitivit CREATE");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.musicplayer_main);
 
@@ -145,6 +157,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     protected void onDestroy() {
+        Log.e("info","MainAcitivit Destory");
         unregisterReceiver(volumnChangeReceiver);
         unregisterReceiver(messageReceiver);
         musicService.stopSelf();
@@ -197,6 +210,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 ispause = false;
                 break;
 
+            case R.id.STOP:
+             Log.e("reset","reset");   musicService.resetMusic();break;
+
+
         }
     }
 
@@ -214,6 +231,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         intentFilter.addAction("com.example.MusicService.DETIAL");
         intentFilter.addAction("com.example.MusicService.ARRAY");
         intentFilter.addAction("com.example.LocalMusic.PLAY");
+        intentFilter.addAction("com.example.MusicService.ISPLAY");
+        intentFilter.addAction("com.example.MusicService.ISPAUSE");
+
         registerReceiver(messageReceiver, intentFilter);
 
     }
@@ -293,7 +313,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         main_fulltitle_tv = (TextView) findViewById(R.id.tv);
         main_count_tv = (TextView) findViewById(R.id.main_count_tv);
         seekbar = (SeekBar) findViewById(R.id.seekBar);
+        STOP = (ImageButton)findViewById(R.id.STOP);
 
+        STOP.setOnClickListener(this);
         main_like_bt.setOnClickListener(this);
         main_recent_bt.setOnClickListener(this);
         main_list_bt.setOnClickListener(this);
@@ -301,6 +323,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         main_next_bt.setOnClickListener(this);
 
     }
+
+
 
     private void readytoplay() {
 
