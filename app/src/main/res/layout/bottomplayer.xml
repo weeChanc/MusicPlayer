@@ -2,32 +2,50 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="74dp"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@android:color/white">
 
-    <ImageView
-        android:id="@+id/imageview1"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+    <SeekBar
+        android:id="@+id/seekBar"
+        android:layout_width="260dp"
+        android:layout_height="wrap_content"
+        android:background="@color/colorWhite"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/add"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_above="@+id/tv"
+        android:layout_toRightOf="@+id/imageView3"
+        android:layout_toEndOf="@+id/imageView3" />
+
+    <TextView
+        android:id="@+id/tv"
+        tools:text="fulldata"
+        android:layout_width="164dp"
+        android:layout_height="49dp"
+        android:layout_weight="2.53"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.944"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/NEXT"
+        app:layout_constraintTop_toBottomOf="@+id/seekBar"
+        app:layout_constraintVertical_bias="0.0"
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@+id/imageView3"
+        android:layout_toEndOf="@+id/imageView3" />
 
     <ImageButton
         android:id="@+id/NEXT"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_alignBottom="@+id/tv"
-        android:layout_marginLeft="15dp"
-        android:layout_marginStart="15dp"
-        android:layout_toEndOf="@+id/tv"
-        android:layout_toRightOf="@+id/tv"
+        android:layout_marginEnd="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_toLeftOf="@+id/STOP"
+        android:layout_toStartOf="@+id/STOP"
         android:layout_weight="1"
         android:background="@drawable/click"
-        android:foreground="?android:attr/selectableItemBackground"
         android:scaleType="centerInside"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toLeftOf="@+id/STOP"
@@ -35,48 +53,34 @@
         app:layout_constraintVertical_bias="1.0"
         app:srcCompat="@drawable/nextbule" />
 
-    <TextView
-        android:id="@+id/tv"
-        android:layout_width="164dp"
-        android:layout_height="49dp"
-        android:layout_alignBottom="@+id/imageview1"
-        android:layout_centerHorizontal="true"
-        android:layout_weight="2.53"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.944"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/NEXT"
-        app:layout_constraintTop_toBottomOf="@+id/seekBar"
-        app:layout_constraintVertical_bias="0.0" />
-
-    <SeekBar
-        android:id="@+id/seekBar"
-        android:layout_width="260dp"
-        android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/STOP"
-        android:layout_alignParentTop="true"
-        android:layout_alignRight="@+id/STOP"
-        android:layout_marginTop="4dp"
-        android:background="@color/colorWhite"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <ImageButton
         android:id="@+id/STOP"
         android:layout_width="40dp"
         android:layout_height="40dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
         android:layout_alignTop="@+id/NEXT"
-        android:layout_toEndOf="@+id/NEXT"
-        android:layout_toRightOf="@+id/NEXT"
+        android:layout_marginEnd="12dp"
+        android:layout_marginRight="12dp"
         android:layout_weight="1"
         android:background="@color/colorWhite"
-        android:foreground="?android:attr/selectableItemBackground"
         android:scaleType="centerInside"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0"
         app:srcCompat="@drawable/stopblue" />
+
+    <ImageView
+        android:id="@+id/imageView3"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/add" />
+
 </RelativeLayout>

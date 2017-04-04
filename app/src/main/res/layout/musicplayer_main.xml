@@ -151,95 +151,13 @@
     </RelativeLayout>
 
     <LinearLayout
-        android:id="@+id/line3"
         android:layout_width="match_parent"
-        android:layout_height="62dp"
-        android:layout_weight="0.10"
-        android:background="@color/colorWhite"
-        android:elevation="5dp"
-        android:orientation="vertical">
+        android:layout_weight="1.00"
+        android:orientation="horizontal"
+        android:layout_height="wrap_content"></LinearLayout>
 
-        <android.support.constraint.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <ImageView
-                android:id="@+id/imageView3"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:layout_marginBottom="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginTop="8dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/add" />
-
-            <ImageButton
-                android:id="@+id/STOP"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_margin="8dp"
-                android:layout_marginBottom="8dp"
-                android:layout_marginRight="16dp"
-                android:layout_marginTop="0dp"
-                android:layout_weight="1"
-                android:background="@color/colorWhite"
-                android:scaleType="centerInside"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="1.0"
-                app:srcCompat="@drawable/stopblue" />
-
-            <ImageButton
-                android:id="@+id/NEXT"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginBottom="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_weight="1"
-                android:background="@drawable/click"
-                android:scaleType="centerInside"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintRight_toLeftOf="@+id/STOP"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="1.0"
-                app:srcCompat="@drawable/nextbule" />
-
-            <TextView
-                android:id="@+id/tv"
-                android:layout_width="164dp"
-                android:layout_height="49dp"
-                android:layout_marginBottom="16dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_weight="2.53"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintHorizontal_bias="0.944"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toLeftOf="@+id/NEXT"
-                app:layout_constraintTop_toBottomOf="@+id/seekBar"
-                app:layout_constraintVertical_bias="0.0"
-                tools:text="fulldata" />
-
-            <SeekBar
-                android:id="@+id/seekBar"
-                android:layout_width="260dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="16dp"
-                android:layout_marginTop="16dp"
-                android:background="@color/colorWhite"
-                app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-        </android.support.constraint.ConstraintLayout>
-
-
-    </LinearLayout>
-
+    <include
+        layout="@layout/bottomplayer"
+        android:layout_width="match_parent"
+        android:layout_height="70dp" />
 </LinearLayout>

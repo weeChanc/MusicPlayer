@@ -71,13 +71,27 @@
         <ListView
             android:id="@+id/local_music_listview"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="337dp"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_below="@+id/local_mode_bt"
             android:background="@color/colorAccent"
             android:divider="@null"
-            android:dividerHeight="0dp" />
+            android:dividerHeight="0dp"
+            android:layout_weight="0.93" />
+
+
+        <View
+            android:id="@+id/view3"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/cardview_shadow_start_color"
+            android:elevation="1dp" />
+
+        <include
+            layout="@layout/bottomplayer"
+            android:layout_width="match_parent"
+            android:layout_height="72dp" />
 
     </LinearLayout>
 
