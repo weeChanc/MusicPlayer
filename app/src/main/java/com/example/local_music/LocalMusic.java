@@ -6,20 +6,25 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 
 import com.example.MyAdapter.MySimpleAdapter;
+import com.example.MyAdapter.ViewPagerAdapter;
 import com.example.mylatouttest.R;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class LocalMusic extends AppCompatActivity implements View.OnClickListener {
@@ -94,6 +99,33 @@ public class LocalMusic extends AppCompatActivity implements View.OnClickListene
         MySimpleAdapter simpleAdapter = new MySimpleAdapter(this, musicdata, R.layout.listitem,
                 new String[]{"title","singer"}, new int[]{R.id.local_list_title,R.id.local_SingerName});
         listView.setAdapter(simpleAdapter);
+
+
+
+        LayoutInflater inflater = getLayoutInflater();
+        View view1 = inflater.inflate(R.layout.pagerdownlist,null);
+        View view2 = inflater.inflate(R.layout.pagerdownlist,null);
+        ListView listview1 = (ListView)view1.findViewById(R.id.PAGE_DOWN);
+        ListView listview2 = (ListView)view2.findViewById(R.id.PAGE_DOWN);
+        listview1.setAdapter(simpleAdapter);
+        listview2.setAdapter(simpleAdapter);
+        listview1.setDivider(null);
+        listview2.setDivider(null);
+
+        List<View> listviewa = new ArrayList<>();
+
+        listviewa.add(view1);
+        listviewa.add(view2);
+
+        ArrayList<String> list = new ArrayList<>();
+        list.add("第一页");list.add("第二页");
+
+        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(listviewa,list);
+
+        ViewPager viewpager = (ViewPager)findViewById(R.id.pager);
+        viewpager.setAdapter(viewPagerAdapter);
+
+
     }
 
 
