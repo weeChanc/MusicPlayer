@@ -73,6 +73,7 @@
             android:layout_alignStart="@+id/singer_tv"
             android:layout_marginTop="8dp"
             android:layout_toStartOf="@+id/play_image"
+            android:maxLines="1"
             android:text="TextView"
             android:textColor="@android:color/black"
             android:textSize="16dp"

@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.media.Image;
 import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.IBinder;
@@ -17,6 +18,7 @@ import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.widget.ImageButton;
 import android.widget.RemoteViews;
 
 import com.example.mylatouttest.MainActivity;
@@ -145,6 +147,10 @@ public class MusicService extends Service {
                 }
             }
 
+            if(intent.getAction().equals("com.example.MainActivity.REQUSETRES")){
+                mainMessageCallBack();
+            }
+
 
 
 
@@ -164,6 +170,8 @@ public class MusicService extends Service {
         Intent arraylistIntent = new Intent("com.example.MusicService.ARRAY");
         arraylistIntent.putExtra("ARRAY", data);
         sendBroadcast(arraylistIntent);            //将歌曲信息列表传给其他活动！
+
+
 
         try {
             SharedPreferences share = getSharedPreferences("data", MODE_PRIVATE);
@@ -219,8 +227,9 @@ public class MusicService extends Service {
                     if (!isseekbartouch) {
                         intent.putExtra("PROGRESS", mediaPlayer.getCurrentPosition());
                         sendBroadcast(intent);
+                        Log.e("info","callback");
                         try {
-                            Thread.sleep(1000);
+                            Thread.sleep(400);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -261,7 +270,7 @@ public class MusicService extends Service {
         String[] want = new String[]{MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.DATA, MediaStore.Audio.Media.ARTIST,
                 MediaStore.Audio.Media.DISPLAY_NAME, MediaStore.Audio.Media.DURATION};
 
-        Cursor cursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, want, null, null, MediaStore.Audio.Media.TITLE);
+        Cursor cursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, want, MediaStore.Audio.Media.DURATION +">60000", null, MediaStore.Audio.Media.TITLE);
         if (cursor != null && cursor.moveToFirst())
             do {
                 Map<String, String> map = new HashMap<>();
@@ -274,6 +283,13 @@ public class MusicService extends Service {
                 data.add(map);
 
             } while (cursor.moveToNext());
+
+        for(int i = 0 ; i < data.size()-1 ; i++){
+            if(data.get(i).get("title").equals(data.get(i+1).get("title")))
+            {
+                data.remove(data.get(i));
+            }
+        }
 
         if (cursor != null)
             cursor.close();
@@ -324,6 +340,7 @@ public class MusicService extends Service {
         intentFilter.addAction("CHANGESELF");
         intentFilter.addAction("CHANGENEXT");
         intentFilter.addAction("com.example.MusicService.NOTIFI");
+        intentFilter.addAction("com.example.MainActivity.REQUSETRES");
         registerReceiver(musicReceiver, intentFilter);
     }
 

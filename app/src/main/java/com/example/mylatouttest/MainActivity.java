@@ -110,7 +110,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.musicplayer_main);
 
-                readytoplay();
+        Intent intent = new Intent("com.example.MainActivity.REQUSETRES");
+        sendBroadcast(intent);
+
+
+        readytoplay();
+
+
 
         seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -140,13 +146,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 sendBroadcast(intent);
             }
         });
-
-//        NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
-//        RemoteViews contentView = new RemoteViews(getPackageName(),R.layout.notification);
-//        Notification notification = new NotificationCompat.Builder(this).setWhen(System.currentTimeMillis()).build();
-//        notificationManager.notify(1,notification);
-
-
     }
 
     @Override
@@ -154,7 +153,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Log.e("info","MainAcitivit Destory");
         unregisterReceiver(volumnChangeReceiver);
         unregisterReceiver(messageReceiver);
-        musicService.stopSelf();
         super.onDestroy();
     }
 
@@ -251,13 +249,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Toast.makeText(this, "再按一次退出", Toast.LENGTH_SHORT).show();
             i = 1;
         } else if (i == 1) {
-
             finish();
         }
         new Thread(new Runnable() {
             @Override
             public void run() {
-                sleep(2000);
+                sleep(3000);
                 i = 0;
             }
         }).start();
