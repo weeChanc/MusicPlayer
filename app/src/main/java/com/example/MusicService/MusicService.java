@@ -13,7 +13,10 @@ import android.database.Cursor;
 import android.media.Image;
 import android.media.MediaPlayer;
 import android.os.Binder;
+import android.os.Environment;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
@@ -31,6 +34,7 @@ import java.util.Map;
 
 
 public class MusicService extends Service {
+    private File[] files;
 
     private MediaPlayer mediaPlayer = new MediaPlayer();
     private ArrayList<Map<String, String>> data = new ArrayList<>();
@@ -49,17 +53,16 @@ public class MusicService extends Service {
 
     public class MusicReceiver extends BroadcastReceiver {
 
-
         //接收器
         @Override
         public void onReceive(Context context, Intent intent) {
 
-                if (intent.getAction().equals("com.example.MainActivity.STARTMUSIC")) {
+            if (intent.getAction().equals("com.example.MainActivity.STARTMUSIC")) {
 
                 Log.e("info", "get");
 
                 if (intent.getBooleanExtra("NEXT", false)) {
-                    Log.e("info","getnext");
+                    Log.e("info", "getnext");
                     setPosition();
                     mediaPlayer.reset();
                 }
@@ -75,12 +78,41 @@ public class MusicService extends Service {
 
                 initMediaPlayer(data.get(position).get("data"));
 
-                progressCallBack();
 
-                if (intent.getBooleanExtra("SEEK", false)) {
-                    mediaPlayer.seekTo(intent.getIntExtra("PROGRESS", 0));
-                }
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            for (int i = 0; i < files.length; i++) {
+                                if (files[i].getAbsolutePath().contains(data.get(position).get("title"))) {
+                                    Intent intentlrc = new Intent("com.example.MusicService.LRC");
+                                    intentlrc.putExtra("LRC",i);
+                                    sendBroadcast(intentlrc);
+                                    break;
+                                }
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }).start();
+
+
+
+
+
             }
+
+            progressCallBack();
+
+            if (intent.getBooleanExtra("SEEK", false)) {
+                mediaPlayer.seekTo(intent.getIntExtra("PROGRESS", 0));
+            }
+
+//                int size = data.get(position).get("fulltitle").indexOf('.');
+
+//                    Log.e("loca",data.get(position).get("singer")+data.get(position).get("title"));
+
 
             if (intent.getAction().equals("com.example.LocalMusic.MODE")) {
                 play_mode = intent.getCharExtra("MODE", 'o');
@@ -93,65 +125,60 @@ public class MusicService extends Service {
                     isseekbartouch = false;
             }
 
-            if(intent.getAction().equals("CHANGESELF")){
-                if(mediaPlayer.isPlaying()){
+            if (intent.getAction().equals("CHANGESELF")) {
+                if (mediaPlayer.isPlaying()) {
                     mediaPlayer.pause();
-                    Log.e("info","isplaying");
-                    contentView.setImageViewResource(R.id.play_image,R.drawable.playdark);
+                    Log.e("info", "isplaying");
+                    contentView.setImageViewResource(R.id.play_image, R.drawable.playdark);
                     notification = builder.setContent(contentView).build();
                     startForeground(1, notification);
 
                     Intent intentchangeMain = new Intent("com.example.MusicService.ISPLAY");
-                    intentchangeMain.putExtra("ISPLAY",false);
+                    intentchangeMain.putExtra("ISPLAY", false);
                     sendBroadcast(intentchangeMain);
 
-                }
-                else
-                {
-                    contentView.setImageViewResource(R.id.play_image,R.drawable.pause);
+                } else {
+                    contentView.setImageViewResource(R.id.play_image, R.drawable.pause);
                     notification = builder.setContent(contentView).build();
                     startForeground(1, notification);
 
-                    Intent intentstartmusic = new Intent ("com.example.MainActivity.STARTMUSIC");
+                    Intent intentstartmusic = new Intent("com.example.MainActivity.STARTMUSIC");
                     sendBroadcast(intentstartmusic);
 
                     Intent intentchangeMain = new Intent("com.example.MusicService.ISPLAY");
-                    intentchangeMain.putExtra("ISPLAY",true);
+                    intentchangeMain.putExtra("ISPLAY", true);
                     sendBroadcast(intentchangeMain);
                 }
             }
 
-            if(intent.getAction().equals("CHANGENEXT")){
-                Log.e("info","CHANGENEXT");
+            if (intent.getAction().equals("CHANGENEXT")) {
+                Log.e("info", "CHANGENEXT");
                 Intent intentchangeMain = new Intent("com.example.MusicService.ISPLAY");
-                intentchangeMain.putExtra("ISPLAY",true);
+                intentchangeMain.putExtra("ISPLAY", true);
                 sendBroadcast(intentchangeMain);
                 Intent intentplay = new Intent("com.example.MainActivity.STARTMUSIC");
-                intentplay.putExtra("NEXT",true);
+                intentplay.putExtra("NEXT", true);
                 sendBroadcast(intentplay);
-                contentView.setImageViewResource(R.id.play_image,R.drawable.pause);
+                contentView.setImageViewResource(R.id.play_image, R.drawable.pause);
                 notification = builder.setContent(contentView).build();
                 startForeground(1, notification);
             }
 
-            if(intent.getAction().equals("com.example.MusicService.NOTIFI")){
-                if(intent.getBooleanExtra("PLAY",false)){
-                    contentView.setImageViewResource(R.id.play_image,R.drawable.pause);
+            if (intent.getAction().equals("com.example.MusicService.NOTIFI")) {
+                if (intent.getBooleanExtra("PLAY", false)) {
+                    contentView.setImageViewResource(R.id.play_image, R.drawable.pause);
                     notification = builder.setContent(contentView).build();
                     startForeground(1, notification);
-                }else
-                {
-                    contentView.setImageViewResource(R.id.play_image,R.drawable.playdark);
+                } else {
+                    contentView.setImageViewResource(R.id.play_image, R.drawable.playdark);
                     notification = builder.setContent(contentView).build();
                     startForeground(1, notification);
                 }
             }
 
-            if(intent.getAction().equals("com.example.MainActivity.REQUSETRES")){
+            if (intent.getAction().equals("com.example.MainActivity.REQUSETRES")) {
                 mainMessageCallBack();
             }
-
-
 
 
         }
@@ -162,6 +189,11 @@ public class MusicService extends Service {
     public void onCreate() {
 
         super.onCreate();
+
+        File file = new File(Environment.getExternalStorageDirectory().getPath() + "//Musiclrc");
+        files = file.listFiles();
+
+
         Log.e("info", "SERVICE create");
         registerMyReceiver();//注册广播
         readMusicData(); //读取信息
@@ -170,7 +202,6 @@ public class MusicService extends Service {
         Intent arraylistIntent = new Intent("com.example.MusicService.ARRAY");
         arraylistIntent.putExtra("ARRAY", data);
         sendBroadcast(arraylistIntent);            //将歌曲信息列表传给其他活动！
-
 
 
         try {
@@ -196,7 +227,6 @@ public class MusicService extends Service {
                 sendBroadcast(intent2);
             }
         });
-
 
 
         initNotification();
@@ -227,7 +257,7 @@ public class MusicService extends Service {
                     if (!isseekbartouch) {
                         intent.putExtra("PROGRESS", mediaPlayer.getCurrentPosition());
                         sendBroadcast(intent);
-                        Log.e("info","callback");
+                        Log.e("info", "callback");
                         try {
                             Thread.sleep(400);
                         } catch (Exception e) {
@@ -270,7 +300,7 @@ public class MusicService extends Service {
         String[] want = new String[]{MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.DATA, MediaStore.Audio.Media.ARTIST,
                 MediaStore.Audio.Media.DISPLAY_NAME, MediaStore.Audio.Media.DURATION};
 
-        Cursor cursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, want, MediaStore.Audio.Media.DURATION +">60000", null, MediaStore.Audio.Media.TITLE);
+        Cursor cursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, want, MediaStore.Audio.Media.DURATION + ">60000", null, MediaStore.Audio.Media.TITLE);
         if (cursor != null && cursor.moveToFirst())
             do {
                 Map<String, String> map = new HashMap<>();
@@ -284,9 +314,8 @@ public class MusicService extends Service {
 
             } while (cursor.moveToNext());
 
-        for(int i = 0 ; i < data.size()-1 ; i++){
-            if(data.get(i).get("title").equals(data.get(i+1).get("title")))
-            {
+        for (int i = 0; i < data.size() - 1; i++) {
+            if (data.get(i).get("title").equals(data.get(i + 1).get("title"))) {
                 data.remove(data.get(i));
             }
         }
@@ -320,7 +349,8 @@ public class MusicService extends Service {
             mediaPlayer.pause();
         }
     }
-    public void resetMusic(){
+
+    public void resetMusic() {
         mediaPlayer.reset();
     }
 
@@ -344,22 +374,22 @@ public class MusicService extends Service {
         registerReceiver(musicReceiver, intentFilter);
     }
 
-    void initNotification(){
+    void initNotification() {
 
         contentView = new RemoteViews(getPackageName(), R.layout.notification);
-        contentView.setTextViewText(R.id.title_tv,data.get(position).get("title"));
-        contentView.setTextViewText(R.id.singer_tv,data.get(position).get("singer"));
-        contentView.setImageViewResource(R.id.next_image,R.drawable.nextdark);
-        contentView.setImageViewResource(R.id.lyric_image,R.drawable.lyric);
-        contentView.setImageViewResource(R.id.head_image,R.drawable.music);
-        contentView.setImageViewResource(R.id.play_image,R.drawable.playdark);
+        contentView.setTextViewText(R.id.title_tv, data.get(position).get("title"));
+        contentView.setTextViewText(R.id.singer_tv, data.get(position).get("singer"));
+        contentView.setImageViewResource(R.id.next_image, R.drawable.nextdark);
+        contentView.setImageViewResource(R.id.lyric_image, R.drawable.lyric);
+        contentView.setImageViewResource(R.id.head_image, R.drawable.music);
+        contentView.setImageViewResource(R.id.play_image, R.drawable.playdark);
 
         Intent intent = new Intent("CHANGESELF");
-        PendingIntent changependingIntent = PendingIntent.getBroadcast(MusicService.this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT); //点击事件
-        contentView.setOnClickPendingIntent(R.id.play_image,changependingIntent);
+        PendingIntent changependingIntent = PendingIntent.getBroadcast(MusicService.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT); //点击事件
+        contentView.setOnClickPendingIntent(R.id.play_image, changependingIntent);
 
         Intent intent2 = new Intent("CHANGENEXT");
-        contentView.setOnClickPendingIntent(R.id.next_image,PendingIntent.getBroadcast(this,0,intent2,PendingIntent.FLAG_UPDATE_CURRENT));
+        contentView.setOnClickPendingIntent(R.id.next_image, PendingIntent.getBroadcast(this, 0, intent2, PendingIntent.FLAG_UPDATE_CURRENT));
 
 
         Intent intentstartactivity = new Intent(MusicService.this, MainActivity.class);
@@ -371,17 +401,15 @@ public class MusicService extends Service {
                 .setContentIntent(pendingIntent)
                 .setSmallIcon(R.drawable.delete)
                 .build();
-        startForeground(1,notification);
+        startForeground(1, notification);
     }
 
-    void upgradeDataNotification(){
-        contentView.setTextViewText(R.id.title_tv,data.get(position).get("title"));
-        contentView.setTextViewText(R.id.singer_tv,data.get(position).get("singer"));
-        notification =  builder.setContent(contentView).build();
-        startForeground(1,notification);
+    void upgradeDataNotification() {
+        contentView.setTextViewText(R.id.title_tv, data.get(position).get("title"));
+        contentView.setTextViewText(R.id.singer_tv, data.get(position).get("singer"));
+        notification = builder.setContent(contentView).build();
+        startForeground(1, notification);
     }
-
-
 
 
 }

@@ -10,7 +10,10 @@ import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Build;
+import android.os.Environment;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
@@ -28,7 +31,14 @@ import com.example.MusicService.MusicService;
 import com.example.VolumechangeReceiver.VolumnChangeReceiver;
 import com.example.local_music.LocalMusic;
 
+import org.w3c.dom.Text;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 
@@ -50,8 +60,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     ImageButton main_recent_bt;
     ImageButton main_next_bt;
     ImageButton STOP;
+    static TextView lrc;
+    LyricInfo lyricInfo;
     TextView main_fulltitle_tv;
     TextView main_count_tv;
+    boolean stopThread = false ;
+    Thread lyricThread = new Thread() ;
+
 
     ArrayList<Map<String, String>> mapArrayList = null;
 
@@ -100,6 +115,56 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         main_play_pause_bt.setImageResource(R.drawable.startwhite);
             }
 
+            if(intent.getAction().equals("com.example.MusicService.LRC")){
+                File file = new File(Environment.getExternalStorageDirectory().getPath() + "//Musiclrc");
+                File[] files;
+                files = file.listFiles();
+
+                Log.e("lrc",files[intent.getIntExtra("LRC",-1)].toString());
+                getLRC(files[intent.getIntExtra("LRC",-1)],lyricInfo);
+
+
+
+                lyricThread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        for(int i = 0 ; i < lyricInfo.lineinfo.size() && !stopThread ;i++) {
+                            Message message = new Message();
+                            message.obj = lyricInfo.lineinfo.get(i).line;
+                            long start = System.currentTimeMillis();
+                            long gap = 0;
+                            long stop1 = 0;
+                            Log.e("info",(lyricInfo.lineinfo.get(i).start+""));
+                            try {
+                                while (!stopThread &&
+                                        (System.currentTimeMillis() - start - gap < (lyricInfo.lineinfo.get(i).start - lyricInfo.lineinfo.get(i - 1).start) )){
+                                    if(stop1 != 0) {
+                                        stop1 = 0 ;
+                                    }
+                                    while(ispause){
+                                         if(stop1 == 0)
+                                             stop1 = System.currentTimeMillis();
+
+                                    }
+                                    if(stop1 != 0){
+                                        gap = gap + System.currentTimeMillis()-stop1;
+                                    }
+
+                                }
+                            }catch (Exception e){
+                                e.printStackTrace();
+                            }
+
+
+                            handler.sendMessage(message);
+                        }
+
+                    }
+                });
+
+                lyricThread.start();
+            }
+
         }
     }
 
@@ -113,6 +178,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Intent intent = new Intent("com.example.MainActivity.REQUSETRES");
         sendBroadcast(intent);
 
+        lyricInfo = new LyricInfo();
+        lyricInfo.lineinfo = new ArrayList<>();
 
         readytoplay();
 
@@ -201,6 +268,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 seekbar.setProgress(0);
                 Intent intentnext = new Intent("com.example.MainActivity.STARTMUSIC");
                 intentnext.putExtra("NEXT", true);
+                stopThread = true;
+                stopThread = false;
+
                 sendBroadcast(intentnext);
 
                 Intent intentnotify = new Intent("com.example.MusicService.NOTIFI");
@@ -234,30 +304,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         intentFilter.addAction("com.example.LocalMusic.PLAY");
         intentFilter.addAction("com.example.MusicService.ISPLAY");
         intentFilter.addAction("com.example.MusicService.ISPAUSE");
+        intentFilter.addAction("com.example.MusicService.LRC");
 
         registerReceiver(messageReceiver, intentFilter);
 
     }
 
 
-    public static int i = 0;
-
+    long time;int key = 0 ;
     @Override
     public void onBackPressed() {
-
-        if (i == 0) {
+        if(key++ == 0 ) {
+            time = System.currentTimeMillis();
             Toast.makeText(this, "再按一次退出", Toast.LENGTH_SHORT).show();
-            i = 1;
-        } else if (i == 1) {
-            finish();
         }
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                sleep(3000);
-                i = 0;
-            }
-        }).start();
+        else if(System.currentTimeMillis()-time>2000){
+            key = 0 ;
+        }else finish();
+
 
 
     }
@@ -312,6 +376,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         main_next_bt = (ImageButton) findViewById(R.id.NEXT);
         main_fulltitle_tv = (TextView) findViewById(R.id.tv);
         main_count_tv = (TextView) findViewById(R.id.main_count_tv);
+        lrc = (TextView)findViewById(R.id.lrc) ;
         seekbar = (SeekBar) findViewById(R.id.seekBar);
         STOP = (ImageButton)findViewById(R.id.STOP);
 
@@ -347,6 +412,65 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         try {
             Thread.sleep(500);
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    class LyricInfo{
+        List<LineInfo> lineinfo;
+        String artist;
+        String title;
+    }
+
+    class LineInfo{
+
+        int start;
+        String line;
+    }
+
+    private static Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            lrc.setText(msg.obj.toString());
+
+        }
+    };
+
+    void getLRC(File file , LyricInfo lyricinfo){
+        try {
+            FileInputStream fip = new FileInputStream(file);
+            InputStreamReader ips = new InputStreamReader(fip);
+            BufferedReader bufferedReader = new BufferedReader(ips);
+
+            lyricinfo.lineinfo = new ArrayList<>();
+
+            String Line;
+
+            while((Line = bufferedReader.readLine()) != null){
+
+                int last = Line.indexOf(']');
+
+                if(Line.startsWith("[ar:"))
+                {
+                    lyricinfo.artist = Line.substring(4,last);
+
+                }
+
+                if(Line.startsWith("[ti:")){
+                    lyricinfo.title = Line.substring(4,last);
+                }
+
+                if(Line.startsWith("[0")){
+                    LineInfo currentlineinfo = new LineInfo();
+
+                    currentlineinfo.line =  Line.substring(last + 1 ).trim();
+                    currentlineinfo.start = (int)(Integer.parseInt(Line.substring(1,3).trim())*60*1000 + Double.parseDouble(Line.substring(4,last).trim())*1000);
+                    lyricinfo.lineinfo.add(currentlineinfo);
+                }
+            }
+
+        }catch (Exception e){
             e.printStackTrace();
         }
     }
