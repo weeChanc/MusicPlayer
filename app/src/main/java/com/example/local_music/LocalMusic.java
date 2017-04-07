@@ -69,7 +69,7 @@ public class LocalMusic extends AppCompatActivity implements View.OnClickListene
          */
         try {
             SharedPreferences sharedPreferences = getSharedPreferences("data", MODE_PRIVATE);
-            mode = sharedPreferences.getString("MODE", "orl");
+            mode = sharedPreferences.getString("MODE", "rlo");
             if (mode.charAt(2) == 'o') local_mode_bt.setImageResource((R.drawable.orderplay));
             if (mode.charAt(2) == 'r') local_mode_bt.setImageResource((R.drawable.randomblue));
             if (mode.charAt(2) == 'l') local_mode_bt.setImageResource((R.drawable.loopplaybule));

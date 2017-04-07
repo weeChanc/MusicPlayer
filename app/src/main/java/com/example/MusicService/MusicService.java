@@ -34,7 +34,7 @@ import java.util.Map;
 
 
 public class MusicService extends Service {
-    private File[] files;
+
 
     private MediaPlayer mediaPlayer = new MediaPlayer();
     private ArrayList<Map<String, String>> data = new ArrayList<>();
@@ -79,23 +79,23 @@ public class MusicService extends Service {
                 initMediaPlayer(data.get(position).get("data"));
 
 
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            for (int i = 0; i < files.length; i++) {
-                                if (files[i].getAbsolutePath().contains(data.get(position).get("title"))) {
-                                    Intent intentlrc = new Intent("com.example.MusicService.LRC");
-                                    intentlrc.putExtra("LRC",i);
-                                    sendBroadcast(intentlrc);
-                                    break;
-                                }
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }).start();
+//                new Thread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        try {
+//                            for (int i = 0; i < files.length; i++) {
+//                                if (files[i].getAbsolutePath().contains(data.get(position).get("title"))) {
+//                                    Intent intentlrc = new Intent("com.example.MusicService.LRC");
+//                                    intentlrc.putExtra("LRC",i);
+//                                    sendBroadcast(intentlrc);
+//                                    break;
+//                                }
+//                            }
+//                        } catch (Exception e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                }).start();
 
 
 
@@ -190,10 +190,6 @@ public class MusicService extends Service {
 
         super.onCreate();
 
-        File file = new File(Environment.getExternalStorageDirectory().getPath() + "//Musiclrc");
-        files = file.listFiles();
-
-
         Log.e("info", "SERVICE create");
         registerMyReceiver();//注册广播
         readMusicData(); //读取信息
@@ -259,7 +255,7 @@ public class MusicService extends Service {
                         sendBroadcast(intent);
                         Log.e("info", "callback");
                         try {
-                            Thread.sleep(400);
+                            Thread.sleep(200);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }

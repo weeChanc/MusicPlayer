@@ -18,6 +18,7 @@ import android.widget.RelativeLayout;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
+import com.example.mylatouttest.MainActivity;
 import com.example.mylatouttest.R;
 
 import org.w3c.dom.Text;
@@ -117,7 +118,8 @@ public class MySimpleAdapter extends BaseAdapter {
             viewHolder.bt4.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.e("info", "play");
+                    MainActivity.stopThread = true;
+                    MainActivity.stopThread = false;
                     Intent intent = new Intent("com.example.MainActivity.STARTMUSIC");
                     intent.putExtra("LOCATION", position);
                     intent.putExtra("POSITION", true);                             //下面的方法找不到对应的position只能放上来

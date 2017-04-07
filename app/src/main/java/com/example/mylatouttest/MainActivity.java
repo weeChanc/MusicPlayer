@@ -31,7 +31,6 @@ import com.example.MusicService.MusicService;
 import com.example.VolumechangeReceiver.VolumnChangeReceiver;
 import com.example.local_music.LocalMusic;
 
-import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -44,31 +43,39 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private VolumnChangeReceiver volumnChangeReceiver;
-    private MessageReceiver messageReceiver;
+    static TextView lrc;
+    private static Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            lrc.setText(msg.obj.toString());
 
-
+        }
+    };
     int position;
     int max;
     boolean ispause = true; //判断播放状态
-    private MusicService musicService;
     SeekBar seekbar;
-
     ImageButton main_list_bt;
     ImageButton main_play_pause_bt;
     ImageButton main_like_bt;
     ImageButton main_recent_bt;
     ImageButton main_next_bt;
     ImageButton STOP;
-    static TextView lrc;
     LyricInfo lyricInfo;
     TextView main_fulltitle_tv;
     TextView main_count_tv;
-    boolean stopThread = false ;
-    Thread lyricThread = new Thread() ;
+    public static boolean stopThread = false;
+    Thread lyricThread = new Thread();
 
-
+    String temptitle = "";
+    int progress;
+    File[] files;
     ArrayList<Map<String, String>> mapArrayList = null;
+    long time;
+    int key = 0;
+    private VolumnChangeReceiver volumnChangeReceiver;
+    private MessageReceiver messageReceiver;
+    private MusicService musicService;
 
 
     private ServiceConnection connection = new ServiceConnection() {
@@ -83,95 +90,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     };
 
-    public class MessageReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-
-            if (intent.getAction().equals("com.example.MusicService.PROGRESS")) {
-                seekbar.setProgress(intent.getIntExtra("PROGRESS", 0));
-            } // 修改进度
-
-            if (intent.getAction().equals("com.example.MusicService.DETIAL")) {
-                main_fulltitle_tv.setText(intent.getStringExtra("TITLE"));
-                main_count_tv.setText(intent.getIntExtra("COUNT", 0) + "");
-                max = intent.getIntExtra("MAXPROGRESS", 0);
-                seekbar.setMax(intent.getIntExtra("MAXPROGRESS", 0));
-            } //接受并初始化/修改 当前歌曲 以及歌曲数目
-
-            if (intent.getAction().equals("com.example.MusicService.ARRAY")) {
-                mapArrayList = (ArrayList<Map<String, String>>) intent.getSerializableExtra("ARRAY");
-            }   // 中转继续传给其他活动
-
-            if (intent.getAction().equals("com.example.LocalMusic.PLAY")) {
-                ispause = false;
-                main_play_pause_bt.setImageResource(R.drawable.pausewhite);
-            }
-
-            if(intent.getAction().equals("com.example.MusicService.ISPLAY")){
-
-                    if( intent.getBooleanExtra("ISPLAY",false) )
-                    main_play_pause_bt.setImageResource(R.drawable.pausewhite);
-                    else
-                        main_play_pause_bt.setImageResource(R.drawable.startwhite);
-            }
-
-            if(intent.getAction().equals("com.example.MusicService.LRC")){
-                File file = new File(Environment.getExternalStorageDirectory().getPath() + "//Musiclrc");
-                File[] files;
-                files = file.listFiles();
-
-                Log.e("lrc",files[intent.getIntExtra("LRC",-1)].toString());
-                getLRC(files[intent.getIntExtra("LRC",-1)],lyricInfo);
-
-
-
-                lyricThread = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        for(int i = 0 ; i < lyricInfo.lineinfo.size() && !stopThread ;i++) {
-                            Message message = new Message();
-                            message.obj = lyricInfo.lineinfo.get(i).line;
-                            long start = System.currentTimeMillis();
-                            long gap = 0;
-                            long stop1 = 0;
-                            Log.e("info",(lyricInfo.lineinfo.get(i).start+""));
-                            try {
-                                while (!stopThread &&
-                                        (System.currentTimeMillis() - start - gap < (lyricInfo.lineinfo.get(i).start - lyricInfo.lineinfo.get(i - 1).start) )){
-                                    if(stop1 != 0) {
-                                        stop1 = 0 ;
-                                    }
-                                    while(ispause){
-                                         if(stop1 == 0)
-                                             stop1 = System.currentTimeMillis();
-
-                                    }
-                                    if(stop1 != 0){
-                                        gap = gap + System.currentTimeMillis()-stop1;
-                                    }
-
-                                }
-                            }catch (Exception e){
-                                e.printStackTrace();
-                            }
-
-
-                            handler.sendMessage(message);
-                        }
-
-                    }
-                });
-
-                lyricThread.start();
-            }
-
-        }
-    }
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.e("info","MainAcitivit CREATE");
+        Log.e("info", "MainAcitivit CREATE");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.musicplayer_main);
 
@@ -181,14 +102,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         lyricInfo = new LyricInfo();
         lyricInfo.lineinfo = new ArrayList<>();
 
-        readytoplay();
 
+        readytoplay();
 
 
         seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-
+                Log.e("info", "asd");
             }
 
             @Override
@@ -202,10 +123,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 intent.putExtra("ISSEEKBARTOUCH", true);
                 sendBroadcast(intent);
             }
+
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 Intent intent2 = new Intent("com.example.MainActivity.STARTMUSIC");
-                intent2.putExtra("PROGRESS", seekBar.getProgress()-1);
+                intent2.putExtra("PROGRESS", seekBar.getProgress() - 1);
                 intent2.putExtra("SEEK", true);
                 sendBroadcast(intent2);
 
@@ -217,7 +139,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     protected void onDestroy() {
-        Log.e("info","MainAcitivit Destory");
+        Log.e("info", "MainAcitivit Destory");
         unregisterReceiver(volumnChangeReceiver);
         unregisterReceiver(messageReceiver);
         super.onDestroy();
@@ -241,7 +163,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (ispause) {
                     intent.putExtra("ISPAUSE", true);
                     sendBroadcast(intent);
-                    intentnotify1.putExtra("PLAY",true);
+                    intentnotify1.putExtra("PLAY", true);
                     sendBroadcast(intentnotify1);
                     main_play_pause_bt.setImageResource(R.drawable.pausewhite);
                     ispause = false;
@@ -265,29 +187,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
             case R.id.NEXT:
+                Log.e("info","next");
+                stopThread = true;
+                stopThread = false;
                 seekbar.setProgress(0);
                 Intent intentnext = new Intent("com.example.MainActivity.STARTMUSIC");
                 intentnext.putExtra("NEXT", true);
-                stopThread = true;
-                stopThread = false;
-
                 sendBroadcast(intentnext);
 
                 Intent intentnotify = new Intent("com.example.MusicService.NOTIFI");
-                intentnotify.putExtra("PLAY",true);
+                intentnotify.putExtra("PLAY", true);
                 sendBroadcast(intentnotify);
-
                 main_play_pause_bt.setImageResource(R.drawable.pausewhite);
                 ispause = false;
+                lyricThread.interrupt();
                 break;
 
             case R.id.STOP:
-             Log.e("reset","reset");   musicService.resetMusic();break;
+                Log.e("reset", "reset");
+                musicService.resetMusic();
+                break;
 
 
         }
     }
-
 
     private void registerMyReceiver() {
         IntentFilter intentFilter = new IntentFilter();
@@ -305,23 +228,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         intentFilter.addAction("com.example.MusicService.ISPLAY");
         intentFilter.addAction("com.example.MusicService.ISPAUSE");
         intentFilter.addAction("com.example.MusicService.LRC");
-
         registerReceiver(messageReceiver, intentFilter);
 
     }
 
-
-    long time;int key = 0 ;
     @Override
     public void onBackPressed() {
-        if(key++ == 0 ) {
+        if (key++ == 0) {
             time = System.currentTimeMillis();
             Toast.makeText(this, "再按一次退出", Toast.LENGTH_SHORT).show();
-        }
-        else if(System.currentTimeMillis()-time>2000){
-            key = 0 ;
-        }else finish();
-
+        } else if (System.currentTimeMillis() - time > 2000) {
+            key = 0;
+        } else finish();
 
 
     }
@@ -376,9 +294,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         main_next_bt = (ImageButton) findViewById(R.id.NEXT);
         main_fulltitle_tv = (TextView) findViewById(R.id.tv);
         main_count_tv = (TextView) findViewById(R.id.main_count_tv);
-        lrc = (TextView)findViewById(R.id.lrc) ;
+        lrc = (TextView) findViewById(R.id.lrc);
         seekbar = (SeekBar) findViewById(R.id.seekBar);
-        STOP = (ImageButton)findViewById(R.id.STOP);
+        STOP = (ImageButton) findViewById(R.id.STOP);
 
         STOP.setOnClickListener(this);
         main_like_bt.setOnClickListener(this);
@@ -390,13 +308,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-
     private void readytoplay() {
 
         while (!checkPermission()) {
             sleep(500);
         }
 
+
+        File file = new File(Environment.getExternalStorageDirectory().getPath() + "//Musiclrc");
+        files = file.listFiles();
 
         Intent intent = new Intent(MainActivity.this, MusicService.class);
         bindService(intent, connection, BIND_AUTO_CREATE);
@@ -408,36 +328,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    void sleep(int time) {
+    void sleep(long time) {
         try {
-            Thread.sleep(500);
+            Thread.sleep(time);
         } catch (Exception e) {
+            Log.e("catch","catch");
             e.printStackTrace();
         }
     }
 
-
-    class LyricInfo{
-        List<LineInfo> lineinfo;
-        String artist;
-        String title;
-    }
-
-    class LineInfo{
-
-        int start;
-        String line;
-    }
-
-    private static Handler handler = new Handler(){
-        @Override
-        public void handleMessage(Message msg) {
-            lrc.setText(msg.obj.toString());
-
-        }
-    };
-
-    void getLRC(File file , LyricInfo lyricinfo){
+    void getLRC(File file, LyricInfo lyricinfo) {
         try {
             FileInputStream fip = new FileInputStream(file);
             InputStreamReader ips = new InputStreamReader(fip);
@@ -447,32 +347,143 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             String Line;
 
-            while((Line = bufferedReader.readLine()) != null){
+            while ((Line = bufferedReader.readLine()) != null) {
 
                 int last = Line.indexOf(']');
 
-                if(Line.startsWith("[ar:"))
-                {
-                    lyricinfo.artist = Line.substring(4,last);
+                if (Line.startsWith("[ar:")) {
+                    lyricinfo.artist = Line.substring(4, last);
 
                 }
 
-                if(Line.startsWith("[ti:")){
-                    lyricinfo.title = Line.substring(4,last);
+                if (Line.startsWith("[ti:")) {
+                    lyricinfo.title = Line.substring(4, last);
                 }
 
-                if(Line.startsWith("[0")){
+                if (Line.startsWith("[0")) {
+
                     LineInfo currentlineinfo = new LineInfo();
 
-                    currentlineinfo.line =  Line.substring(last + 1 ).trim();
-                    currentlineinfo.start = (int)(Integer.parseInt(Line.substring(1,3).trim())*60*1000 + Double.parseDouble(Line.substring(4,last).trim())*1000);
+                    currentlineinfo.line = Line.substring(last + 1).trim();
+                    currentlineinfo.start = (int) (Integer.parseInt(Line.substring(1, 3).trim()) * 60 * 1000 + Double.parseDouble(Line.substring(4, last).trim()) * 1000);
                     lyricinfo.lineinfo.add(currentlineinfo);
                 }
             }
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public class MessageReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            if (intent.getAction().equals("com.example.MusicService.PROGRESS")) {
+                progress = intent.getIntExtra("PROGRESS", 0);
+                seekbar.setProgress(progress);
+
+                lyricThread = new Thread(new Runnable() { //处理歌词的线程
+
+                    @Override
+                    public void run() {
+
+                        try {
+                            int temp = 0;
+                            while (temp < lyricInfo.lineinfo.size() - 1   ) {
+                                Log.e("inter","inter");
+                                Message message = new Message();
+                                message.obj = "";
+
+                                long start = System.currentTimeMillis();
+
+                                while((System.currentTimeMillis() - start ) < 400){
+                                    if(stopThread) return;
+                                }
+                                for (int j = 0; j < lyricInfo.lineinfo.size() - 1 ; j++) {
+
+                                    if (lyricThread.isInterrupted()) break;
+
+                                    if (progress >= lyricInfo.lineinfo.get(j).start && progress <= lyricInfo.lineinfo.get(j + 1).start) {
+                                        message.obj = lyricInfo.lineinfo.get(j).line;
+                                        temp = j;
+                                        break;
+                                    }
+
+
+                                }
+                                handler.sendMessage(message);
+                            }
+                        }catch(Exception e){
+                            Log.e("inter","catch");
+                        }
+                    }
+                });
+
+
+                try {
+
+                    if (!temptitle.equals(main_fulltitle_tv.getText().toString())) {
+                        temptitle = main_fulltitle_tv.getText().toString();
+                        Log.e("fa", temptitle);
+                        int pos = 0;
+                        for (; pos < files.length; pos++) {
+                            if (files[pos].getAbsolutePath().contains(temptitle)) {
+                                Log.e("found", "found");
+                                getLRC(files[pos], lyricInfo);   //找到并导入对应歌词到类中
+                                lyricThread.start();
+                                break;
+                            }
+                            if(pos == files.length -1)
+                                lrc.setText("没找到歌词");
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+
+            } // 修改进度
+
+            if (intent.getAction().equals("com.example.MusicService.DETIAL")) {
+                main_fulltitle_tv.setText(intent.getStringExtra("TITLE"));
+                main_count_tv.setText(intent.getIntExtra("COUNT", 0) + "");
+                max = intent.getIntExtra("MAXPROGRESS", 0);
+                seekbar.setMax(intent.getIntExtra("MAXPROGRESS", 0));
+
+            } //接受并初始化/修改 当前歌曲 以及歌曲数目 歌词
+
+
+            if (intent.getAction().equals("com.example.MusicService.ARRAY")) {
+                mapArrayList = (ArrayList<Map<String, String>>) intent.getSerializableExtra("ARRAY");
+            }   // 中转继续传给其他活动
+
+            if (intent.getAction().equals("com.example.LocalMusic.PLAY")) {
+                ispause = false;
+                main_play_pause_bt.setImageResource(R.drawable.pausewhite);
+            }
+
+            if (intent.getAction().equals("com.example.MusicService.ISPLAY")) {
+
+                if (intent.getBooleanExtra("ISPLAY", false))
+                    main_play_pause_bt.setImageResource(R.drawable.pausewhite);
+                else
+                    main_play_pause_bt.setImageResource(R.drawable.startwhite);
+            }
+
+        }
+    }
+
+    private class LyricInfo {
+        List<LineInfo> lineinfo;
+        String artist;
+        String title;
+    }
+
+    private class LineInfo {
+
+        int start;
+        String line;
     }
 
 }
