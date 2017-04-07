@@ -43,15 +43,8 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    static TextView lrc;
-    private static Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            lrc.setText(msg.obj.toString());
 
-        }
-    };
-    int position;
+    static TextView lrc;
     int max;
     boolean ispause = true; //判断播放状态
     SeekBar seekbar;
@@ -73,9 +66,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     ArrayList<Map<String, String>> mapArrayList = null;
     long time;
     int key = 0;
+
     private VolumnChangeReceiver volumnChangeReceiver;
     private MessageReceiver messageReceiver;
     private MusicService musicService;
+
+    private static Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            lrc.setText(msg.obj.toString());
+        }
+    };
+
 
 
     private ServiceConnection connection = new ServiceConnection() {

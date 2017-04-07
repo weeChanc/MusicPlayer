@@ -34,13 +34,10 @@ public class LocalMusic extends AppCompatActivity implements View.OnClickListene
     ImageButton local_mode_bt;
     ArrayList<Map<String, Object>> data;
 
-//    class DataReceiver extends BroadcastReceiver{
-//        @Override
-//        public void onReceive(Context context, Intent intent) {
-//            mapArrayList = (ArrayList<Map<String,String>>)intent.getSerializableExtra("arrayList");
-//            Log.e("info","receive");
-//        }
-//    }
+    class globle{
+
+    }
+
 
     @Override
     public void onBackPressed() {
