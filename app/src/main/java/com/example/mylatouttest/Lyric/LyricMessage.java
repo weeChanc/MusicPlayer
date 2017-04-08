@@ -1,4 +1,4 @@
-package com.example.mylatouttest;
+package com.example.mylatouttest.Lyric;
 
 /**
  * Created by 铖哥 on 2017/4/8.

@@ -87,18 +87,9 @@ public class MusicService extends Service {
                 mediaPlayer.seekTo(intent.getIntExtra("PROGRESS", 0));
             }
 
-
-
             if (intent.getAction().equals("com.example.LocalMusic.MODE")) {
                 play_mode = intent.getCharExtra("MODE", 'o');
             }
-
-//            if (intent.getAction().equals("com.example.MainActivity.ISSEEKBARTOUCH")) {
-//                if (myApplication.isSeekBarTouch())
-//                    isseekbartouch = true;
-//                else
-//                    isseekbartouch = false;
-//            }
 
             if (intent.getAction().equals("CHANGESELF")) {
                 if (mediaPlayer.isPlaying()) {
@@ -230,7 +221,7 @@ public class MusicService extends Service {
                         intent.putExtra("PROGRESS", mediaPlayer.getCurrentPosition());
                         sendBroadcast(intent);
                         try {
-                            Thread.sleep(200);
+                            Thread.sleep(800);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -342,7 +333,6 @@ public class MusicService extends Service {
         intentFilter.addAction("com.example.MainActivity.STARTMUSIC");
         intentFilter.addAction("com.example.MainActivity.NEXTMUSIC");
         intentFilter.addAction("com.example.LocalMusic.MODE");
-        intentFilter.addAction("com.example.MainActivity.ISSEEKBARTOUCH");
         intentFilter.addAction("CHANGESELF");
         intentFilter.addAction("CHANGENEXT");
         intentFilter.addAction("com.example.MusicService.NOTIFI");

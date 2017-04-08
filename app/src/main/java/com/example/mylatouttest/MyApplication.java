@@ -25,6 +25,15 @@ public class MyApplication  extends Application{
     private String mode;
     private String bottomTitle;
     private int position = 0 ;
+    private int progress;
+
+    public int getProgress() {
+        return progress;
+    }
+
+    public void setProgress(int progress) {
+        this.progress = progress;
+    }
 
     public int getPosition() {
         return position;

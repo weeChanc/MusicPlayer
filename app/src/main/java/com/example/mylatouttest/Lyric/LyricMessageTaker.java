@@ -1,4 +1,6 @@
-package com.example.mylatouttest;
+package com.example.mylatouttest.Lyric;
+
+import com.example.mylatouttest.Lyric.LyricMessage;
 
 import java.util.List;
 

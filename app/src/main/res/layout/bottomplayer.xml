@@ -16,8 +16,8 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_above="@+id/tv"
-        android:layout_toRightOf="@+id/imageView3"
-        android:layout_toEndOf="@+id/imageView3" />
+        android:layout_toRightOf="@+id/bottom_head"
+        android:layout_toEndOf="@+id/bottom_head" />
 
     <TextView
         android:id="@+id/tv"
@@ -32,8 +32,8 @@
         app:layout_constraintTop_toBottomOf="@+id/seekBar"
         app:layout_constraintVertical_bias="0.0"
         android:layout_alignParentBottom="true"
-        android:layout_toRightOf="@+id/imageView3"
-        android:layout_toEndOf="@+id/imageView3" />
+        android:layout_toRightOf="@+id/bottom_head"
+        android:layout_toEndOf="@+id/bottom_head" />
 
     <ImageButton
         android:id="@+id/NEXT"
@@ -72,7 +72,7 @@
         app:srcCompat="@drawable/stopblue" />
 
     <ImageView
-        android:id="@+id/imageView3"
+        android:id="@+id/bottom_head"
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:layout_alignParentLeft="true"

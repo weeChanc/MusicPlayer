@@ -9,6 +9,7 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.media.Image;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
@@ -24,10 +25,10 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.PopupWindow;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,8 +37,11 @@ import android.util.Base64;
 
 
 import com.example.MusicService.MusicService;
+import com.example.View.BottomPlayer;
 import com.example.VolumechangeReceiver.VolumnChangeReceiver;
 import com.example.local_music.LocalMusic;
+import com.example.mylatouttest.Lyric.LyricJson;
+import com.example.mylatouttest.Lyric.LyricMessageTaker;
 import com.google.gson.Gson;
 
 
@@ -45,9 +49,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -56,11 +58,20 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import static android.view.WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED;
+
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    MyApplication myApplication;
+    public static boolean stopThread = false;
     static TextView lrc;
+    private static Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            lrc.setText(msg.obj.toString());
+        }
+    };
+    MyApplication myApplication;
     int max;
     boolean ispause = true; //判断播放状态
     SeekBar seekbar;
@@ -71,29 +82,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     ImageButton main_next_bt;
     ImageButton STOP;
     LyricInfo lyricInfo;
-    TextView main_fulltitle_tv;
     TextView main_count_tv;
-    public static boolean stopThread = false;
     Thread lyricThread = new Thread();
-    int count = 0;
-
     String temptitle = "";
     int progress;
     File[] files;
     ArrayList<Map<String, String>> data = null;
     long time;
     int key = 0;
-
+    File file ;
     private VolumnChangeReceiver volumnChangeReceiver;
     private MessageReceiver messageReceiver;
     private MusicService musicService;
-
-    private static Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            lrc.setText(msg.obj.toString());
-        }
-    };
+    TextView bottomtext ;
+    ImageView bottomhead ;
+    ImageButton bottomnext;
+    SeekBar bottomSeekbar;
 
 
     private ServiceConnection connection = new ServiceConnection() {
@@ -111,17 +115,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
+                PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+        }//运行权限
+
+        if( ContextCompat.checkSelfPermission(this,Manifest.permission.SYSTEM_ALERT_WINDOW) != PackageManager.PERMISSION_GRANTED ){
+            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.SYSTEM_ALERT_WINDOW},1);
+        }
+
         String directory = Environment.getExternalStorageDirectory().getAbsoluteFile().getPath() + "/MyLyric/";
         Log.e("eqqw", directory);
-        File file = new File(directory);
+        file = new File(directory);
 
         if (file.exists())
             Log.e("eee", "ok");
         else
             file.mkdir();
 
+        files = file.listFiles();
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.musicplayer_main);
+
 
 
         Intent intent = new Intent("com.example.MainActivity.REQUSETRES");
@@ -143,10 +159,38 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        PopupWindow popupWindow = new PopupWindow(contentView, ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT);
 //        popupWindow.showAtLocation(rootView,Gravity.BOTTOM,0,0);
 
+        WindowManager manager = (WindowManager)getSystemService(Context.WINDOW_SERVICE);
+        WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
+        layoutParams.gravity = Gravity.LEFT| Gravity.BOTTOM;
+        layoutParams.x= 0;
+        layoutParams.y= 0;
+        layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT;
+        layoutParams.height = 300;
+        layoutParams.type = WindowManager.LayoutParams.TYPE_SYSTEM_ERROR;
+        layoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+                | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED;
+        View view = View.inflate(getApplicationContext(),R.layout.bottomplayer,null);
+         bottomtext = (TextView)view.findViewById(R.id.tv);
+         bottomhead = (ImageView) view.findViewById(R.id.bottom_head);
+         bottomnext = (ImageButton) view.findViewById(R.id.NEXT);
+         bottomSeekbar = (SeekBar)view.findViewById(R.id.seekBar);
+
+        bottomnext.setImageResource(R.drawable.nextbule);
+        bottomtext.setText("abc");
+        bottomhead.setImageResource(R.drawable.add);
+
+        manager.addView(view,layoutParams);
+
+
+
+
+
 
         seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                myApplication.setProgress(progress);
             }
 
             @Override
@@ -166,46 +210,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 intent2.putExtra("SEEK", true);
                 sendBroadcast(intent2);
                 myApplication.setIsSeekBarTouch(false);
+
             }
         });
-
-
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//
-//                OkHttpClient client = new OkHttpClient();
-//                Request request = new Request.Builder()
-//                        .url("http://lyrics.kugou.com/search?ver=1&man=yes&client=pc&keyword=%E6%B5%AE%E5%A4%B8&duration=218392&hash=")
-//                        .build();
-//
-//                try {
-//
-//
-//                    Response response = client.newCall(request).execute();
-//                    String responsedata = response.body().string();
-//                    Log.e("eqqw",responsedata);
-//                    Gson gson =new Gson();
-//                    LyricMessageTaker lyricMessageTaker = gson.fromJson(responsedata,LyricMessageTaker.class);
-//
-//                    byte[] lyric = new byte[1];
-////                    byte[] lyric = Base64.decode(lyricMessageTaker.getCandidates(),Base64.DEFAULT);
-//                    Log.e("eqqw",lyricMessageTaker.getCandidates().get(1).singer);
-
-//
-//                    file = new File(directory+"simple3.lrc");
-//                    if(!file.exists()) {
-//                        file.createNewFile();
-//                    }
-//                    FileOutputStream fos = new FileOutputStream(file);
-//                    fos.write(lyric);
-//                    fos.close();
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }).start();
-
 
     }
 
@@ -222,9 +229,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId()) {
             case R.id.main_list_bt:
                 Intent acitvityintent = new Intent(this, LocalMusic.class);
-//                Bundle bundle = new Bundle();
-//                bundle.putParcelableArrayList("arrayList", (ArrayList) mapArrayList);
-//                acitvityintent.putExtras(bundle);
                 startActivity(acitvityintent);
                 break;
 
@@ -321,21 +325,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    private boolean checkPermission() {
-
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
-                PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-        }//运行权限
-
-
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-            Log.e("permit", "permit");
-            return true;
-        }
-        Log.e("permit", "didnt permit");
-        return false;
-    }
+//    private boolean checkPermission() {
+//
+//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
+//                PackageManager.PERMISSION_GRANTED) {
+//            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+//        }//运行权限
+//
+//
+//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+//            Log.e("permit", "permit");
+//            return true;
+//        }
+//        Log.e("permit", "didnt permit");
+//        return false;
+//    }
 
     private void insertDesign() {
         if (Build.VERSION.SDK_INT >= 21) {
@@ -369,7 +373,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         main_like_bt = (ImageButton) findViewById(R.id.main_like_bt);
         main_recent_bt = (ImageButton) findViewById(R.id.main_recent_bt);
         main_next_bt = (ImageButton) findViewById(R.id.NEXT);
-        main_fulltitle_tv = (TextView) findViewById(R.id.tv);
         main_count_tv = (TextView) findViewById(R.id.main_count_tv);
         lrc = (TextView) findViewById(R.id.lrc);
         seekbar = (SeekBar) findViewById(R.id.seekBar);
@@ -387,16 +390,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void readytoplay() {
 
-        while (!checkPermission()) {
-            sleep(500);
-        }
+//        if(Build.VERSION.SDK_INT >= 23) {
+//            while (!checkPermission()) {
+//                sleep(500);
+//            }
+//        }
 
         Intent intent = new Intent(MainActivity.this, MusicService.class);
         bindService(intent, connection, BIND_AUTO_CREATE);
         startService(intent);
 
-        File file = new File(Environment.getExternalStorageDirectory().getPath() + "//MyLyric");
-        files = file.listFiles();
+
+
 
         getView();
         insertDesign();
@@ -452,13 +457,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    private boolean seekLyric(){
+        files = file.listFiles();
+        int pos = 0;
+        Log.e("tag",temptitle);
+        for (; pos <= files.length; pos++) {
+            if (files.length > 0 && files[pos].getAbsolutePath().contains(temptitle)) {
+                Log.e("tag", "找到了歌词");
+                getLRC(files[pos], lyricInfo);   //找到并导入对应歌词到类中
+                lyricThread.start();
+                return true;  //找到返回true
+            }
+            if(pos == files.length-1)
+                return false;
+        }
+
+        return false;
+    }
+
     public class MessageReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
 
             if (intent.getAction().equals("com.example.MusicService.PROGRESS")) {
                 progress = intent.getIntExtra("PROGRESS", 0);
-                seekbar.setProgress(progress);
+                seekbar.setProgress(myApplication.getProgress());
 
                 lyricThread = new Thread(new Runnable() { //处理歌词的线程
 
@@ -467,7 +490,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         try {
                             int temp = 0;
                             while (temp < lyricInfo.lineinfo.size() - 1) {
-                                Log.e("inter", "inter");
+                                Log.e("tag", "处理歌词线程");
                                 Message message = new Message();
                                 message.obj = "";
 
@@ -486,12 +509,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                         break;
                                     }
 
-
                                 }
                                 handler.sendMessage(message);
                             }
                         } catch (Exception e) {
-                            Log.e("inter", "catch");
                         }
                     }
                 });
@@ -499,21 +520,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 try {
 
-                    if (!temptitle.equals(main_fulltitle_tv.getText().toString())) {
-                            temptitle = main_fulltitle_tv.getText().toString();
+                    if (!temptitle.equals(bottomtext.getText().toString())) {
+                            temptitle = bottomtext.getText().toString();
 
-                            int pos = 0;
-                            for (; pos <= files.length; pos++) {
-                                if (files.length > 0 && files[pos].getAbsolutePath().contains(temptitle)) {
-                                    Log.e("found", "found");
-                                    getLRC(files[pos], lyricInfo);   //找到并导入对应歌词到类中
-                                    lyricThread.start();
-                                    break;
-                                }
-
-                                if (pos == files.length - 1 || (files.length == 0 && pos == 0)) {
+                                if (!seekLyric()) {
                                     data = myApplication.getData();
+                                    Log.e("tag","找不到歌词，准备搜索");
                                     lrc.setText("成哥为你搜索歌词中");
+
+
                                     new Thread(new Runnable() {
                                         @Override
                                         public void run() {
@@ -523,29 +538,35 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                                 Response response = okHttpClient.newCall(request).execute();
                                                 Gson gson = new Gson();
                                                 LyricMessageTaker lyricMessageTaker = gson.fromJson(response.body().string(), LyricMessageTaker.class);
-                                                for (int i = 0; i < lyricMessageTaker.getCandidates().size(); i++) {
+
+                                                int lyricmount = lyricMessageTaker.getCandidates().size();
+                                                for (int i = 0; i < lyricmount  ; i++) {
                                                     if (lyricMessageTaker.getCandidates().get(i).getSinger().equals(data.get(myApplication.getPosition()).get("singer"))) {
+
                                                         request = new Request.Builder().url(lyricMessageTaker.getCandidates().get(i).initURL()).build();
                                                         response = okHttpClient.newCall(request).execute();
+                                                        LyricJson lyricJson = gson.fromJson(response.body().string(), LyricJson.class);
+                                                        byte[] lyric = Base64.decode(lyricJson.getContent(), Base64.DEFAULT);
+                                                        File file = new File(Environment.getExternalStorageDirectory().getPath() + "//MyLyric//" + data.get(myApplication.getPosition()).get("title") + ".lrc");
+                                                        if (!file.exists()) {
+                                                            Log.e("tag", "网络上找到了歌词，写入中");
+                                                            file.createNewFile();
+                                                            FileOutputStream fos = new FileOutputStream(file);
+                                                            fos.write(lyric);
+                                                            Log.e("tag", "写入成功");
+                                                            fos.close();
+                                                            seekLyric();
+                                                        }
                                                         break;
                                                     }
-                                                    if (i == lyricMessageTaker.getCandidates().size() - 1) {
-                                                        request = new Request.Builder().url(lyricMessageTaker.getCandidates().get(0).initURL()).build();
-                                                        response = okHttpClient.newCall(request).execute();
+                                                    if( i == lyricmount - 1) {
+                                                        Log.e("tag","找不到歌词");
+                                                        lrc.setText("连成哥都不能帮你找到歌词了");
                                                     }
                                                 }
-
-                                                LyricJson lyricJson = gson.fromJson(response.body().string(), LyricJson.class);
-
-                                                byte[] lyric = Base64.decode(lyricJson.getContent(), Base64.DEFAULT);
-
-                                                File file = new File(Environment.getExternalStorageDirectory().getPath() + "//MyLyric//" + data.get(myApplication.getPosition()).get("title") + ".lrc");
-
-                                                if (!file.exists()) {
-                                                    file.createNewFile();
-                                                    FileOutputStream fos = new FileOutputStream(file);
-                                                    fos.write(lyric);
-                                                    fos.close();
+                                                if(lyricmount == 0 ) {
+                                                    Log.e("tag","找不到歌词");
+                                                    lrc.setText("对不起,找不到歌词");
                                                 }
 
                                             } catch (Exception e) {
@@ -556,7 +577,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
                                 }
-                            }
+
 
 
                     }
@@ -569,16 +590,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             } // 修改进度de guangbo
 
             if (intent.getAction().equals("com.example.MusicService.DETIAL")) {
-                main_fulltitle_tv.setText(intent.getStringExtra("TITLE"));
+                bottomtext.setText(intent.getStringExtra("TITLE"));
                 main_count_tv.setText(intent.getIntExtra("COUNT", 0) + "");
                 max = intent.getIntExtra("MAXPROGRESS", 0);
                 seekbar.setMax(intent.getIntExtra("MAXPROGRESS", 0));
 
-            } //接受并初始化/修改 当前歌曲 以及歌曲数目 歌词f
-
-//            if (intent.getAction().equals("com.example.MusicService.ARRAY")) {
-//                mapArrayList = (ArrayList<Map<String, String>>) intent.getSerializableExtra("ARRAY");
-//            }   // 中转继续传给其他活动
+            } //接受并初始化/修改 当前歌曲 以及歌曲数目 歌词
 
             if (intent.getAction().equals("com.example.LocalMusic.PLAY")) {
                 ispause = false;
@@ -606,10 +623,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         int start;
         String line;
-    }
-
-    private boolean seekLyric(){
-
     }
 
 
