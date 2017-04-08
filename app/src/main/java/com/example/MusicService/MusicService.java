@@ -25,6 +25,7 @@ import android.widget.ImageButton;
 import android.widget.RemoteViews;
 
 import com.example.mylatouttest.MainActivity;
+import com.example.mylatouttest.MyApplication;
 import com.example.mylatouttest.R;
 
 import java.io.File;
@@ -35,7 +36,7 @@ import java.util.Map;
 
 public class MusicService extends Service {
 
-
+    private MyApplication myApplication ;
     private MediaPlayer mediaPlayer = new MediaPlayer();
     private ArrayList<Map<String, String>> data = new ArrayList<>();
     private char play_mode = 'o';  // o 顺序播放 r 随机播放 l 单曲循环
@@ -78,29 +79,6 @@ public class MusicService extends Service {
 
                 initMediaPlayer(data.get(position).get("data"));
 
-
-//                new Thread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        try {
-//                            for (int i = 0; i < files.length; i++) {
-//                                if (files[i].getAbsolutePath().contains(data.get(position).get("title"))) {
-//                                    Intent intentlrc = new Intent("com.example.MusicService.LRC");
-//                                    intentlrc.putExtra("LRC",i);
-//                                    sendBroadcast(intentlrc);
-//                                    break;
-//                                }
-//                            }
-//                        } catch (Exception e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                }).start();
-
-
-
-
-
             }
 
             progressCallBack();
@@ -118,12 +96,12 @@ public class MusicService extends Service {
                 play_mode = intent.getCharExtra("MODE", 'o');
             }
 
-            if (intent.getAction().equals("com.example.MainActivity.ISSEEKBARTOUCH")) {
-                if (intent.getBooleanExtra("ISSEEKBARTOUCH", false))
-                    isseekbartouch = true;
-                else
-                    isseekbartouch = false;
-            }
+//            if (intent.getAction().equals("com.example.MainActivity.ISSEEKBARTOUCH")) {
+//                if (myApplication.isSeekBarTouch())
+//                    isseekbartouch = true;
+//                else
+//                    isseekbartouch = false;
+//            }
 
             if (intent.getAction().equals("CHANGESELF")) {
                 if (mediaPlayer.isPlaying()) {
@@ -189,6 +167,7 @@ public class MusicService extends Service {
     public void onCreate() {
 
         super.onCreate();
+        myApplication = (MyApplication)getApplication();
 
         Log.e("info", "SERVICE create");
         registerMyReceiver();//注册广播
@@ -250,7 +229,7 @@ public class MusicService extends Service {
             public void run() {
                 Intent intent = new Intent("com.example.MusicService.PROGRESS");
                 while (mediaPlayer.isPlaying()) {
-                    if (!isseekbartouch) {
+                    if (!myApplication.isSeekBarTouch()) {
                         intent.putExtra("PROGRESS", mediaPlayer.getCurrentPosition());
                         sendBroadcast(intent);
                         Log.e("info", "callback");
@@ -269,6 +248,8 @@ public class MusicService extends Service {
     private void mainMessageCallBack() {  //返回 歌曲数量 以及 当前歌曲
         Intent detialIntent = new Intent("com.example.MusicService.DETIAL");
         detialIntent.putExtra("MAXPROGRESS", Integer.parseInt(data.get(position).get("duration")));
+        myApplication.setSeekBarMax(Integer.parseInt(data.get(position).get("duration")));
+        myApplication.setBottomTitle(data.get(position).get("title"));
         Log.e("info", Integer.parseInt(data.get(position).get("duration")) + "");
         detialIntent.putExtra("TITLE", data.get(position).get("title"));
         detialIntent.putExtra("COUNT", data.size());
@@ -315,6 +296,8 @@ public class MusicService extends Service {
                 data.remove(data.get(i));
             }
         }
+
+        myApplication.setData(data);
 
         if (cursor != null)
             cursor.close();

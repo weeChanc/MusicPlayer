@@ -20,6 +20,7 @@ import android.widget.RelativeLayout;
 
 import com.example.MyAdapter.MySimpleAdapter;
 import com.example.MyAdapter.ViewPagerAdapter;
+import com.example.mylatouttest.MyApplication;
 import com.example.mylatouttest.R;
 
 import java.lang.reflect.Array;
@@ -33,10 +34,9 @@ public class LocalMusic extends AppCompatActivity implements View.OnClickListene
     ArrayList<Map<String, String>> musicdata = null;
     ImageButton local_mode_bt;
     ArrayList<Map<String, Object>> data;
+    MyApplication myApplication;
 
-    class globle{
 
-    }
 
 
     @Override
@@ -48,9 +48,10 @@ public class LocalMusic extends AppCompatActivity implements View.OnClickListene
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.localmusic);
-        RelativeLayout a = (RelativeLayout) findViewById(R.id.local_layout);
+        myApplication = (MyApplication) getApplication();
 
-        musicdata = (ArrayList<Map<String, String>>) getIntent().getSerializableExtra("arrayList");
+        musicdata = myApplication.getData();
+
         local_mode_bt = (ImageButton) findViewById(R.id.local_mode_bt);
         local_mode_bt.setOnClickListener(this);
         insertDesign();

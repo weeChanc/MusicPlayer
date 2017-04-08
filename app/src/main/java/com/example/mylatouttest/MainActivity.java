@@ -21,8 +21,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,7 +48,7 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-
+    MyApplication myApplication ;
     static TextView lrc;
     int max;
     boolean ispause = true; //判断播放状态
@@ -63,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     String temptitle = "";
     int progress;
     File[] files;
-    ArrayList<Map<String, String>> mapArrayList = null;
+    ArrayList<Map<String, String>> data = null;
     long time;
     int key = 0;
 
@@ -94,9 +99,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.e("info", "MainAcitivit CREATE");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.musicplayer_main);
+
 
         Intent intent = new Intent("com.example.MainActivity.REQUSETRES");
         sendBroadcast(intent);
@@ -105,8 +110,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         lyricInfo.lineinfo = new ArrayList<>();
 
 
+        myApplication = (MyApplication) getApplication();
+        myApplication.setSeekBar(seekbar);
+        myApplication.setMain_play_pause_bt(main_play_pause_bt);
+
         readytoplay();
 
+//        View contentView = LayoutInflater.from(MainActivity.this).inflate(R.layout.bottomplayer,null);
+//        View rootView = LayoutInflater.from(MainActivity.this).inflate(R.layout.musicplayer_main,null) ;
+//        PopupWindow popupWindow = new PopupWindow(contentView, ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT);
+//        popupWindow.showAtLocation(rootView,Gravity.BOTTOM,0,0);
+
+
+
+        this.data = myApplication.getData();
 
         seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -121,9 +138,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     main_play_pause_bt.setImageResource(R.drawable.pausewhite);
                     ispause = false;
                 }
-                Intent intent = new Intent("com.example.MainActivity.ISSEEKBARTOUCH");
-                intent.putExtra("ISSEEKBARTOUCH", true);
-                sendBroadcast(intent);
+                myApplication.setIsSeekBarTouch(true);
             }
 
             @Override
@@ -132,9 +147,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 intent2.putExtra("PROGRESS", seekBar.getProgress() - 1);
                 intent2.putExtra("SEEK", true);
                 sendBroadcast(intent2);
-
-                Intent intent = new Intent("com.example.MainActivity.ISSEEKBARTOUCH");
-                sendBroadcast(intent);
+                myApplication.setIsSeekBarTouch(false);
             }
         });
     }
@@ -152,9 +165,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId()) {
             case R.id.main_list_bt:
                 Intent acitvityintent = new Intent(this, LocalMusic.class);
-                Bundle bundle = new Bundle();
-                bundle.putParcelableArrayList("arrayList", (ArrayList) mapArrayList);
-                acitvityintent.putExtras(bundle);
+//                Bundle bundle = new Bundle();
+//                bundle.putParcelableArrayList("arrayList", (ArrayList) mapArrayList);
+//                acitvityintent.putExtras(bundle);
                 startActivity(acitvityintent);
                 break;
 
@@ -169,11 +182,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     sendBroadcast(intentnotify1);
                     main_play_pause_bt.setImageResource(R.drawable.pausewhite);
                     ispause = false;
+
+                    myApplication.setIsPlay(true);
+
                 } else {
                     musicService.pauseMusic();
                     sendBroadcast(intentnotify1);
                     ispause = true;
                     main_play_pause_bt.setImageResource(R.drawable.startwhite);
+
+                    myApplication.setIsPlay(false);
                 }
 
 
@@ -189,6 +207,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
             case R.id.NEXT:
+                myApplication.setIsPlay(true);
                 Log.e("info","next");
                 stopThread = true;
                 stopThread = false;
@@ -456,9 +475,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             } //接受并初始化/修改 当前歌曲 以及歌曲数目 歌词
 
 
-            if (intent.getAction().equals("com.example.MusicService.ARRAY")) {
-                mapArrayList = (ArrayList<Map<String, String>>) intent.getSerializableExtra("ARRAY");
-            }   // 中转继续传给其他活动
+//            if (intent.getAction().equals("com.example.MusicService.ARRAY")) {
+//                mapArrayList = (ArrayList<Map<String, String>>) intent.getSerializableExtra("ARRAY");
+//            }   // 中转继续传给其他活动
 
             if (intent.getAction().equals("com.example.LocalMusic.PLAY")) {
                 ispause = false;
