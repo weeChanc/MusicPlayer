@@ -59,40 +59,44 @@ import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    public static boolean stopThread = false;
-    static TextView lrc;
+
+    static TextView lrc; //歌词的textview
     private static Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            lrc.setText(msg.obj.toString());
+            lrc.setText(msg.obj.toString());   //处理歌词的Handler
         }
     };
-    MyApplication myApplication;
-    int max;
-    boolean ispause = true; //判断播放状态
-    SeekBar seekbar;
+
+    private MyApplication myApplication; //全局变量
+    int max;  //seekbar的最大值
     ImageButton main_list_bt;
     ImageButton main_play_pause_bt;
     ImageButton main_like_bt;
     ImageButton main_recent_bt;
-
-    LyricInfo lyricInfo;
+    ImageButton bottomnext;
+    ImageView bottomhead ;
     TextView main_count_tv;
-    Thread lyricThread = new Thread();
+    TextView bottomtext ;
+    SeekBar bottomSeekbar;
+    View bottomPlayer;
+    View destopLyric;
+
+    ArrayList<Map<String, String>> data = null; //所有歌曲信息
+    LyricInfo lyricInfo; //当前播放的歌曲信息
+    Thread lyricThread ;  //播歌线程
     String temptitle = "";
-    int progress;
-    File[] files;
-    ArrayList<Map<String, String>> data = null;
-    long time;
-    int key = 0;
+
     File file ;
+    File[] files;
+
+    long time; //再按一次退出计时
+    int key = 0;//再按一次退出计数
+
     private VolumnChangeReceiver volumnChangeReceiver;
     private MessageReceiver messageReceiver;
     private MusicService musicService;
-    TextView bottomtext ;
-    ImageView bottomhead ;
-    ImageButton bottomnext;
-    SeekBar bottomSeekbar;
+    private WindowManager manager;
 
 
     private ServiceConnection connection = new ServiceConnection() {
@@ -120,20 +124,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         String directory = Environment.getExternalStorageDirectory().getAbsoluteFile().getPath() + "/MyLyric/";
-        Log.e("eqqw", directory);
         file = new File(directory);
-
-        if (file.exists())
-            Log.e("eee", "ok");
-        else
+        if (!file.exists())
             file.mkdir();
-
         files = file.listFiles();
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.musicplayer_main);
-
-
 
         Intent intent = new Intent("com.example.MainActivity.REQUSETRES");
         sendBroadcast(intent);
@@ -141,98 +138,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         lyricInfo = new LyricInfo();
         lyricInfo.lineinfo = new ArrayList<>();
 
-
         myApplication = (MyApplication) getApplication();
         myApplication.setMain_play_pause_bt(main_play_pause_bt);
 
-
         readytoplay();
 
-//        View contentView = LayoutInflater.from(MainActivity.this).inflate(R.layout.bottomplayer,null);
-//        View rootView = LayoutInflater.from(MainActivity.this).inflate(R.layout.musicplayer_main,null) ;
-//        PopupWindow popupWindow = new PopupWindow(contentView, ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT);
-//        popupWindow.showAtLocation(rootView,Gravity.BOTTOM,0,0);
-
-        WindowManager manager = (WindowManager)getSystemService(Context.WINDOW_SERVICE);
-        WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
-        Display display = manager.getDefaultDisplay();
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        display.getMetrics(displayMetrics);
-
-        layoutParams.gravity = Gravity.LEFT| Gravity.BOTTOM;
-        layoutParams.x= 0;
-        layoutParams.y= 0;
-        layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT;
-        layoutParams.height = displayMetrics.heightPixels / 9;
-        layoutParams.type = WindowManager.LayoutParams.TYPE_TOAST;
-        layoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
-                | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-                | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED;
-        View view = View.inflate(getApplicationContext(),R.layout.bottomplayer,null);
-         bottomtext = (TextView)view.findViewById(R.id.tv);
-         bottomhead = (ImageView) view.findViewById(R.id.bottom_head);
-         bottomnext = (ImageButton) view.findViewById(R.id.bottom_next);
-         bottomSeekbar = (SeekBar)view.findViewById(R.id.bottom_seekbar);
-
-        bottomnext.setImageResource(R.drawable.nextbule);
-        bottomtext.setText("标题");
-        bottomhead.setImageResource(R.drawable.add);
-
-        manager.addView(view,layoutParams);
-
-
-        bottomnext.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                myApplication.setIsPlay(true);
-                Log.e("info", "next");
-                stopThread = true;
-                stopThread = false;
-                bottomSeekbar.setProgress(0);
-                Intent intentnext = new Intent("com.example.MainActivity.STARTMUSIC");
-                intentnext.putExtra("NEXT", true);
-                sendBroadcast(intentnext);
-
-                Intent intentnotify = new Intent("com.example.MusicService.NOTIFI");
-                intentnotify.putExtra("PLAY", true);
-                sendBroadcast(intentnotify);
-                main_play_pause_bt.setImageResource(R.drawable.pausewhite);
-                ispause = false;
-                lyricThread.interrupt();
-            }
-        });
-
-        bottomSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                myApplication.setProgress(progress);
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {     //按下进度条 先调用onStartTrackingTouch一次，再调用onProgressChanged一次
-                seekBar.setMax(max);
-                if (ispause) {
-                    main_play_pause_bt.setImageResource(R.drawable.pausewhite);
-                    ispause = false;
-                }
-                myApplication.setIsSeekBarTouch(true);
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                Intent intent2 = new Intent("com.example.MainActivity.STARTMUSIC");
-                intent2.putExtra("PROGRESS", seekBar.getProgress() - 1);
-                intent2.putExtra("SEEK", true);
-                sendBroadcast(intent2);
-                myApplication.setIsSeekBarTouch(false);
-
-            }
-        });
+        initWindows();
 
     }
 
+
     @Override
     protected void onDestroy() {
+        manager.removeView(bottomPlayer);
         Log.e("info", "MainAcitivit Destory");
         unregisterReceiver(volumnChangeReceiver);
         unregisterReceiver(messageReceiver);
@@ -251,22 +169,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Toast.makeText(this, "play", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent("com.example.MainActivity.STARTMUSIC");
                 Intent intentnotify1 = new Intent("com.example.MusicService.NOTIFI");
-                if (ispause) {
+                if (myApplication.isPlay()) {
+                    musicService.pauseMusic();
+                    sendBroadcast(intentnotify1);
+                    myApplication.setIsPlay(false);
+                    main_play_pause_bt.setImageResource(R.drawable.startwhite);
+                    myApplication.setIsPlay(false);
+                } else {
+
                     intent.putExtra("ISPAUSE", true);
                     sendBroadcast(intent);
                     intentnotify1.putExtra("PLAY", true);
                     sendBroadcast(intentnotify1);
                     main_play_pause_bt.setImageResource(R.drawable.pausewhite);
-                    ispause = false;
                     myApplication.setIsPlay(true);
-
-                } else {
-                    musicService.pauseMusic();
-                    sendBroadcast(intentnotify1);
-                    ispause = true;
-                    main_play_pause_bt.setImageResource(R.drawable.startwhite);
-
-                    myApplication.setIsPlay(false);
                 }
 
 
@@ -476,7 +392,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 long start = System.currentTimeMillis();
 
                                 while ((System.currentTimeMillis() - start) < 400) {
-                                    if (stopThread) return;
+                                    if (!myApplication.getThreadStatus()) return;
                                 }
                                 for (int j = 0; j < lyricInfo.lineinfo.size() - 1; j++) {
 
@@ -577,7 +493,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             } //接受并初始化/修改 当前歌曲 以及歌曲数目 歌词
 
             if (intent.getAction().equals("com.example.LocalMusic.PLAY")) {
-                ispause = false;
+                myApplication.setIsPlay(true);
                 main_play_pause_bt.setImageResource(R.drawable.pausewhite);
             }
 
@@ -590,6 +506,95 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
 
         }
+    }
+
+    private void initWindows(){
+        manager = (WindowManager)getSystemService(Context.WINDOW_SERVICE);
+        WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
+        Display display = manager.getDefaultDisplay();
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        display.getMetrics(displayMetrics);
+
+        layoutParams.gravity = Gravity.LEFT| Gravity.BOTTOM;
+        layoutParams.x= 0;
+        layoutParams.y= 0;
+        layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT;
+        layoutParams.height = displayMetrics.heightPixels / 9;
+        layoutParams.type = WindowManager.LayoutParams.TYPE_TOAST;
+        layoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+                | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED;
+        bottomPlayer = View.inflate(getApplicationContext(),R.layout.bottomplayer,null);
+        bottomtext = (TextView)bottomPlayer.findViewById(R.id.tv);
+        bottomhead = (ImageView) bottomPlayer.findViewById(R.id.bottom_head);
+        bottomnext = (ImageButton) bottomPlayer.findViewById(R.id.bottom_next);
+        bottomSeekbar = (SeekBar)bottomPlayer.findViewById(R.id.bottom_seekbar);
+
+        bottomnext.setImageResource(R.drawable.nextbule);
+        bottomtext.setText("标题");
+        bottomhead.setImageResource(R.drawable.add);
+
+        manager.addView(bottomPlayer,layoutParams);
+
+        bottomnext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myApplication.setIsPlay(true);
+                Log.e("info", "next");
+                myApplication.setThreadstatus(false);
+                myApplication.setThreadstatus(true);
+
+                bottomSeekbar.setProgress(0);
+                Intent intentnext = new Intent("com.example.MainActivity.STARTMUSIC");
+                intentnext.putExtra("NEXT", true);
+                sendBroadcast(intentnext);
+
+                Intent intentnotify = new Intent("com.example.MusicService.NOTIFI");
+                intentnotify.putExtra("PLAY", true);
+                sendBroadcast(intentnotify);
+                main_play_pause_bt.setImageResource(R.drawable.pausewhite);
+                myApplication.setIsPlay(true);
+
+
+                destopLyric = View.inflate(getApplicationContext(),R.layout.lyric,null);
+                WindowManager.LayoutParams  params = new WindowManager.LayoutParams();
+                params.type = WindowManager.LayoutParams.TYPE_TOAST;
+                params.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+                        | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                        | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED;
+                manager.addView(destopLyric,params);
+
+
+
+            }
+        });
+
+        bottomSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                myApplication.setProgress(progress);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {     //按下进度条 先调用onStartTrackingTouch一次，再调用onProgressChanged一次
+                seekBar.setMax(max);
+                if (!myApplication.isPlay()) {
+                    main_play_pause_bt.setImageResource(R.drawable.pausewhite);
+                    myApplication.setIsPlay(true);
+                }
+                myApplication.setIsSeekBarTouch(true);
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                Intent intent2 = new Intent("com.example.MainActivity.STARTMUSIC");
+                intent2.putExtra("PROGRESS", seekBar.getProgress() - 1);
+                intent2.putExtra("SEEK", true);
+                sendBroadcast(intent2);
+                myApplication.setIsSeekBarTouch(false);
+
+            }
+        });
     }
 
     private class LyricInfo {

@@ -25,6 +25,15 @@ public class MyApplication  extends Application{
     private String bottomTitle;
     private int position = 0 ;
     private int progress;
+    private boolean threadStatus;
+
+    public void setThreadstatus(boolean stopThread) {
+        this.threadStatus = stopThread;   // true 为打开  false 为关闭
+    }
+
+    public boolean getThreadStatus() {
+        return threadStatus;
+    }
 
     public int getProgress() {
         return progress;
@@ -87,6 +96,7 @@ public class MyApplication  extends Application{
     public File[] getFiles(){
         return files;
     }
+
 
     public boolean isSeekBarTouch(){
         return isSeekBarTouch;

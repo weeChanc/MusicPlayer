@@ -123,14 +123,14 @@ public class MySimpleAdapter extends BaseAdapter {
                 public void onClick(View v) {
                     myApplication.setPosition(position);
 
-                    MainActivity.stopThread = true;
-                    MainActivity.stopThread = false;
+                    myApplication.setThreadstatus(false);
                     Intent intent = new Intent("com.example.MainActivity.STARTMUSIC");
                     intent.putExtra("LOCATION", position);
                     intent.putExtra("POSITION", true);                             //下面的方法找不到对应的position只能放上来
                     context.sendBroadcast(intent);
                     Intent intent1 = new Intent("com.example.LocalMusic.PLAY"); //点击后通知主界面更新图标
                     context.sendBroadcast(intent1);
+                    myApplication.setThreadstatus(true);
                 }
             });
 
