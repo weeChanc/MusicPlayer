@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageButton;
@@ -41,8 +40,8 @@ public class BottomPlayer extends RelativeLayout {
     public BottomPlayer(Context context, AttributeSet attrs) {
         super(context, attrs);
         LayoutInflater.from(context).inflate(R.layout.bottomplayer, this);
-        seekbar = (SeekBar) findViewById(R.id.seekBar);
-        ImageButton NEXT = (ImageButton) findViewById(R.id.NEXT);
+        seekbar = (SeekBar) findViewById(R.id.bottom_seekbar);
+        ImageButton NEXT = (ImageButton) findViewById(R.id.bottom_next);
         TextView tv = (TextView) findViewById(R.id.tv);
 
         registerMyReceiver();

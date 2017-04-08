@@ -7,36 +7,38 @@
     android:background="@android:color/white">
 
     <SeekBar
-        android:id="@+id/seekBar"
+        android:id="@+id/bottom_seekbar"
         android:layout_width="260dp"
         android:layout_height="wrap_content"
-        android:background="@color/colorWhite"
+        android:layout_above="@+id/tv"
+        android:layout_toEndOf="@+id/bottom_head"
+        android:layout_toRightOf="@+id/bottom_head"
+        android:background="@color/item_normally"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_above="@+id/tv"
-        android:layout_toRightOf="@+id/bottom_head"
-        android:layout_toEndOf="@+id/bottom_head" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tv"
-        tools:text="fulldata"
         android:layout_width="164dp"
         android:layout_height="49dp"
+        android:layout_alignParentBottom="true"
+        android:layout_toEndOf="@+id/bottom_head"
+        android:layout_toRightOf="@+id/bottom_head"
         android:layout_weight="2.53"
+        android:background="@color/item_normally"
+        android:textColor="@color/drak_gray"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.944"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/NEXT"
-        app:layout_constraintTop_toBottomOf="@+id/seekBar"
+        app:layout_constraintRight_toLeftOf="@+id/bottom_next"
+        app:layout_constraintTop_toBottomOf="@+id/bottom_seekbar"
         app:layout_constraintVertical_bias="0.0"
-        android:layout_alignParentBottom="true"
-        android:layout_toRightOf="@+id/bottom_head"
-        android:layout_toEndOf="@+id/bottom_head" />
+        tools:text="fulldata" />
 
     <ImageButton
-        android:id="@+id/NEXT"
+        android:id="@+id/bottom_next"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_alignBottom="@+id/tv"
@@ -59,7 +61,7 @@
         android:layout_height="40dp"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_alignTop="@+id/NEXT"
+        android:layout_alignTop="@+id/bottom_next"
         android:layout_marginEnd="12dp"
         android:layout_marginRight="12dp"
         android:layout_weight="1"

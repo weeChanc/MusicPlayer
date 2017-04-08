@@ -18,7 +18,6 @@ public class MyApplication  extends Application{
     private  ArrayList<Map<String, String>> data;
     private boolean isPlay = false ;
     private File[] files;
-    private SeekBar seekBar;
     private int seekBarMax;
     private boolean isSeekBarTouch = false;
     private ImageButton main_play_pause_bt;
@@ -63,9 +62,6 @@ public class MyApplication  extends Application{
         this.files = files;
     }
 
-    public void setSeekBar(SeekBar seekBar){
-        this.seekBar = seekBar;
-    }
 
     public void setIsSeekBarTouch(boolean isSeekBarTouch){
         this.isSeekBarTouch = isSeekBarTouch;
@@ -90,10 +86,6 @@ public class MyApplication  extends Application{
 
     public File[] getFiles(){
         return files;
-    }
-
-    public SeekBar getSeekBar(){
-        return seekBar;
     }
 
     public boolean isSeekBarTouch(){

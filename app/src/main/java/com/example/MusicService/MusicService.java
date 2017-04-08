@@ -218,7 +218,7 @@ public class MusicService extends Service {
                 Intent intent = new Intent("com.example.MusicService.PROGRESS");
                 while (mediaPlayer.isPlaying()) {
                     if (!myApplication.isSeekBarTouch()) {
-                        intent.putExtra("PROGRESS", mediaPlayer.getCurrentPosition());
+                        myApplication.setProgress(mediaPlayer.getCurrentPosition());
                         sendBroadcast(intent);
                         try {
                             Thread.sleep(800);

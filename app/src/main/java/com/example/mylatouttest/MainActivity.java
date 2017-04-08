@@ -9,7 +9,6 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.media.Image;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
@@ -21,12 +20,12 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -37,7 +36,6 @@ import android.util.Base64;
 
 
 import com.example.MusicService.MusicService;
-import com.example.View.BottomPlayer;
 import com.example.VolumechangeReceiver.VolumnChangeReceiver;
 import com.example.local_music.LocalMusic;
 import com.example.mylatouttest.Lyric.LyricJson;
@@ -58,8 +56,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-import static android.view.WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED;
-
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -79,8 +75,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     ImageButton main_play_pause_bt;
     ImageButton main_like_bt;
     ImageButton main_recent_bt;
-    ImageButton main_next_bt;
-    ImageButton STOP;
+
     LyricInfo lyricInfo;
     TextView main_count_tv;
     Thread lyricThread = new Thread();
@@ -148,7 +143,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
         myApplication = (MyApplication) getApplication();
-        myApplication.setSeekBar(seekbar);
         myApplication.setMain_play_pause_bt(main_play_pause_bt);
 
 
@@ -161,33 +155,54 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         WindowManager manager = (WindowManager)getSystemService(Context.WINDOW_SERVICE);
         WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
+        Display display = manager.getDefaultDisplay();
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        display.getMetrics(displayMetrics);
+
         layoutParams.gravity = Gravity.LEFT| Gravity.BOTTOM;
         layoutParams.x= 0;
         layoutParams.y= 0;
         layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT;
-        layoutParams.height = 300;
-        layoutParams.type = WindowManager.LayoutParams.TYPE_SYSTEM_ERROR;
+        layoutParams.height = displayMetrics.heightPixels / 9;
+        layoutParams.type = WindowManager.LayoutParams.TYPE_TOAST;
         layoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
                 | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
                 | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED;
         View view = View.inflate(getApplicationContext(),R.layout.bottomplayer,null);
          bottomtext = (TextView)view.findViewById(R.id.tv);
          bottomhead = (ImageView) view.findViewById(R.id.bottom_head);
-         bottomnext = (ImageButton) view.findViewById(R.id.NEXT);
-         bottomSeekbar = (SeekBar)view.findViewById(R.id.seekBar);
+         bottomnext = (ImageButton) view.findViewById(R.id.bottom_next);
+         bottomSeekbar = (SeekBar)view.findViewById(R.id.bottom_seekbar);
 
         bottomnext.setImageResource(R.drawable.nextbule);
-        bottomtext.setText("abc");
+        bottomtext.setText("标题");
         bottomhead.setImageResource(R.drawable.add);
 
         manager.addView(view,layoutParams);
 
 
+        bottomnext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myApplication.setIsPlay(true);
+                Log.e("info", "next");
+                stopThread = true;
+                stopThread = false;
+                bottomSeekbar.setProgress(0);
+                Intent intentnext = new Intent("com.example.MainActivity.STARTMUSIC");
+                intentnext.putExtra("NEXT", true);
+                sendBroadcast(intentnext);
 
+                Intent intentnotify = new Intent("com.example.MusicService.NOTIFI");
+                intentnotify.putExtra("PLAY", true);
+                sendBroadcast(intentnotify);
+                main_play_pause_bt.setImageResource(R.drawable.pausewhite);
+                ispause = false;
+                lyricThread.interrupt();
+            }
+        });
 
-
-
-        seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        bottomSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 myApplication.setProgress(progress);
@@ -266,28 +281,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Toast.makeText(this, "recent", Toast.LENGTH_SHORT).show();
                 break;
 
-            case R.id.NEXT:
-                myApplication.setIsPlay(true);
-                Log.e("info", "next");
-                stopThread = true;
-                stopThread = false;
-                seekbar.setProgress(0);
-                Intent intentnext = new Intent("com.example.MainActivity.STARTMUSIC");
-                intentnext.putExtra("NEXT", true);
-                sendBroadcast(intentnext);
-
-                Intent intentnotify = new Intent("com.example.MusicService.NOTIFI");
-                intentnotify.putExtra("PLAY", true);
-                sendBroadcast(intentnotify);
-                main_play_pause_bt.setImageResource(R.drawable.pausewhite);
-                ispause = false;
-                lyricThread.interrupt();
-                break;
-
-            case R.id.STOP:
-                Log.e("reset", "reset");
-                musicService.resetMusic();
-                break;
 
 
         }
@@ -342,15 +335,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //    }
 
     private void insertDesign() {
-        if (Build.VERSION.SDK_INT >= 21) {
-            View decorView = getWindow().getDecorView();
-            int option = View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE;            //隐藏导航栏
-            decorView.setSystemUiVisibility(option);
-            getWindow().setNavigationBarColor(Color.TRANSPARENT);
-            getWindow().setStatusBarColor(Color.TRANSPARENT);
-        }
 
         if (Build.VERSION.SDK_INT >= 21) {
             View decorView = getWindow().getDecorView();
@@ -372,18 +356,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         main_play_pause_bt = (ImageButton) findViewById(R.id.main_play_pause_bt);
         main_like_bt = (ImageButton) findViewById(R.id.main_like_bt);
         main_recent_bt = (ImageButton) findViewById(R.id.main_recent_bt);
-        main_next_bt = (ImageButton) findViewById(R.id.NEXT);
         main_count_tv = (TextView) findViewById(R.id.main_count_tv);
         lrc = (TextView) findViewById(R.id.lrc);
-        seekbar = (SeekBar) findViewById(R.id.seekBar);
-        STOP = (ImageButton) findViewById(R.id.STOP);
 
-        STOP.setOnClickListener(this);
         main_like_bt.setOnClickListener(this);
         main_recent_bt.setOnClickListener(this);
         main_list_bt.setOnClickListener(this);
         main_play_pause_bt.setOnClickListener(this);
-        main_next_bt.setOnClickListener(this);
+
 
     }
 
@@ -480,8 +460,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         public void onReceive(Context context, Intent intent) {
 
             if (intent.getAction().equals("com.example.MusicService.PROGRESS")) {
-                progress = intent.getIntExtra("PROGRESS", 0);
-                seekbar.setProgress(myApplication.getProgress());
+                bottomSeekbar.setProgress(myApplication.getProgress());
 
                 lyricThread = new Thread(new Runnable() { //处理歌词的线程
 
@@ -503,7 +482,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                                     if (lyricThread.isInterrupted()) break;
 
-                                    if (progress >= lyricInfo.lineinfo.get(j).start && progress <= lyricInfo.lineinfo.get(j + 1).start) {
+                                    if (myApplication.getProgress() >= lyricInfo.lineinfo.get(j).start && myApplication.getProgress() <= lyricInfo.lineinfo.get(j + 1).start) {
                                         message.obj = lyricInfo.lineinfo.get(j).line;
                                         temp = j;
                                         break;
@@ -593,7 +572,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 bottomtext.setText(intent.getStringExtra("TITLE"));
                 main_count_tv.setText(intent.getIntExtra("COUNT", 0) + "");
                 max = intent.getIntExtra("MAXPROGRESS", 0);
-                seekbar.setMax(intent.getIntExtra("MAXPROGRESS", 0));
+                bottomSeekbar.setMax(intent.getIntExtra("MAXPROGRESS", 0));
 
             } //接受并初始化/修改 当前歌曲 以及歌曲数目 歌词
 
