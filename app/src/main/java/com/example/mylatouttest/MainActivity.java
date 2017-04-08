@@ -32,23 +32,34 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import android.util.Base64;
+
+
 import com.example.MusicService.MusicService;
 import com.example.VolumechangeReceiver.VolumnChangeReceiver;
 import com.example.local_music.LocalMusic;
+import com.google.gson.Gson;
 
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    MyApplication myApplication ;
+    MyApplication myApplication;
     static TextView lrc;
     int max;
     boolean ispause = true; //判断播放状态
@@ -82,7 +93,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             lrc.setText(msg.obj.toString());
         }
     };
-
 
 
     private ServiceConnection connection = new ServiceConnection() {
@@ -122,7 +132,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        popupWindow.showAtLocation(rootView,Gravity.BOTTOM,0,0);
 
 
-
         this.data = myApplication.getData();
 
         seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -150,6 +159,54 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 myApplication.setIsSeekBarTouch(false);
             }
         });
+
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                OkHttpClient client = new OkHttpClient();
+                Request request = new Request.Builder()
+                        .url("http://lyrics.kugou.com/search?ver=1&man=yes&client=pc&keyword=%E6%B5%AE%E5%A4%B8&duration=218392&hash=")
+                        .build();
+
+                try {
+
+
+                    Response response = client.newCall(request).execute();
+                    String responsedata = response.body().string();
+                    Log.e("eqqw",responsedata);
+                    Gson gson =new Gson();
+                    LyricMessageTaker lyricMessageTaker = gson.fromJson(responsedata,LyricMessageTaker.class);
+
+                    byte[] lyric = new byte[1];
+//                    byte[] lyric = Base64.decode(lyricMessageTaker.getCandidates(),Base64.DEFAULT);
+                    Log.e("eqqw",lyricMessageTaker.getCandidates().get(1).singer);
+                    String directory = Environment.getExternalStorageDirectory().getAbsoluteFile().getPath()+"/MyLyric/";
+                    Log.e("eqqw",directory);
+                    File file = new File(directory);
+
+                    if(file.exists())
+                    Log.e("eee","ok");
+                    else
+                    file.mkdir();
+
+                    file = new File(directory+"simple3.lrc");
+                    if(!file.exists()) {
+                        file.createNewFile();
+                    }
+                    FileOutputStream fos = new FileOutputStream(file);
+                    fos.write(lyric);
+                    fos.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
+
+
+
     }
 
     @Override
@@ -208,7 +265,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             case R.id.NEXT:
                 myApplication.setIsPlay(true);
-                Log.e("info","next");
+                Log.e("info", "next");
                 stopThread = true;
                 stopThread = false;
                 seekbar.setProgress(0);
@@ -267,13 +324,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private boolean checkPermission() {
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) !=
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
                 PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
         }//运行权限
 
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
             Log.e("permit", "permit");
             return true;
         }
@@ -353,7 +410,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         try {
             Thread.sleep(time);
         } catch (Exception e) {
-            Log.e("catch","catch");
+            Log.e("catch", "catch");
             e.printStackTrace();
         }
     }
@@ -411,17 +468,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                         try {
                             int temp = 0;
-                            while (temp < lyricInfo.lineinfo.size() - 1   ) {
-                                Log.e("inter","inter");
+                            while (temp < lyricInfo.lineinfo.size() - 1) {
+                                Log.e("inter", "inter");
                                 Message message = new Message();
                                 message.obj = "";
 
                                 long start = System.currentTimeMillis();
 
-                                while((System.currentTimeMillis() - start ) < 400){
-                                    if(stopThread) return;
+                                while ((System.currentTimeMillis() - start) < 400) {
+                                    if (stopThread) return;
                                 }
-                                for (int j = 0; j < lyricInfo.lineinfo.size() - 1 ; j++) {
+                                for (int j = 0; j < lyricInfo.lineinfo.size() - 1; j++) {
 
                                     if (lyricThread.isInterrupted()) break;
 
@@ -435,8 +492,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 }
                                 handler.sendMessage(message);
                             }
-                        }catch(Exception e){
-                            Log.e("inter","catch");
+                        } catch (Exception e) {
+                            Log.e("inter", "catch");
                         }
                     }
                 });
@@ -455,7 +512,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 lyricThread.start();
                                 break;
                             }
-                            if(pos == files.length -1)
+                            if (pos == files.length - 1)
                                 lrc.setText("没找到歌词");
                         }
                     }
@@ -506,5 +563,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         int start;
         String line;
     }
+
 
 }

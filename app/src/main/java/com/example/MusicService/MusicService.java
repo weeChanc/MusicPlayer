@@ -87,9 +87,6 @@ public class MusicService extends Service {
                 mediaPlayer.seekTo(intent.getIntExtra("PROGRESS", 0));
             }
 
-//                int size = data.get(position).get("fulltitle").indexOf('.');
-
-//                    Log.e("loca",data.get(position).get("singer")+data.get(position).get("title"));
 
 
             if (intent.getAction().equals("com.example.LocalMusic.MODE")) {
