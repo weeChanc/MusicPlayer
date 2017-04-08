@@ -229,7 +229,6 @@ public class MusicService extends Service {
                     if (!myApplication.isSeekBarTouch()) {
                         intent.putExtra("PROGRESS", mediaPlayer.getCurrentPosition());
                         sendBroadcast(intent);
-                        Log.e("info", "callback");
                         try {
                             Thread.sleep(200);
                         } catch (Exception e) {
@@ -283,7 +282,7 @@ public class MusicService extends Service {
                 map.put("singer", cursor.getString(2));
                 map.put("fulltitle", cursor.getString(3));
                 map.put("duration", cursor.getInt(4) + "");
-
+                map.put("URL","http://lyrics.kugou.com/search?ver=1&man=yes&client=pc&keyword="+map.get("title")+"&duration="+map.get("duration")+"&hash=");
                 data.add(map);
 
             } while (cursor.moveToNext());
@@ -310,6 +309,7 @@ public class MusicService extends Service {
             position = (int) (Math.rint(Math.random() * data.size()));
         }
 
+        myApplication.setPosition(position);
         return position;
     }
 

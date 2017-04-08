@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     TextView main_count_tv;
     public static boolean stopThread = false;
     Thread lyricThread = new Thread();
+    int count = 0;
 
     String temptitle = "";
     int progress;
@@ -109,6 +110,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        String directory = Environment.getExternalStorageDirectory().getAbsoluteFile().getPath() + "/MyLyric/";
+        Log.e("eqqw", directory);
+        File file = new File(directory);
+
+        if (file.exists())
+            Log.e("eee", "ok");
+        else
+            file.mkdir();
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.musicplayer_main);
 
@@ -124,6 +135,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         myApplication.setSeekBar(seekbar);
         myApplication.setMain_play_pause_bt(main_play_pause_bt);
 
+
         readytoplay();
 
 //        View contentView = LayoutInflater.from(MainActivity.this).inflate(R.layout.bottomplayer,null);
@@ -132,12 +144,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        popupWindow.showAtLocation(rootView,Gravity.BOTTOM,0,0);
 
 
-        this.data = myApplication.getData();
-
         seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                Log.e("info", "asd");
             }
 
             @Override
@@ -161,50 +170,41 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
 
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//
+//                OkHttpClient client = new OkHttpClient();
+//                Request request = new Request.Builder()
+//                        .url("http://lyrics.kugou.com/search?ver=1&man=yes&client=pc&keyword=%E6%B5%AE%E5%A4%B8&duration=218392&hash=")
+//                        .build();
+//
+//                try {
+//
+//
+//                    Response response = client.newCall(request).execute();
+//                    String responsedata = response.body().string();
+//                    Log.e("eqqw",responsedata);
+//                    Gson gson =new Gson();
+//                    LyricMessageTaker lyricMessageTaker = gson.fromJson(responsedata,LyricMessageTaker.class);
+//
+//                    byte[] lyric = new byte[1];
+////                    byte[] lyric = Base64.decode(lyricMessageTaker.getCandidates(),Base64.DEFAULT);
+//                    Log.e("eqqw",lyricMessageTaker.getCandidates().get(1).singer);
 
-                OkHttpClient client = new OkHttpClient();
-                Request request = new Request.Builder()
-                        .url("http://lyrics.kugou.com/search?ver=1&man=yes&client=pc&keyword=%E6%B5%AE%E5%A4%B8&duration=218392&hash=")
-                        .build();
-
-                try {
-
-
-                    Response response = client.newCall(request).execute();
-                    String responsedata = response.body().string();
-                    Log.e("eqqw",responsedata);
-                    Gson gson =new Gson();
-                    LyricMessageTaker lyricMessageTaker = gson.fromJson(responsedata,LyricMessageTaker.class);
-
-                    byte[] lyric = new byte[1];
-//                    byte[] lyric = Base64.decode(lyricMessageTaker.getCandidates(),Base64.DEFAULT);
-                    Log.e("eqqw",lyricMessageTaker.getCandidates().get(1).singer);
-                    String directory = Environment.getExternalStorageDirectory().getAbsoluteFile().getPath()+"/MyLyric/";
-                    Log.e("eqqw",directory);
-                    File file = new File(directory);
-
-                    if(file.exists())
-                    Log.e("eee","ok");
-                    else
-                    file.mkdir();
-
-                    file = new File(directory+"simple3.lrc");
-                    if(!file.exists()) {
-                        file.createNewFile();
-                    }
-                    FileOutputStream fos = new FileOutputStream(file);
-                    fos.write(lyric);
-                    fos.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-
-
+//
+//                    file = new File(directory+"simple3.lrc");
+//                    if(!file.exists()) {
+//                        file.createNewFile();
+//                    }
+//                    FileOutputStream fos = new FileOutputStream(file);
+//                    fos.write(lyric);
+//                    fos.close();
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }).start();
 
 
     }
@@ -239,7 +239,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     sendBroadcast(intentnotify1);
                     main_play_pause_bt.setImageResource(R.drawable.pausewhite);
                     ispause = false;
-
                     myApplication.setIsPlay(true);
 
                 } else {
@@ -392,17 +391,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             sleep(500);
         }
 
-
-        File file = new File(Environment.getExternalStorageDirectory().getPath() + "//Musiclrc");
-        files = file.listFiles();
-
         Intent intent = new Intent(MainActivity.this, MusicService.class);
         bindService(intent, connection, BIND_AUTO_CREATE);
         startService(intent);
 
+        File file = new File(Environment.getExternalStorageDirectory().getPath() + "//MyLyric");
+        files = file.listFiles();
+
         getView();
         insertDesign();
         registerMyReceiver();
+
 
     }
 
@@ -465,7 +464,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                     @Override
                     public void run() {
-
                         try {
                             int temp = 0;
                             while (temp < lyricInfo.lineinfo.size() - 1) {
@@ -502,26 +500,73 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 try {
 
                     if (!temptitle.equals(main_fulltitle_tv.getText().toString())) {
-                        temptitle = main_fulltitle_tv.getText().toString();
-                        Log.e("fa", temptitle);
-                        int pos = 0;
-                        for (; pos < files.length; pos++) {
-                            if (files[pos].getAbsolutePath().contains(temptitle)) {
-                                Log.e("found", "found");
-                                getLRC(files[pos], lyricInfo);   //找到并导入对应歌词到类中
-                                lyricThread.start();
-                                break;
+                            temptitle = main_fulltitle_tv.getText().toString();
+
+                            int pos = 0;
+                            for (; pos <= files.length; pos++) {
+                                if (files.length > 0 && files[pos].getAbsolutePath().contains(temptitle)) {
+                                    Log.e("found", "found");
+                                    getLRC(files[pos], lyricInfo);   //找到并导入对应歌词到类中
+                                    lyricThread.start();
+                                    break;
+                                }
+
+                                if (pos == files.length - 1 || (files.length == 0 && pos == 0)) {
+                                    data = myApplication.getData();
+                                    lrc.setText("成哥为你搜索歌词中");
+                                    new Thread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            try {
+                                                OkHttpClient okHttpClient = new OkHttpClient();
+                                                Request request = new Request.Builder().url(data.get(myApplication.getPosition()).get("URL")).build();
+                                                Response response = okHttpClient.newCall(request).execute();
+                                                Gson gson = new Gson();
+                                                LyricMessageTaker lyricMessageTaker = gson.fromJson(response.body().string(), LyricMessageTaker.class);
+                                                for (int i = 0; i < lyricMessageTaker.getCandidates().size(); i++) {
+                                                    if (lyricMessageTaker.getCandidates().get(i).getSinger().equals(data.get(myApplication.getPosition()).get("singer"))) {
+                                                        request = new Request.Builder().url(lyricMessageTaker.getCandidates().get(i).initURL()).build();
+                                                        response = okHttpClient.newCall(request).execute();
+                                                        break;
+                                                    }
+                                                    if (i == lyricMessageTaker.getCandidates().size() - 1) {
+                                                        request = new Request.Builder().url(lyricMessageTaker.getCandidates().get(0).initURL()).build();
+                                                        response = okHttpClient.newCall(request).execute();
+                                                    }
+                                                }
+
+                                                LyricJson lyricJson = gson.fromJson(response.body().string(), LyricJson.class);
+
+                                                byte[] lyric = Base64.decode(lyricJson.getContent(), Base64.DEFAULT);
+
+                                                File file = new File(Environment.getExternalStorageDirectory().getPath() + "//MyLyric//" + data.get(myApplication.getPosition()).get("title") + ".lrc");
+
+                                                if (!file.exists()) {
+                                                    file.createNewFile();
+                                                    FileOutputStream fos = new FileOutputStream(file);
+                                                    fos.write(lyric);
+                                                    fos.close();
+                                                }
+
+                                            } catch (Exception e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    }).start();
+
+
+                                }
                             }
-                            if (pos == files.length - 1)
-                                lrc.setText("没找到歌词");
-                        }
+
+
                     }
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
 
 
-            } // 修改进度
+            } // 修改进度de guangbo
 
             if (intent.getAction().equals("com.example.MusicService.DETIAL")) {
                 main_fulltitle_tv.setText(intent.getStringExtra("TITLE"));
@@ -529,8 +574,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 max = intent.getIntExtra("MAXPROGRESS", 0);
                 seekbar.setMax(intent.getIntExtra("MAXPROGRESS", 0));
 
-            } //接受并初始化/修改 当前歌曲 以及歌曲数目 歌词
-
+            } //接受并初始化/修改 当前歌曲 以及歌曲数目 歌词f
 
 //            if (intent.getAction().equals("com.example.MusicService.ARRAY")) {
 //                mapArrayList = (ArrayList<Map<String, String>>) intent.getSerializableExtra("ARRAY");
@@ -562,6 +606,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         int start;
         String line;
+    }
+
+    private boolean seekLyric(){
+
     }
 
 

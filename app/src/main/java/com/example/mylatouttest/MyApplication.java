@@ -24,6 +24,15 @@ public class MyApplication  extends Application{
     private ImageButton main_play_pause_bt;
     private String mode;
     private String bottomTitle;
+    private int position = 0 ;
+
+    public int getPosition() {
+        return position;
+    }
+
+    public void setPosition(int position) {
+        this.position = position;
+    }
 
     public void setBottomTitle(String bottomTitle){
         this.bottomTitle = bottomTitle;

@@ -71,7 +71,7 @@ public class BottomPlayer extends RelativeLayout {
         seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                Log.e("info", "asd");
+
             }
 
             @Override

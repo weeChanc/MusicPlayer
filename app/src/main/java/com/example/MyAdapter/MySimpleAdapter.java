@@ -19,6 +19,7 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import com.example.mylatouttest.MainActivity;
+import com.example.mylatouttest.MyApplication;
 import com.example.mylatouttest.R;
 
 import org.w3c.dom.Text;
@@ -38,6 +39,7 @@ public class MySimpleAdapter extends BaseAdapter {
     private String[] from;
     private int[] to;
     private LayoutInflater inflater;
+    private MyApplication myApplication = MyApplication.getApplication();
 
 
     public MySimpleAdapter(Context context, List<Map<String, String>> resource, int layoutID, String[] from, int[] to) {
@@ -93,6 +95,7 @@ public class MySimpleAdapter extends BaseAdapter {
             viewHolder.bt4.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    myApplication.setPosition(position);
                     Log.e("info", "play");
                     Intent intent = new Intent("com.example.MainActivity.STARTMUSIC");
                     intent.putExtra("LOCATION", position);
@@ -118,6 +121,8 @@ public class MySimpleAdapter extends BaseAdapter {
             viewHolder.bt4.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    myApplication.setPosition(position);
+
                     MainActivity.stopThread = true;
                     MainActivity.stopThread = false;
                     Intent intent = new Intent("com.example.MainActivity.STARTMUSIC");
