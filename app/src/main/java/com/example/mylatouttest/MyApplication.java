@@ -20,19 +20,36 @@ public class MyApplication  extends Application{
     private File[] files;
     private int seekBarMax;
     private boolean isSeekBarTouch = false;
-    private ImageButton main_play_pause_bt;
     private String mode;
     private String bottomTitle;
     private int position = 0 ;
     private int progress;
-    private boolean threadStatus;
+    private String bottomSinger;
+    private File file;
+    private Thread thread;
 
-    public void setThreadstatus(boolean stopThread) {
-        this.threadStatus = stopThread;   // true 为打开  false 为关闭
+    public Thread getThread() {
+        return thread;
     }
 
-    public boolean getThreadStatus() {
-        return threadStatus;
+    public void setThread(Thread thread) {
+        this.thread = thread;
+    }
+
+    public File getFile() {
+        return file;
+    }
+
+    public void setFile(File file) {
+        this.file = file;
+    }
+
+    public String getBottomSinger() {
+        return bottomSinger;
+    }
+
+    public void setBottomSinger(String bottomSinger) {
+        this.bottomSinger = bottomSinger;
     }
 
     public int getProgress() {
@@ -59,9 +76,6 @@ public class MyApplication  extends Application{
         this.seekBarMax = seekBarMax;
     }
 
-    public void setMain_play_pause_bt(ImageButton main_play_pause_bt){
-        this.main_play_pause_bt = main_play_pause_bt;
-    }
 
     public void setIsPlay(boolean isPlay){
         this.isPlay = isPlay;
@@ -97,13 +111,8 @@ public class MyApplication  extends Application{
         return files;
     }
 
-
     public boolean isSeekBarTouch(){
         return isSeekBarTouch;
-    }
-
-    public ImageButton getMain_play_pause_bt(){
-        return main_play_pause_bt;
     }
 
     public int getSeekBarMax(){

@@ -42,7 +42,7 @@ public class BottomPlayer extends RelativeLayout {
         LayoutInflater.from(context).inflate(R.layout.bottomplayer, this);
         seekbar = (SeekBar) findViewById(R.id.bottom_seekbar);
         ImageButton NEXT = (ImageButton) findViewById(R.id.bottom_next);
-        TextView tv = (TextView) findViewById(R.id.tv);
+        TextView tv = (TextView) findViewById(R.id.bottom_title);
 
         registerMyReceiver();
 
@@ -75,7 +75,6 @@ public class BottomPlayer extends RelativeLayout {
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {     //按下进度条 先调用onStartTrackingTouch一次，再调用onProgressChanged一次
-//                seekBar.setMax(myApplication.getSeekBarMax());
                 if (!myApplication.isPlay()) {
                      myApplication.setIsPlay(true);
                 }

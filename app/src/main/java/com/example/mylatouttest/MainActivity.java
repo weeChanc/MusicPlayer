@@ -9,6 +9,7 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.media.Image;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
@@ -77,14 +78,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     ImageButton bottomnext;
     ImageView bottomhead ;
     TextView main_count_tv;
-    TextView bottomtext ;
+    TextView bottomtitle ;
+    TextView bottomsinger;
     SeekBar bottomSeekbar;
     View bottomPlayer;
     View destopLyric;
 
     ArrayList<Map<String, String>> data = null; //所有歌曲信息
     LyricInfo lyricInfo; //当前播放的歌曲信息
-    Thread lyricThread ;  //播歌线程
+    Thread lyricThread = new Thread() ;  //播歌线程
     String temptitle = "";
 
     File file ;
@@ -113,21 +115,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
-                PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-        }//运行权限
-
-        if( ContextCompat.checkSelfPermission(this,Manifest.permission.SYSTEM_ALERT_WINDOW) != PackageManager.PERMISSION_GRANTED ){
-            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.SYSTEM_ALERT_WINDOW},1);
-        }
-
-        String directory = Environment.getExternalStorageDirectory().getAbsoluteFile().getPath() + "/MyLyric/";
-        file = new File(directory);
-        if (!file.exists())
-            file.mkdir();
-        files = file.listFiles();
+        myApplication = (MyApplication) getApplication();
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.musicplayer_main);
@@ -138,8 +126,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         lyricInfo = new LyricInfo();
         lyricInfo.lineinfo = new ArrayList<>();
 
-        myApplication = (MyApplication) getApplication();
-        myApplication.setMain_play_pause_bt(main_play_pause_bt);
+        file = myApplication.getFile();
+        files = file.listFiles();
+
+
 
         readytoplay();
 
@@ -170,21 +160,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Intent intent = new Intent("com.example.MainActivity.STARTMUSIC");
                 Intent intentnotify1 = new Intent("com.example.MusicService.NOTIFI");
                 if (myApplication.isPlay()) {
+                    myApplication.setIsPlay(false);
                     musicService.pauseMusic();
                     sendBroadcast(intentnotify1);
-                    myApplication.setIsPlay(false);
                     main_play_pause_bt.setImageResource(R.drawable.startwhite);
-                    myApplication.setIsPlay(false);
-                } else {
 
+                } else {
+                    myApplication.setIsPlay(true);
                     intent.putExtra("ISPAUSE", true);
                     sendBroadcast(intent);
-                    intentnotify1.putExtra("PLAY", true);
                     sendBroadcast(intentnotify1);
                     main_play_pause_bt.setImageResource(R.drawable.pausewhite);
-                    myApplication.setIsPlay(true);
-                }
 
+                }
 
                 break;
 
@@ -213,11 +201,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         intentFilter.addAction("com.example.MusicService.PROGRESS");
         intentFilter.addAction("com.example.MusicService.DETIAL");
-        intentFilter.addAction("com.example.MusicService.ARRAY");
         intentFilter.addAction("com.example.LocalMusic.PLAY");
-        intentFilter.addAction("com.example.MusicService.ISPLAY");
-        intentFilter.addAction("com.example.MusicService.ISPAUSE");
-        intentFilter.addAction("com.example.MusicService.LRC");
+        intentFilter.addAction("CHANGEMAINBUTTON");
         registerReceiver(messageReceiver, intentFilter);
 
     }
@@ -233,22 +218,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     }
-
-//    private boolean checkPermission() {
-//
-//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
-//                PackageManager.PERMISSION_GRANTED) {
-//            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-//        }//运行权限
-//
-//
-//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-//            Log.e("permit", "permit");
-//            return true;
-//        }
-//        Log.e("permit", "didnt permit");
-//        return false;
-//    }
 
     private void insertDesign() {
 
@@ -286,22 +255,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void readytoplay() {
 
-//        if(Build.VERSION.SDK_INT >= 23) {
-//            while (!checkPermission()) {
-//                sleep(500);
-//            }
-//        }
-
         Intent intent = new Intent(MainActivity.this, MusicService.class);
         bindService(intent, connection, BIND_AUTO_CREATE);
         startService(intent);
 
-
-
-
         getView();
         insertDesign();
         registerMyReceiver();
+
+        setThread();
+        myApplication.setThread(lyricThread);
+
 
 
     }
@@ -378,102 +342,65 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if (intent.getAction().equals("com.example.MusicService.PROGRESS")) {
                 bottomSeekbar.setProgress(myApplication.getProgress());
 
-                lyricThread = new Thread(new Runnable() { //处理歌词的线程
-
-                    @Override
-                    public void run() {
-                        try {
-                            int temp = 0;
-                            while (temp < lyricInfo.lineinfo.size() - 1) {
-                                Log.e("tag", "处理歌词线程");
-                                Message message = new Message();
-                                message.obj = "";
-
-                                long start = System.currentTimeMillis();
-
-                                while ((System.currentTimeMillis() - start) < 400) {
-                                    if (!myApplication.getThreadStatus()) return;
-                                }
-                                for (int j = 0; j < lyricInfo.lineinfo.size() - 1; j++) {
-
-                                    if (lyricThread.isInterrupted()) break;
-
-                                    if (myApplication.getProgress() >= lyricInfo.lineinfo.get(j).start && myApplication.getProgress() <= lyricInfo.lineinfo.get(j + 1).start) {
-                                        message.obj = lyricInfo.lineinfo.get(j).line;
-                                        temp = j;
-                                        break;
-                                    }
-
-                                }
-                                handler.sendMessage(message);
-                            }
-                        } catch (Exception e) {
-                        }
-                    }
-                });
-
 
                 try {
 
-                    if (!temptitle.equals(bottomtext.getText().toString())) {
-                            temptitle = bottomtext.getText().toString();
+                    if (!temptitle.equals(bottomtitle.getText().toString())) {
+                        temptitle =bottomtitle.getText().toString();
 
-                                if (!seekLyric()) {
-                                    data = myApplication.getData();
-                                    Log.e("tag","找不到歌词，准备搜索");
-                                    lrc.setText("成哥为你搜索歌词中");
+                        if (!seekLyric()) {
+                            data = myApplication.getData();
+                            Log.e("tag","找不到歌词，准备搜索");
+                            lrc.setText("成哥为你搜索歌词中");
 
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        OkHttpClient okHttpClient = new OkHttpClient();
+                                        Request request = new Request.Builder().url(data.get(myApplication.getPosition()).get("URL")).build();
+                                        Response response = okHttpClient.newCall(request).execute();
+                                        Gson gson = new Gson();
+                                        LyricMessageTaker lyricMessageTaker = gson.fromJson(response.body().string(), LyricMessageTaker.class);
 
-                                    new Thread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            try {
-                                                OkHttpClient okHttpClient = new OkHttpClient();
-                                                Request request = new Request.Builder().url(data.get(myApplication.getPosition()).get("URL")).build();
-                                                Response response = okHttpClient.newCall(request).execute();
-                                                Gson gson = new Gson();
-                                                LyricMessageTaker lyricMessageTaker = gson.fromJson(response.body().string(), LyricMessageTaker.class);
+                                        int lyricmount = lyricMessageTaker.getCandidates().size();
+                                        for (int i = 0; i < lyricmount  ; i++) {
+                                            if (lyricMessageTaker.getCandidates().get(i).getSinger().equals(data.get(myApplication.getPosition()).get("singer"))) {
 
-                                                int lyricmount = lyricMessageTaker.getCandidates().size();
-                                                for (int i = 0; i < lyricmount  ; i++) {
-                                                    if (lyricMessageTaker.getCandidates().get(i).getSinger().equals(data.get(myApplication.getPosition()).get("singer"))) {
-
-                                                        request = new Request.Builder().url(lyricMessageTaker.getCandidates().get(i).initURL()).build();
-                                                        response = okHttpClient.newCall(request).execute();
-                                                        LyricJson lyricJson = gson.fromJson(response.body().string(), LyricJson.class);
-                                                        byte[] lyric = Base64.decode(lyricJson.getContent(), Base64.DEFAULT);
-                                                        File file = new File(Environment.getExternalStorageDirectory().getPath() + "//MyLyric//" + data.get(myApplication.getPosition()).get("title") + ".lrc");
-                                                        if (!file.exists()) {
-                                                            Log.e("tag", "网络上找到了歌词，写入中");
-                                                            file.createNewFile();
-                                                            FileOutputStream fos = new FileOutputStream(file);
-                                                            fos.write(lyric);
-                                                            Log.e("tag", "写入成功");
-                                                            fos.close();
-                                                            seekLyric();
-                                                        }
-                                                        break;
-                                                    }
-                                                    if( i == lyricmount - 1) {
-                                                        Log.e("tag","找不到歌词");
-                                                        lrc.setText("连成哥都不能帮你找到歌词了");
-                                                    }
+                                                request = new Request.Builder().url(lyricMessageTaker.getCandidates().get(i).initURL()).build();
+                                                response = okHttpClient.newCall(request).execute();
+                                                LyricJson lyricJson = gson.fromJson(response.body().string(), LyricJson.class);
+                                                byte[] lyric = Base64.decode(lyricJson.getContent(), Base64.DEFAULT);
+                                                File file = new File(Environment.getExternalStorageDirectory().getPath() + "//MyLyric//" + data.get(myApplication.getPosition()).get("title") + ".lrc");
+                                                if (!file.exists()) {
+                                                    Log.e("tag", "网络上找到了歌词，写入中");
+                                                    file.createNewFile();
+                                                    FileOutputStream fos = new FileOutputStream(file);
+                                                    fos.write(lyric);
+                                                    Log.e("tag", "写入成功");
+                                                    fos.close();
+                                                    seekLyric();
                                                 }
-                                                if(lyricmount == 0 ) {
-                                                    Log.e("tag","找不到歌词");
-                                                    lrc.setText("对不起,找不到歌词");
-                                                }
-
-                                            } catch (Exception e) {
-                                                e.printStackTrace();
+                                                break;
+                                            }
+                                            if( i == lyricmount - 1) {
+                                                Log.e("tag","找不到歌词");
+                                                lrc.setText("连成哥都不能帮你找到歌词了");
                                             }
                                         }
-                                    }).start();
+                                        if(lyricmount == 0 ) {
+                                            Log.e("tag","找不到歌词");
+                                            lrc.setText("对不起,找不到歌词");
+                                        }
 
-
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
                                 }
+                            }).start();
 
 
+                        }
 
                     }
 
@@ -482,13 +409,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
 
 
+
+
+
             } // 修改进度de guangbo
 
             if (intent.getAction().equals("com.example.MusicService.DETIAL")) {
-                bottomtext.setText(intent.getStringExtra("TITLE"));
+                bottomsinger.setText(myApplication.getBottomSinger());
+                bottomtitle.setText(myApplication.getBottomTitle());
                 main_count_tv.setText(intent.getIntExtra("COUNT", 0) + "");
-                max = intent.getIntExtra("MAXPROGRESS", 0);
-                bottomSeekbar.setMax(intent.getIntExtra("MAXPROGRESS", 0));
+                max = myApplication.getSeekBarMax();
+                bottomSeekbar.setMax(max);
 
             } //接受并初始化/修改 当前歌曲 以及歌曲数目 歌词
 
@@ -497,10 +428,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 main_play_pause_bt.setImageResource(R.drawable.pausewhite);
             }
 
-            if (intent.getAction().equals("com.example.MusicService.ISPLAY")) {
-
-                if (intent.getBooleanExtra("ISPLAY", false))
+            if(intent.getAction().equals("CHANGEMAINBUTTON")){
+                if(myApplication.isPlay()){
                     main_play_pause_bt.setImageResource(R.drawable.pausewhite);
+                }
                 else
                     main_play_pause_bt.setImageResource(R.drawable.startwhite);
             }
@@ -520,18 +451,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         layoutParams.y= 0;
         layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT;
         layoutParams.height = displayMetrics.heightPixels / 9;
-        layoutParams.type = WindowManager.LayoutParams.TYPE_TOAST;
+        layoutParams.type = WindowManager.LayoutParams.TYPE_PHONE;
         layoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
                 | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
                 | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED;
+
         bottomPlayer = View.inflate(getApplicationContext(),R.layout.bottomplayer,null);
-        bottomtext = (TextView)bottomPlayer.findViewById(R.id.tv);
+        bottomtitle = (TextView)bottomPlayer.findViewById(R.id.bottom_title);
         bottomhead = (ImageView) bottomPlayer.findViewById(R.id.bottom_head);
         bottomnext = (ImageButton) bottomPlayer.findViewById(R.id.bottom_next);
+        bottomsinger = (TextView) bottomPlayer.findViewById(R.id.bottomsinger);
         bottomSeekbar = (SeekBar)bottomPlayer.findViewById(R.id.bottom_seekbar);
-
         bottomnext.setImageResource(R.drawable.nextbule);
-        bottomtext.setText("标题");
+        bottomtitle.setText("标题");
         bottomhead.setImageResource(R.drawable.add);
 
         manager.addView(bottomPlayer,layoutParams);
@@ -539,30 +471,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         bottomnext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                lyricThread.interrupt();
+
                 myApplication.setIsPlay(true);
                 Log.e("info", "next");
-                myApplication.setThreadstatus(false);
-                myApplication.setThreadstatus(true);
 
                 bottomSeekbar.setProgress(0);
                 Intent intentnext = new Intent("com.example.MainActivity.STARTMUSIC");
                 intentnext.putExtra("NEXT", true);
                 sendBroadcast(intentnext);
-
-                Intent intentnotify = new Intent("com.example.MusicService.NOTIFI");
-                intentnotify.putExtra("PLAY", true);
-                sendBroadcast(intentnotify);
                 main_play_pause_bt.setImageResource(R.drawable.pausewhite);
-                myApplication.setIsPlay(true);
+                Intent intentnotify = new Intent("com.example.MusicService.NOTIFI");
+                sendBroadcast(intentnotify);
 
-
-                destopLyric = View.inflate(getApplicationContext(),R.layout.lyric,null);
-                WindowManager.LayoutParams  params = new WindowManager.LayoutParams();
-                params.type = WindowManager.LayoutParams.TYPE_TOAST;
-                params.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
-                        | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-                        | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED;
-                manager.addView(destopLyric,params);
 
 
 
@@ -593,6 +515,42 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 sendBroadcast(intent2);
                 myApplication.setIsSeekBarTouch(false);
 
+            }
+        });
+    }
+
+    private void setThread(){
+        lyricThread = new Thread(new Runnable() { //处理歌词的线程
+
+            @Override
+            public void run() {
+                try {
+                    int temp = 0;
+                    while (temp < lyricInfo.lineinfo.size() - 1) {
+                        Log.e("tag", "处理歌词线程");
+                        Message message = new Message();
+                        message.obj = "";
+
+                        long start = System.currentTimeMillis();
+
+                        Thread.sleep(400);
+
+                        for (int j = 0; j < lyricInfo.lineinfo.size() - 1; j++) {
+
+                            if (myApplication.getProgress() >= lyricInfo.lineinfo.get(j).start && myApplication.getProgress() <= lyricInfo.lineinfo.get(j + 1).start) {
+                                message.obj = lyricInfo.lineinfo.get(j).line;
+                                temp = j;
+                                break;
+                            }
+
+                        }
+                        handler.sendMessage(message);
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                    Log.e("tag","线程被打断了");
+                    return ;
+                }
             }
         });
     }

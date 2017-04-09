@@ -40,6 +40,7 @@ public class MySimpleAdapter extends BaseAdapter {
     private int[] to;
     private LayoutInflater inflater;
     private MyApplication myApplication = MyApplication.getApplication();
+    private Thread lyricThread;
 
 
     public MySimpleAdapter(Context context, List<Map<String, String>> resource, int layoutID, String[] from, int[] to) {
@@ -89,20 +90,26 @@ public class MySimpleAdapter extends BaseAdapter {
                     viewHolder.title_tv.setText(resource.get(position).get("title"));
                     viewHolder.singer_tv.setText(resource.get(position).get("singer"));
                     addListener(viewHolder);
-
                     view.setTag(viewHolder);
+
+            lyricThread=myApplication.getThread();
 
             viewHolder.bt4.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     myApplication.setPosition(position);
-                    Log.e("info", "play");
+                    myApplication.setIsPlay(true);
+                    lyricThread.interrupt();
                     Intent intent = new Intent("com.example.MainActivity.STARTMUSIC");
                     intent.putExtra("LOCATION", position);
-                    intent.putExtra("POSITION", true);                             //下面的方法找不到对应的position只能放上来
-                    context.sendBroadcast(intent);
+                    intent.putExtra("POSITION", true);
+                    context.sendBroadcast(intent);                              //下面的方法找不到对应的position只能放上来
                     Intent intent1 = new Intent("com.example.LocalMusic.PLAY"); //点击后通知主界面更新图标
                     context.sendBroadcast(intent1);
+
+                    Intent intent2 = new Intent("com.example.MusicService.NOTIFI");
+                    context.sendBroadcast((intent2));
+
                 }
             });
 
@@ -122,15 +129,19 @@ public class MySimpleAdapter extends BaseAdapter {
                 @Override
                 public void onClick(View v) {
                     myApplication.setPosition(position);
+                    myApplication.setIsPlay(true);
 
-                    myApplication.setThreadstatus(false);
+                    lyricThread.interrupt();
                     Intent intent = new Intent("com.example.MainActivity.STARTMUSIC");
                     intent.putExtra("LOCATION", position);
-                    intent.putExtra("POSITION", true);                             //下面的方法找不到对应的position只能放上来
-                    context.sendBroadcast(intent);
+                    intent.putExtra("POSITION", true);
+                    context.sendBroadcast(intent);                              //下面的方法找不到对应的position只能放上来
                     Intent intent1 = new Intent("com.example.LocalMusic.PLAY"); //点击后通知主界面更新图标
                     context.sendBroadcast(intent1);
-                    myApplication.setThreadstatus(true);
+
+                    Intent intent2 = new Intent("com.example.MusicService.NOTIFI");
+                    context.sendBroadcast((intent2));
+
                 }
             });
 

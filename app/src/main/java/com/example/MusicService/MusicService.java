@@ -36,15 +36,12 @@ import java.util.Map;
 
 public class MusicService extends Service {
 
-    private MyApplication myApplication ;
+    private MyApplication myApplication;
     private MediaPlayer mediaPlayer = new MediaPlayer();
     private ArrayList<Map<String, String>> data = new ArrayList<>();
     private char play_mode = 'o';  // o 顺序播放 r 随机播放 l 单曲循环
-    private boolean ispause = false;
-    private boolean status = true; // 战士无用
     private MBind mbind = new MBind();
     public int position = 0; //当前播放曲目的位置
-    public boolean isseekbartouch = false;
     private RemoteViews contentView;
     private Notification notification;
     private PendingIntent pendingIntent;
@@ -83,6 +80,7 @@ public class MusicService extends Service {
 
             progressCallBack();
 
+
             if (intent.getBooleanExtra("SEEK", false)) {
                 mediaPlayer.seekTo(intent.getIntExtra("PROGRESS", 0));
             }
@@ -91,47 +89,48 @@ public class MusicService extends Service {
                 play_mode = intent.getCharExtra("MODE", 'o');
             }
 
-            if (intent.getAction().equals("CHANGESELF")) {
+            if (intent.getAction().equals("notification_play_pause")) {
                 if (mediaPlayer.isPlaying()) {
                     mediaPlayer.pause();
-                    Log.e("info", "isplaying");
-                    contentView.setImageViewResource(R.id.play_image, R.drawable.playdark);
-                    notification = builder.setContent(contentView).build();
-                    startForeground(1, notification);
+                    myApplication.setIsPlay(false);
 
-                    Intent intentchangeMain = new Intent("com.example.MusicService.ISPLAY");
-                    intentchangeMain.putExtra("ISPLAY", false);
+                    Intent intentchangeMain = new Intent("CHANGEMAINBUTTON");
                     sendBroadcast(intentchangeMain);
 
                 } else {
-                    contentView.setImageViewResource(R.id.play_image, R.drawable.pause);
-                    notification = builder.setContent(contentView).build();
-                    startForeground(1, notification);
+
+                    myApplication.setIsPlay(true);
 
                     Intent intentstartmusic = new Intent("com.example.MainActivity.STARTMUSIC");
-                    sendBroadcast(intentstartmusic);
+                    sendBroadcast(intentstartmusic); //继续播放
 
-                    Intent intentchangeMain = new Intent("com.example.MusicService.ISPLAY");
-                    intentchangeMain.putExtra("ISPLAY", true);
+                    Intent intentchangeMain = new Intent("CHANGEMAINBUTTON");
                     sendBroadcast(intentchangeMain);
+
                 }
+
+                Intent intentnoti = new Intent("com.example.MusicService.NOTIFI");
+                context.sendBroadcast(intentnoti);
             }
 
             if (intent.getAction().equals("CHANGENEXT")) {
-                Log.e("info", "CHANGENEXT");
-                Intent intentchangeMain = new Intent("com.example.MusicService.ISPLAY");
-                intentchangeMain.putExtra("ISPLAY", true);
-                sendBroadcast(intentchangeMain);
+
                 Intent intentplay = new Intent("com.example.MainActivity.STARTMUSIC");
                 intentplay.putExtra("NEXT", true);
                 sendBroadcast(intentplay);
+
+                myApplication.setIsPlay(true);
+                Intent intentchangeMain = new Intent("CHANGEMAINBUTTON");
+                sendBroadcast(intentchangeMain);
+
                 contentView.setImageViewResource(R.id.play_image, R.drawable.pause);
                 notification = builder.setContent(contentView).build();
                 startForeground(1, notification);
             }
 
             if (intent.getAction().equals("com.example.MusicService.NOTIFI")) {
-                if (intent.getBooleanExtra("PLAY", false)) {
+                Log.e("get", "get" + myApplication.isPlay());
+                if (myApplication.isPlay()) {
                     contentView.setImageViewResource(R.id.play_image, R.drawable.pause);
                     notification = builder.setContent(contentView).build();
                     startForeground(1, notification);
@@ -155,11 +154,12 @@ public class MusicService extends Service {
     public void onCreate() {
 
         super.onCreate();
-        myApplication = (MyApplication)getApplication();
+
+        myApplication = (MyApplication) getApplication();
+        data = myApplication.getData();
 
         Log.e("info", "SERVICE create");
         registerMyReceiver();//注册广播
-        readMusicData(); //读取信息
         mainMessageCallBack();// 初始化界面信息
 
         Intent arraylistIntent = new Intent("com.example.MusicService.ARRAY");
@@ -170,7 +170,7 @@ public class MusicService extends Service {
         try {
             SharedPreferences share = getSharedPreferences("data", MODE_PRIVATE);
             play_mode = share.getString("MODE", "orl").charAt(2);
-        } catch (Exception e) {
+        } catch (Exception e) {             //根据上次退出的选择模式
             e.printStackTrace();
         }
 
@@ -179,14 +179,14 @@ public class MusicService extends Service {
             public void onCompletion(MediaPlayer mp) { //音乐播放完毕的监听器
                 Log.e("info", "end of the music");
 
-                mediaPlayer.reset(); //音乐停后不会reset
+                mediaPlayer.reset(); //音乐停后不会reset,先reset 否则不能下一首
 
-                setPosition();
+                setPosition();  //播放完根据模式选择位置
 
                 Intent intent = new Intent("com.example.MusicService.PROGRESS"); //复位进度条
                 sendBroadcast(intent);
 
-                Intent intent2 = new Intent("com.example.MainActivity.STARTMUSIC"); //激动播放
+                Intent intent2 = new Intent("com.example.MainActivity.STARTMUSIC"); //自动播放
                 sendBroadcast(intent2);
             }
         });
@@ -219,12 +219,12 @@ public class MusicService extends Service {
                 while (mediaPlayer.isPlaying()) {
                     if (!myApplication.isSeekBarTouch()) {
                         myApplication.setProgress(mediaPlayer.getCurrentPosition());
-                        sendBroadcast(intent);
                         try {
-                            Thread.sleep(800);
+                            Thread.sleep(400);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
+                        sendBroadcast(intent);
                     }
                 }
             }
@@ -234,11 +234,11 @@ public class MusicService extends Service {
 
     private void mainMessageCallBack() {  //返回 歌曲数量 以及 当前歌曲
         Intent detialIntent = new Intent("com.example.MusicService.DETIAL");
-        detialIntent.putExtra("MAXPROGRESS", Integer.parseInt(data.get(position).get("duration")));
         myApplication.setSeekBarMax(Integer.parseInt(data.get(position).get("duration")));
         myApplication.setBottomTitle(data.get(position).get("title"));
+        myApplication.setBottomSinger(data.get(position).get("singer"));
+
         Log.e("info", Integer.parseInt(data.get(position).get("duration")) + "");
-        detialIntent.putExtra("TITLE", data.get(position).get("title"));
         detialIntent.putExtra("COUNT", data.size());
         sendBroadcast(detialIntent);
     }
@@ -257,37 +257,6 @@ public class MusicService extends Service {
         }
 
         mediaPlayer.start();
-    }
-
-    private void readMusicData() {
-
-        String[] want = new String[]{MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.DATA, MediaStore.Audio.Media.ARTIST,
-                MediaStore.Audio.Media.DISPLAY_NAME, MediaStore.Audio.Media.DURATION};
-
-        Cursor cursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, want, MediaStore.Audio.Media.DURATION + ">60000", null, MediaStore.Audio.Media.TITLE);
-        if (cursor != null && cursor.moveToFirst())
-            do {
-                Map<String, String> map = new HashMap<>();
-                map.put("title", cursor.getString(0));
-                map.put("data", cursor.getString(1));           //读取音乐文件
-                map.put("singer", cursor.getString(2));
-                map.put("fulltitle", cursor.getString(3));
-                map.put("duration", cursor.getInt(4) + "");
-                map.put("URL","http://lyrics.kugou.com/search?ver=1&man=yes&client=pc&keyword="+map.get("title")+"&duration="+map.get("duration")+"&hash=");
-                data.add(map);
-
-            } while (cursor.moveToNext());
-
-        for (int i = 0; i < data.size() - 1; i++) {
-            if (data.get(i).get("title").equals(data.get(i + 1).get("title"))) {
-                data.remove(data.get(i));
-            }
-        }
-
-        myApplication.setData(data);
-
-        if (cursor != null)
-            cursor.close();
     }
 
 
@@ -310,8 +279,7 @@ public class MusicService extends Service {
     }
 
     public void pauseMusic() {
-        ispause = true;
-
+        myApplication.setIsPlay(false);
         if (mediaPlayer.isPlaying()) {       //停止音乐
             mediaPlayer.pause();
         }
@@ -333,7 +301,7 @@ public class MusicService extends Service {
         intentFilter.addAction("com.example.MainActivity.STARTMUSIC");
         intentFilter.addAction("com.example.MainActivity.NEXTMUSIC");
         intentFilter.addAction("com.example.LocalMusic.MODE");
-        intentFilter.addAction("CHANGESELF");
+        intentFilter.addAction("notification_play_pause");
         intentFilter.addAction("CHANGENEXT");
         intentFilter.addAction("com.example.MusicService.NOTIFI");
         intentFilter.addAction("com.example.MainActivity.REQUSETRES");
@@ -350,7 +318,7 @@ public class MusicService extends Service {
         contentView.setImageViewResource(R.id.head_image, R.drawable.music);
         contentView.setImageViewResource(R.id.play_image, R.drawable.playdark);
 
-        Intent intent = new Intent("CHANGESELF");
+        Intent intent = new Intent("notification_play_pause");
         PendingIntent changependingIntent = PendingIntent.getBroadcast(MusicService.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT); //点击事件
         contentView.setOnClickPendingIntent(R.id.play_image, changependingIntent);
 

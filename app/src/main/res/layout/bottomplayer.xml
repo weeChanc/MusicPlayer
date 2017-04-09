@@ -10,50 +10,53 @@
         android:id="@+id/bottom_seekbar"
         android:layout_width="260dp"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/tv"
+        android:layout_above="@+id/bottom_title"
         android:layout_toEndOf="@+id/bottom_head"
         android:layout_toRightOf="@+id/bottom_head"
         android:background="@color/item_normally"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+       />
 
-    <TextView
-        android:id="@+id/tv"
+    <com.example.View.AutoMoveTextView
+        android:id="@+id/bottom_title"
         android:layout_width="164dp"
-        android:layout_height="49dp"
-        android:layout_alignParentBottom="true"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
         android:layout_toEndOf="@+id/bottom_head"
         android:layout_toRightOf="@+id/bottom_head"
-        android:layout_weight="2.53"
         android:background="@color/item_normally"
+        android:ellipsize="marquee"
+        android:singleLine="true"
         android:textColor="@color/drak_gray"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.944"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/bottom_next"
-        app:layout_constraintTop_toBottomOf="@+id/bottom_seekbar"
-        app:layout_constraintVertical_bias="0.0"
+        android:textSize="16dp"
+        tools:text="fulldata" />
+
+    <com.example.View.AutoMoveTextView
+        android:id="@+id/bottomsinger"
+        android:layout_width="164dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/bottom_title"
+        android:layout_toEndOf="@+id/bottom_head"
+        android:layout_toRightOf="@+id/bottom_head"
+        android:background="@color/item_normally"
+        android:ellipsize="marquee"
+        android:singleLine="true"
+        android:textColor="@color/drak_gray"
+        android:textSize="12sp"
         tools:text="fulldata" />
 
     <ImageButton
         android:id="@+id/bottom_next"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_alignBottom="@+id/tv"
-        android:layout_marginEnd="12dp"
-        android:layout_marginRight="12dp"
-        android:layout_toLeftOf="@+id/STOP"
-        android:layout_toStartOf="@+id/STOP"
+        android:layout_marginEnd="13dp"
+        android:layout_marginRight="13dp"
         android:layout_weight="1"
         android:background="@drawable/click"
         android:scaleType="centerInside"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/STOP"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0"
-        app:srcCompat="@drawable/nextbule" />
+        app:srcCompat="@drawable/nextbule"
+        android:layout_alignParentBottom="true"
+        android:layout_toLeftOf="@+id/STOP"
+        android:layout_toStartOf="@+id/STOP" />
 
     <ImageButton
         android:id="@+id/STOP"
@@ -67,10 +70,6 @@
         android:layout_weight="1"
         android:background="@color/colorWhite"
         android:scaleType="centerInside"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0"
         app:srcCompat="@drawable/stopblue" />
 
     <ImageView
@@ -80,9 +79,6 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/add" />
 
 </RelativeLayout>
