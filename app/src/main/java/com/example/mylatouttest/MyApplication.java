@@ -6,9 +6,11 @@ import android.widget.ImageButton;
 import android.widget.SeekBar;
 
 import com.example.dataBase.MyDataBaseHelper;
+import com.example.song.Hash;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -31,6 +33,15 @@ public class MyApplication  extends Application{
     private File file;
     private Thread thread;
     private SQLiteDatabase dp;
+    private List<Hash> hashList;
+
+    public List<Hash> getHashList() {
+        return hashList;
+    }
+
+    public void setHashList(List<Hash> hashList) {
+        this.hashList = hashList;
+    }
 
     public void setDp(SQLiteDatabase dp) {
         this.dp = dp;

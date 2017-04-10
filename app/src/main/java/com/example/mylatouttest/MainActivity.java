@@ -17,6 +17,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
@@ -28,6 +29,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -43,6 +45,7 @@ import android.util.Base64;
 
 import com.example.MusicService.MusicService;
 import com.example.VolumechangeReceiver.VolumnChangeReceiver;
+import com.example.fragment.DownFragment;
 import com.example.fragment.FragMain;
 import com.example.fragment.LikeListFrag;
 import com.example.local_music.LocalMusic;
@@ -150,7 +153,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        SongGetter.download(SongGetter.getAllSong(editText.getText().toString()).get(0).getFileHash());
+
+
+                        myApplication.setHashList(  SongGetter.getAllSong(editText.getText().toString()));
+
+                        FragmentManager fm = getSupportFragmentManager();
+                        android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
+                        DownFragment downFragment = new DownFragment();
+                        ft.add(R.id.frag_container,downFragment);
                         Toast.makeText(MainActivity.this, "downloade succeed!", Toast.LENGTH_SHORT).show();
                     }
                 }).start();
@@ -158,7 +168,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
-        
+        editText.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+
+                return false;
+            }
+        });
+
 
     }
 
