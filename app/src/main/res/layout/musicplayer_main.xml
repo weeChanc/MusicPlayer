@@ -184,10 +184,10 @@
     <LinearLayout
         android:id="@+id/frag_container"
         android:layout_width="match_parent"
-        android:layout_height="311dp"
-        android:layout_weight="0.21"
+        android:layout_height="288dp"
         android:orientation="vertical">
 
     </LinearLayout>
+    <include layout="@layout/bottomplayer"/>
 
 </LinearLayout>

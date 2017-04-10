@@ -17,6 +17,7 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.util.Base64;
@@ -60,7 +61,7 @@ import okhttp3.Response;
  * Created by 铖哥 on 2017/4/10.
  */
 
-public class FragMain extends Fragment  {
+public class FragMain extends Fragment {
 
     private MyApplication myApplication; //全局变量
     int max;  //seekbar的最大值
@@ -118,8 +119,6 @@ public class FragMain extends Fragment  {
         main_recent_bt = (ImageButton) view.findViewById(R.id.main_recent_bt);
         main_count_tv = (TextView) view.findViewById(R.id.main_count_tv);
         lrc = (TextView) view.findViewById(R.id.lrc);
-
-
         return view;
 
     }
@@ -139,18 +138,39 @@ public class FragMain extends Fragment  {
 
     }
 
-//    @Override
-//    public void onClick(View v) {
-//        switch (v.getId()){
-//            case R.id.main_list_bt
-//        }
-//    }
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        main_recent_bt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((MainActivity)(getActivity())).fragMainRecent();
+            }
+        });
+
+        main_list_bt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        main_like_bt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+    }
 
     public class MessageReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
 
             if (intent.getAction().equals("com.example.MusicService.DETIAL")) {
+
                 Log.e("fragmen","recevier");
 
             } //接受并初始化/修改 当前歌曲 以及歌曲数目 歌词

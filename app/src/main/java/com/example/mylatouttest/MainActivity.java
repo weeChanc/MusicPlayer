@@ -85,8 +85,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     ImageButton main_list_bt;
     ImageButton main_play_pause_bt;
     ImageButton main_like_bt;
-    ImageButton main_recent_bt;
     ImageButton bottomnext;
+    ImageButton bottomstop;
     ImageView bottomhead ;
     TextView main_count_tv;
     TextView bottomtitle ;
@@ -95,6 +95,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     View bottomPlayer;
     View destopLyric;
     FragmentManager fm = getSupportFragmentManager();
+    android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
 
     ArrayList<Map<String, String>> data = null; //所有歌曲信息
     LyricInfo lyricInfo; //当前播放的歌曲信息
@@ -142,7 +143,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         files = file.listFiles();
 
         readytoplay();
-        initWindows();
+//        initWindows();
 
         final EditText editText = (EditText) findViewById(R.id.editText);
         Button button = (Button) findViewById(R.id.button);
@@ -173,6 +174,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public boolean onTouch(View v, MotionEvent event) {
 
                 return false;
+            }
+        });
+
+        bottomSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                myApplication.setProgress(progress);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {     //按下进度条 先调用onStartTrackingTouch一次，再调用onProgressChanged一次
+                seekBar.setMax(max);
+                if (!myApplication.isPlay()) {
+                    main_play_pause_bt.setImageResource(R.drawable.pausewhite);
+                    myApplication.setIsPlay(true);
+                }
+                myApplication.setIsSeekBarTouch(true);
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                Intent intent2 = new Intent("com.example.MainActivity.STARTMUSIC");
+                intent2.putExtra("PROGRESS", seekBar.getProgress() - 1);
+                intent2.putExtra("SEEK", true);
+                sendBroadcast(intent2);
+                myApplication.setIsSeekBarTouch(false);
+
             }
         });
 
@@ -227,14 +255,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 break;
 
-            case R.id.main_recent_bt:
+
+            case R.id.STOP:
                 ft = fm.beginTransaction();
                 FragMain fragMain = new FragMain();
                 ft.add(R.id.frag_container, fragMain);
                 ft.commit();
                 break;
 
-
+            case R.id.bottom_next:
+                Log.e("info", "next");
+                lyricThread.interrupt();
+                myApplication.setIsPlay(true);
+                bottomSeekbar.setProgress(0);
+                Intent intentnext = new Intent("com.example.MainActivity.STARTMUSIC");
+                intentnext.putExtra("NEXT", true);
+                sendBroadcast(intentnext);
+                main_play_pause_bt.setImageResource(R.drawable.pausewhite);
+                Intent intentnotify = new Intent("com.example.MusicService.NOTIFI");
+                sendBroadcast(intentnotify);
+                break;
 
         }
     }
@@ -289,14 +329,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         main_list_bt = (ImageButton) findViewById(R.id.main_list_bt);
         main_play_pause_bt = (ImageButton) findViewById(R.id.main_play_pause_bt);
         main_like_bt = (ImageButton) findViewById(R.id.main_like_bt);
-        main_recent_bt = (ImageButton) findViewById(R.id.main_recent_bt);
+
         main_count_tv = (TextView) findViewById(R.id.main_count_tv);
         lrc = (TextView) findViewById(R.id.lrc);
 
+        bottomtitle = (TextView)findViewById(R.id.bottom_title);
+        bottomhead = (ImageView) findViewById(R.id.bottom_head);
+        bottomnext = (ImageButton) findViewById(R.id.bottom_next);
+        bottomsinger = (TextView)findViewById(R.id.bottomsinger);
+        bottomstop = (ImageButton)findViewById(R.id.STOP);
+        bottomSeekbar = (SeekBar)findViewById(R.id.bottom_seekbar);
+
         main_like_bt.setOnClickListener(this);
-        main_recent_bt.setOnClickListener(this);
         main_list_bt.setOnClickListener(this);
         main_play_pause_bt.setOnClickListener(this);
+        bottomstop.setOnClickListener(this);
+
+        bottomnext.setOnClickListener(this);
 
 
     }
@@ -314,7 +363,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         setThread();
         myApplication.setThread(lyricThread);
-
 
 
     }
@@ -535,8 +583,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 sendBroadcast(intentnotify);
 
 
-
-
             }
         });
 
@@ -566,7 +612,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             }
         });
-    }
+    } //先不用
 
     private void setThread(){
         lyricThread = new Thread(new Runnable() { //处理歌词的线程
@@ -616,5 +662,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         String line;
     }
 
+    public void fragMainRecent(){
+        ft.replace(R.id.frag_container,new LikeListFrag());
+        ft.commit();
+    }
 
 }
