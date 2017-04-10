@@ -33,7 +33,8 @@
             android:inputType="textPersonName"
             android:text="Name"
             android:textAllCaps="true"
-            android:textColor="@android:color/white" />
+            android:textColor="@android:color/white"
+            android:layout_weight="0.06" />
 
         <Button
             android:id="@+id/button"
@@ -48,144 +49,11 @@
 
 
     <LinearLayout
-        android:id="@+id/line2"
-        android:layout_width="wrap_content"
-        android:layout_height="52dp"
-        android:background="@color/colorPrimaryDark"
-        android:elevation="10dp"
-        android:orientation="horizontal">
-
-        <ImageButton
-            android:id="@+id/main_like_bt"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginTop="0dp"
-            android:layout_weight="1.60"
-            android:background="@drawable/click"
-            android:foreground="?android:attr/selectableItemBackground"
-            android:paddingTop="6dp"
-            android:scaleType="centerInside"
-            app:srcCompat="@drawable/love" />
-
-        <ImageButton
-            android:id="@+id/main_recent_bt"
-            android:layout_width="190dp"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="0dp"
-            android:layout_marginTop="0dp"
-            android:background="@drawable/click"
-            android:foreground="?android:attr/selectableItemBackground"
-            android:paddingTop="6dp"
-            android:scaleType="centerInside"
-            app:srcCompat="@drawable/recent" />
-
-    </LinearLayout>
-
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="62dp"
-        android:layout_marginBottom="0dp"
-        android:layout_marginLeft="0dp"
-        android:layout_marginRight="0dp"
-        android:layout_marginTop="0dp"
-        android:background="@color/colorPrimaryDark"
-        android:elevation="10dp">
-
-        <ImageButton
-            android:id="@+id/main_list_bt"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/click" />
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="62dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:foreground="?android:attr/selectableItemBackground">
-
-            <ImageView
-                android:id="@+id/JUSTIMAGE"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_centerVertical="true"
-                android:layout_marginBottom="16dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginTop="16dp"
-                android:scaleType="centerInside"
-                app:srcCompat="@drawable/list" />
-
-            <TextView
-                android:id="@+id/main_count_tv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:textColor="@android:color/background_light"
-                tools:text="歌曲数目" />
-
-            <TextView
-                android:id="@+id/JUSTTEXT"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="14dp"
-                android:layout_marginStart="14dp"
-                android:layout_toEndOf="@+id/JUSTIMAGE"
-                android:layout_toRightOf="@+id/JUSTIMAGE"
-                android:text="本地音乐"
-                android:textColor="@android:color/background_light"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <ImageButton
-                android:id="@+id/main_play_pause_bt"
-                android:layout_width="74dp"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentTop="true"
-                android:layout_marginBottom="0dp"
-                android:layout_marginRight="0dp"
-                android:layout_marginTop="0dp"
-                android:background="@drawable/click"
-                android:foreground="?android:attr/selectableItemBackground"
-                android:padding="12dp"
-                android:scaleType="centerInside"
-                app:srcCompat="@drawable/play" />
-
-            <TextView
-                android:id="@+id/JUSTTEXT2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_toEndOf="@+id/main_count_tv"
-                android:layout_toRightOf="@+id/main_count_tv"
-                android:text="首"
-                android:textColor="@android:color/background_light" />
-
-            <TextView
-                android:id="@+id/lrc"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="TextView"
-                android:textAlignment="center"
-                android:textColor="@android:color/white"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true" />
-        </RelativeLayout>
-
-    </RelativeLayout>
-
-    <LinearLayout
         android:id="@+id/frag_container"
         android:layout_width="match_parent"
         android:layout_height="288dp"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_weight="1.00">
 
     </LinearLayout>
     <include layout="@layout/bottomplayer"/>

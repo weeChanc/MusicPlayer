@@ -234,11 +234,11 @@ public class MusicService extends Service {
 
     private void mainMessageCallBack() {  //返回 歌曲数量 以及 当前歌曲
         Intent detialIntent = new Intent("com.example.MusicService.DETIAL");
+
         myApplication.setSeekBarMax(Integer.parseInt(data.get(position).get("duration")));
         myApplication.setBottomTitle(data.get(position).get("title"));
         myApplication.setBottomSinger(data.get(position).get("singer"));
 
-        Log.e("info", Integer.parseInt(data.get(position).get("duration")) + "");
         detialIntent.putExtra("COUNT", data.size());
         sendBroadcast(detialIntent);
     }

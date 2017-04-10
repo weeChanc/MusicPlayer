@@ -7,24 +7,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.ActionBar;
-import android.support.v7.widget.Toolbar;
-import android.util.Base64;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,29 +20,21 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
+
 
 import com.example.MusicService.MusicService;
 import com.example.VolumechangeReceiver.VolumnChangeReceiver;
-import com.example.mylatouttest.Lyric.LyricJson;
-import com.example.mylatouttest.Lyric.LyricMessageTaker;
+
 import com.example.mylatouttest.MainActivity;
 import com.example.mylatouttest.MyApplication;
 import com.example.mylatouttest.R;
-import com.google.gson.Gson;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStreamReader;
+
 import java.util.ArrayList;
-import java.util.List;
+
 import java.util.Map;
 
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 /**
  * Created by 铖哥 on 2017/4/10.
@@ -63,27 +42,27 @@ import okhttp3.Response;
 
 public class FragMain extends Fragment {
 
-    private MyApplication myApplication; //全局变量
+
     int max;  //seekbar的最大值
     ImageButton main_list_bt;
     ImageButton main_play_pause_bt;
     ImageButton main_like_bt;
     ImageButton main_recent_bt;
     ImageButton bottomnext;
-    ImageView bottomhead ;
+    ImageView bottomhead;
     TextView main_count_tv;
-    TextView bottomtitle ;
+    TextView bottomtitle;
     TextView bottomsinger;
     TextView lrc;
     SeekBar bottomSeekbar;
     View bottomPlayer;
 
     ArrayList<Map<String, String>> data = null; //所有歌曲信息
-    Thread lyricThread = new Thread() ;  //播歌线程
+    Thread lyricThread = new Thread();  //播歌线程
     String temptitle = "";
+    MyApplication myApplication = MyApplication.getApplication();//全局变量
 
-
-    File file ;
+    File file;
     File[] files;
 
     long time; //再按一次退出计时
@@ -94,24 +73,11 @@ public class FragMain extends Fragment {
     private MusicService musicService;
     private WindowManager manager;
 
-    private ServiceConnection connection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            musicService = ((MusicService.MBind) service).getService();
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            Log.e("info", "service disconnected");
-        }
-    };
-
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_main,container,false);
+        View view = inflater.inflate(R.layout.fragment_main, container, false);
 
         main_list_bt = (ImageButton) view.findViewById(R.id.main_list_bt);
         main_play_pause_bt = (ImageButton) view.findViewById(R.id.main_play_pause_bt);
@@ -145,21 +111,42 @@ public class FragMain extends Fragment {
         main_recent_bt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)(getActivity())).fragMainRecent();
+                ((MainActivity) (getActivity())).fragRecent();
+            }
+        });
+
+
+        main_like_bt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((MainActivity) (getActivity())).fragLike();
             }
         });
 
         main_list_bt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                ((MainActivity) (getActivity())).fragLocal();
             }
         });
 
-        main_like_bt.setOnClickListener(new View.OnClickListener() {
+        main_play_pause_bt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent("com.example.MainActivity.STARTMUSIC");
+                Intent intentnotify1 = new Intent("com.example.MusicService.NOTIFI");
+                if (myApplication.isPlay()) {
+                    myApplication.setIsPlay(false);
+                    ((MainActivity) (getActivity())).stopMusic();
+                    getActivity().sendBroadcast(intentnotify1);
+                    main_play_pause_bt.setImageResource(R.drawable.startwhite);
+                } else {
+                    myApplication.setIsPlay(true);
+                    intent.putExtra("ISPAUSE", true);
+                    getActivity().sendBroadcast(intent);
+                    getActivity().sendBroadcast(intentnotify1);
+                    main_play_pause_bt.setImageResource(R.drawable.pausewhite);
+                }
             }
         });
 
@@ -170,17 +157,31 @@ public class FragMain extends Fragment {
         public void onReceive(Context context, Intent intent) {
 
             if (intent.getAction().equals("com.example.MusicService.DETIAL")) {
-
-                Log.e("fragmen","recevier");
+                main_count_tv.setText(intent.getIntExtra("COUNT", 0) + "");
+                Log.e("fragmen", "recevier");
 
             } //接受并初始化/修改 当前歌曲 以及歌曲数目 歌词
 
             if (intent.getAction().equals("com.example.LocalMusic.PLAY")) {
-                Log.e("fragmen","recevier");
+                Log.e("fragmen", "recevier");
             }
 
-            if(intent.getAction().equals("CHANGEMAINBUTTON")){
-                Log.e("fragmen","recevier");
+            if (intent.getAction().equals("CHANGEMAINBUTTON")) {
+                Log.e("fragmen", "recevier");
+            }
+
+            //接受并初始化/修改 当前歌曲 以及歌曲数目 歌词
+
+            if (intent.getAction().equals("com.example.LocalMusic.PLAY")) {
+                myApplication.setIsPlay(true);
+                main_play_pause_bt.setImageResource(R.drawable.pausewhite);
+            }
+
+            if (intent.getAction().equals("CHANGEMAINBUTTON")) {
+                if (myApplication.isPlay()) {
+                    main_play_pause_bt.setImageResource(R.drawable.pausewhite);
+                } else
+                    main_play_pause_bt.setImageResource(R.drawable.startwhite);
             }
 
         }

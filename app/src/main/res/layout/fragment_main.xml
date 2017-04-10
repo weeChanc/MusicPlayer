@@ -8,25 +8,6 @@
     android:orientation="vertical"
     android:weightSum="1">
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="24dp"
-        android:background="@color/color_gap"
-        android:elevation="10dp" />
-
-    <android.support.v7.widget.Toolbar
-
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="64dp"
-        android:background="@color/colortoolbarBlue"
-        android:elevation="10dp"
-        android:minHeight="?attr/actionBarSize"
-        android:theme="?attr/actionBarTheme">
-
-
-    </android.support.v7.widget.Toolbar>
-
     <LinearLayout
         android:id="@+id/line2"
         android:layout_width="wrap_content"

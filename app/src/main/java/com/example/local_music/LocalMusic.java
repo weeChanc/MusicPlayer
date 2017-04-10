@@ -37,8 +37,6 @@ public class LocalMusic extends AppCompatActivity implements View.OnClickListene
     MyApplication myApplication;
 
 
-
-
     @Override
     public void onBackPressed() {
         super.onBackPressed();
@@ -97,7 +95,6 @@ public class LocalMusic extends AppCompatActivity implements View.OnClickListene
         MySimpleAdapter simpleAdapter = new MySimpleAdapter(this, musicdata, R.layout.listitem,
                 new int[]{R.id.local_list_title,R.id.local_SingerName,R.id.local_list_add,R.id.local_list_like,R.id.local_list_del,R.id.local_list__button_play});
         listView.setAdapter(simpleAdapter);
-
 
 
         LayoutInflater inflater = getLayoutInflater();
