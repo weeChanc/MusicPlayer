@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -21,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
+import com.example.dataBase.MyDataBaseHelper;
 import com.example.mylatouttest.MainActivity;
 import com.example.mylatouttest.MyApplication;
 import com.example.mylatouttest.R;
@@ -44,6 +46,10 @@ public class Start extends Activity {
         setContentView(R.layout.activity_start);
         initTask task = new initTask();
         task.execute();
+
+        MyDataBaseHelper dpHelper = new MyDataBaseHelper(this,"list.db",null,1);
+        SQLiteDatabase dp = dpHelper.getWritableDatabase();
+        myApplication.setDp(dp);
 
         if (Build.VERSION.SDK_INT >= 21) {
             View decorView = getWindow().getDecorView();
@@ -137,6 +143,7 @@ public class Start extends Activity {
                 map.put("singer", cursor.getString(2));
                 map.put("fulltitle", cursor.getString(3));
                 map.put("duration", cursor.getInt(4) + "");
+                map.put("isplay",false+"");
                 map.put("URL","http://lyrics.kugou.com/search?ver=1&man=yes&client=pc&keyword="+map.get("title")+"&duration="+map.get("duration")+"&hash=");
                 data.add(map);
 

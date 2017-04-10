@@ -129,10 +129,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         file = myApplication.getFile();
         files = file.listFiles();
 
-
-
         readytoplay();
-
         initWindows();
 
     }

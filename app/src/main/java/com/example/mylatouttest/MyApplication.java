@@ -1,8 +1,11 @@
 package com.example.mylatouttest;
 
 import android.app.Application;
+import android.database.sqlite.SQLiteDatabase;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
+
+import com.example.dataBase.MyDataBaseHelper;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -27,6 +30,15 @@ public class MyApplication  extends Application{
     private String bottomSinger;
     private File file;
     private Thread thread;
+    private SQLiteDatabase dp;
+
+    public void setDp(SQLiteDatabase dp) {
+        this.dp = dp;
+    }
+
+    public SQLiteDatabase getDp() {
+        return dp;
+    }
 
     public Thread getThread() {
         return thread;
