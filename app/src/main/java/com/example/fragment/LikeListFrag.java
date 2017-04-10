@@ -24,7 +24,7 @@ import java.util.Map;
  * Created by 铖哥 on 2017/4/10.
  */
 
-public class LikeListFrag extends Fragment {
+public class LikeListFrag extends Fragment  {
 
     MyApplication myApplication = MyApplication.getApplication();
     ArrayList<Map<String,String>> data ;

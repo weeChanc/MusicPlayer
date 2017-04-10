@@ -22,6 +22,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -29,6 +30,8 @@ import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -40,10 +43,12 @@ import android.util.Base64;
 
 import com.example.MusicService.MusicService;
 import com.example.VolumechangeReceiver.VolumnChangeReceiver;
+import com.example.fragment.FragMain;
 import com.example.fragment.LikeListFrag;
 import com.example.local_music.LocalMusic;
 import com.example.mylatouttest.Lyric.LyricJson;
 import com.example.mylatouttest.Lyric.LyricMessageTaker;
+import com.example.song.SongGetter;
 import com.google.gson.Gson;
 
 
@@ -136,6 +141,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         readytoplay();
         initWindows();
 
+        final EditText editText = (EditText) findViewById(R.id.editText);
+        Button button = (Button) findViewById(R.id.button);
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        SongGetter.download(SongGetter.getAllSong(editText.getText().toString()).get(0).getFileHash());
+                        Toast.makeText(MainActivity.this, "downloade succeed!", Toast.LENGTH_SHORT).show();
+                    }
+                }).start();
+
+            }
+        });
+
+        
+
     }
 
 
@@ -187,7 +211,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
             case R.id.main_recent_bt:
-                Toast.makeText(this, "recent", Toast.LENGTH_SHORT).show();
+                ft = fm.beginTransaction();
+                FragMain fragMain = new FragMain();
+                ft.add(R.id.frag_container, fragMain);
+                ft.commit();
                 break;
 
 
