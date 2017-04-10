@@ -1,6 +1,7 @@
 package com.example.mylatouttest;
 
 import android.Manifest;
+import android.app.FragmentTransaction;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -16,6 +17,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -38,6 +40,7 @@ import android.util.Base64;
 
 import com.example.MusicService.MusicService;
 import com.example.VolumechangeReceiver.VolumnChangeReceiver;
+import com.example.fragment.LikeListFrag;
 import com.example.local_music.LocalMusic;
 import com.example.mylatouttest.Lyric.LyricJson;
 import com.example.mylatouttest.Lyric.LyricMessageTaker;
@@ -83,6 +86,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     SeekBar bottomSeekbar;
     View bottomPlayer;
     View destopLyric;
+    FragmentManager fm = getSupportFragmentManager();
 
     ArrayList<Map<String, String>> data = null; //所有歌曲信息
     LyricInfo lyricInfo; //当前播放的歌曲信息
@@ -175,6 +179,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             case R.id.main_like_bt:
                 Toast.makeText(this, "like", Toast.LENGTH_SHORT).show();
+                android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
+                LikeListFrag likeListFrag = new LikeListFrag();
+                ft.add(R.id.frag_container, likeListFrag);
+                ft.commit();
 
                 break;
 

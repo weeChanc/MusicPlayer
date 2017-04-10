@@ -41,18 +41,16 @@ public class MySimpleAdapter extends BaseAdapter {
     private Context context;
     private List<Map<String, String>> resource;
     private int layoutID;
-    private String[] from;
     private int[] to;
     private LayoutInflater inflater;
     private MyApplication myApplication = MyApplication.getApplication();
     private Thread lyricThread;
     private ArrayList<Map<String,String>> data;
 
-    public MySimpleAdapter(Context context, List<Map<String, String>> resource, int layoutID, String[] from, int[] to) {
+    public MySimpleAdapter(Context context, List<Map<String, String>> resource, int layoutID,int[] to) {
         this.context = context;
         this.resource = resource;
         this.layoutID = layoutID;
-        this.from = from;
         this.to = to;
         inflater = LayoutInflater.from(context);
 
@@ -86,12 +84,12 @@ public class MySimpleAdapter extends BaseAdapter {
             view = inflater.inflate(layoutID, parent, false);
             viewHolder = new ViewHolder();
 
-                    viewHolder.title_tv = (TextView) view.findViewById(R.id.local_list_title);
-                    viewHolder.singer_tv = (TextView) view.findViewById(R.id.local_SingerName);
-                    viewHolder.bt1 = (ImageButton)view.findViewById(R.id.local_list_add);
-                    viewHolder.bt2 = (ImageButton)view.findViewById(R.id.local_list_like);
-                    viewHolder.bt3 = (ImageButton)view.findViewById(R.id.local_list_del);
-                    viewHolder.bt4 = (Button)view.findViewById(R.id.local_list__button_play);
+                    viewHolder.title_tv = (TextView) view.findViewById(to[0]);
+                    viewHolder.singer_tv = (TextView) view.findViewById(to[1]);
+                    viewHolder.bt1 = (ImageButton)view.findViewById(to[2]);
+                    viewHolder.bt2 = (ImageButton)view.findViewById(to[3]);
+                    viewHolder.bt3 = (ImageButton)view.findViewById(to[4]);
+                    viewHolder.bt4 = (Button)view.findViewById(to[5]);
                     view.setTag(viewHolder);
 
         }

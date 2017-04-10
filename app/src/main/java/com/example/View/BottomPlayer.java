@@ -22,7 +22,7 @@ import com.example.mylatouttest.R;
 
 public class BottomPlayer extends RelativeLayout {
 
-    class MyReceiver extends BroadcastReceiver{
+        class MyReceiver extends BroadcastReceiver{
         @Override
         public void onReceive(Context context, Intent intent) {
             if(intent.getAction().equals("com.example.MusicService.PROGRESS")){

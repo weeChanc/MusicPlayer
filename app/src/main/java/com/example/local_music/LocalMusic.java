@@ -95,7 +95,7 @@ public class LocalMusic extends AppCompatActivity implements View.OnClickListene
 
         data = new ArrayList<>();
         MySimpleAdapter simpleAdapter = new MySimpleAdapter(this, musicdata, R.layout.listitem,
-                new String[]{"title","singer"}, new int[]{R.id.local_list_title,R.id.local_SingerName});
+                new int[]{R.id.local_list_title,R.id.local_SingerName,R.id.local_list_add,R.id.local_list_like,R.id.local_list_del,R.id.local_list__button_play});
         listView.setAdapter(simpleAdapter);
 
 

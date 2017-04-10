@@ -3,6 +3,7 @@ package com.example.View;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 
 /**
@@ -10,7 +11,9 @@ import android.widget.LinearLayout;
  */
 
 public class RandomPlayView extends LinearLayout {
-    public RandomPlayView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
+
+
+    public RandomPlayView(Context context, @Nullable AttributeSet attrs) {
+        super(context, attrs);
     }
 }
