@@ -5,11 +5,14 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.media.Image;
 import android.media.MediaPlayer;
 import android.os.Binder;
@@ -46,6 +49,7 @@ public class MusicService extends Service {
     private Notification notification;
     private PendingIntent pendingIntent;
     private NotificationCompat.Builder builder;
+    private SQLiteDatabase db;
 
     MusicReceiver musicReceiver = new MusicReceiver();
 
@@ -56,8 +60,6 @@ public class MusicService extends Service {
         public void onReceive(Context context, Intent intent) {
 
             if (intent.getAction().equals("com.example.MainActivity.STARTMUSIC")) {
-
-                Log.e("info", "get");
 
                 if (intent.getBooleanExtra("NEXT", false)) {
                     Log.e("info", "getnext");
@@ -75,6 +77,31 @@ public class MusicService extends Service {
                 mainMessageCallBack();
 
                 initMediaPlayer(data.get(position).get("data"));
+
+                Intent intentRecent = new Intent("ChangeRecent");
+                sendBroadcast(intentRecent);
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ContentValues values = new ContentValues();
+                        values.put("singer", data.get(position).get("singer"));
+                        values.put("duration", data.get(position).get("duration"));
+                        values.put("title", data.get(position).get("title"));
+                        values.put("position", position);
+                        Cursor cursor = db.query("Recent",null,null,null,null,null,null,null);
+
+                        db.delete("Recent","title=?",new String[]{data.get(position).get("title")});
+                        db.insert("Recent", null, values);  //同歌曲不加入啊
+
+//                        Map<String,String> map = new HashMap<>();
+//                        map.put("singer", data.get(position).get("singer"));
+//                        map.put("duration", data.get(position).get("duration"));
+//                        map.put("title", data.get(position).get("title"));
+//                        map.put("position", position+"");
+
+                    }
+                }).start();  //播放历史 加入数据库存下
 
             }
 
@@ -157,6 +184,8 @@ public class MusicService extends Service {
 
         myApplication = (MyApplication) getApplication();
         data = myApplication.getData();
+
+        db = myApplication.getDp();
 
         Log.e("info", "SERVICE create");
         registerMyReceiver();//注册广播

@@ -56,6 +56,13 @@
         android:layout_weight="1.00">
 
     </LinearLayout>
-    <include layout="@layout/bottomplayer"/>
+
+    <TextView
+        android:id="@+id/lrc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="TextView" />
+
+    <include layout="@layout/bottomplayer" />
 
 </LinearLayout>

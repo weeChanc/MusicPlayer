@@ -11,7 +11,7 @@
     <LinearLayout
         android:id="@+id/line2"
         android:layout_width="wrap_content"
-        android:layout_height="52dp"
+        android:layout_height="64dp"
         android:background="@color/colorPrimaryDark"
         android:elevation="10dp"
         android:orientation="horizontal">
@@ -128,16 +128,6 @@
                 android:text="首"
                 android:textColor="@android:color/background_light" />
 
-            <TextView
-                android:id="@+id/lrc"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="TextView"
-                android:textAlignment="center"
-                android:textColor="@android:color/white"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true" />
         </RelativeLayout>
 
     </RelativeLayout>

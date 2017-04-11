@@ -65,17 +65,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     static TextView lrc; //歌词的textview
-//    private static Handler handler = new Handler() {
-//        @Override
-//        public void handleMessage(Message msg) {
-//            lrc.setText(msg.obj.toString());   //处理歌词的Handler
-//        }
-//    };
+    private static Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            lrc.setText(msg.obj.toString());   //处理歌词的Handler
+        }
+    };
 
     private MyApplication myApplication; //全局变量
     int max;  //seekbar的最大值
     ImageButton bottomnext;
     ImageButton bottomstop;
+    ImageButton bottomplayqueue;
     ImageView bottomhead ;
     TextView bottomtitle ;
     TextView bottomsinger;
@@ -134,7 +135,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Button button = (Button) findViewById(R.id.button);
 
         android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
-        ft.setCustomAnimations(R.anim.left_in_right_out,R.anim.left_in_right_out);
         ft.add(R.id.frag_container,new FragMain());
         ft.commit();
 
@@ -177,7 +177,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onStartTrackingTouch(SeekBar seekBar) {     //按下进度条 先调用onStartTrackingTouch一次，再调用onProgressChanged一次
                 seekBar.setMax(max);
                 if (!myApplication.isPlay()) {
-//                    main_play_pause_bt.setImageResource(R.drawable.pausewhite);
                     myApplication.setIsPlay(true);
                 }
                 myApplication.setIsSeekBarTouch(true);
@@ -231,7 +230,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 sendBroadcast(intentnext);
                 Intent intentnotify = new Intent("com.example.MusicService.NOTIFI");
                 sendBroadcast(intentnotify);
+                Intent intentchange = new Intent("CHANGEMAINBUTTON");
+                sendBroadcast(intentchange);
                 break;
+
+
 
         }
     }
@@ -264,6 +267,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    long start = 0 ;
+    @Override
+    public void onBackPressed() {
+        if(System.currentTimeMillis() - start > 2000 && fm.getBackStackEntryCount() == 0){
+            start = System.currentTimeMillis();
+            Toast.makeText(this,"再按一次退出", Toast.LENGTH_SHORT).show();
+        }else {
+            super.onBackPressed();
+        }
+    }
+
     private void getView() {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -277,8 +291,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         bottomhead = (ImageView) findViewById(R.id.bottom_head);
         bottomnext = (ImageButton) findViewById(R.id.bottom_next);
         bottomsinger = (TextView)findViewById(R.id.bottomsinger);
-        bottomstop = (ImageButton)findViewById(R.id.STOP);
+        bottomstop = (ImageButton)findViewById(R.id.bottom_play_queue);
         bottomSeekbar = (SeekBar)findViewById(R.id.bottom_seekbar);
+        bottomplayqueue = (ImageButton)findViewById(R.id.bottom_play_queue);
 
         bottomnext.setOnClickListener(this);
 
@@ -443,23 +458,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.e("aws",myApplication.getBottomSinger());
                 bottomsinger.setText(myApplication.getBottomSinger());
                 bottomtitle.setText(myApplication.getBottomTitle());
-//                main_count_tv.setText(intent.getIntExtra("COUNT", 0) + "");
                 max = myApplication.getSeekBarMax();
                 bottomSeekbar.setMax(max);
-//
-//            } //接受并初始化/修改 当前歌曲 以及歌曲数目 歌词
-//
-//            if (intent.getAction().equals("com.example.LocalMusic.PLAY")) {
-//                myApplication.setIsPlay(true);
-//                main_play_pause_bt.setImageResource(R.drawable.pausewhite);
-//            }
-//
-//            if(intent.getAction().equals("CHANGEMAINBUTTON")){
-//                if(myApplication.isPlay()){
-//                    main_play_pause_bt.setImageResource(R.drawable.pausewhite);
-//                }
-//                else
-//                    main_play_pause_bt.setImageResource(R.drawable.startwhite);
+
             }
 //
     }
@@ -498,18 +499,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onClick(View v) {
 
-//                lyricThread.interrupt();
+              lyricThread.interrupt();
 
                 myApplication.setIsPlay(true);
                 Log.e("info", "next");
 
+                Intent intentRecent = new Intent("ChangeRecent");
+                sendBroadcast(intentRecent);
+
                 bottomSeekbar.setProgress(0);
+
                 Intent intentnext = new Intent("com.example.MainActivity.STARTMUSIC");
                 intentnext.putExtra("NEXT", true);
                 sendBroadcast(intentnext);
-//                main_play_pause_bt.setImageResource(R.drawable.pausewhite);
+
                 Intent intentnotify = new Intent("com.example.MusicService.NOTIFI");
                 sendBroadcast(intentnotify);
+
+
 
 
             }
@@ -555,8 +562,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         Message message = new Message();
                         message.obj = "";
 
-                        long start = System.currentTimeMillis();
-
                         Thread.sleep(400);
 
                         for (int j = 0; j < lyricInfo.lineinfo.size() - 1; j++) {
@@ -568,7 +573,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             }
 
                         }
-//                        handler.sendMessage(message);
+                        handler.sendMessage(message);
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -586,13 +591,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private class LineInfo {
-
         int start;
         String line;
     }
 
     public void fragRecent(){
         android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
+        ft.setCustomAnimations(R.anim.up_in,R.anim.down_out,R.anim.up_in,R.anim.up_out);
         ft.replace(R.id.frag_container,new FragRecent());
         ft.addToBackStack(null);
         ft.commit();
@@ -600,6 +605,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void fragLike(){
         android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
+        ft.setCustomAnimations(R.anim.up_in,R.anim.down_out,R.anim.up_in,R.anim.up_out);
         ft.replace(R.id.frag_container,new FragLike());
         ft.addToBackStack(null);
         ft.commit();
@@ -607,13 +613,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void fragLocal(){
         android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
+        ft.setCustomAnimations(R.anim.right_in,R.anim.left_out,R.anim.left_in,R.anim.right_out);
         ft.replace(R.id.frag_container,new FragLocal());
         ft.addToBackStack(null);
         ft.commit();
     }
 
     public void stopMusic(){
-        musicService.stopSelf();
+        musicService.pauseMusic();
     }
 
 }

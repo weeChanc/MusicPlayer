@@ -55,22 +55,20 @@
         android:scaleType="centerInside"
         app:srcCompat="@drawable/nextbule"
         android:layout_alignParentBottom="true"
-        android:layout_toLeftOf="@+id/STOP"
-        android:layout_toStartOf="@+id/STOP" />
+        android:layout_toLeftOf="@+id/bottom_play_queue"
+        android:layout_toStartOf="@+id/bottom_play_queue" />
 
     <ImageButton
-        android:id="@+id/STOP"
+        android:id="@+id/bottom_play_queue"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignTop="@+id/bottom_next"
-        android:layout_marginEnd="12dp"
-        android:layout_marginRight="12dp"
         android:layout_weight="1"
         android:background="@color/colorWhite"
         android:scaleType="centerInside"
-        app:srcCompat="@drawable/stopblue" />
+        app:srcCompat="@drawable/playqueen"
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@+id/bottom_seekbar"
+        android:layout_toEndOf="@+id/bottom_seekbar" />
 
     <ImageView
         android:id="@+id/bottom_head"

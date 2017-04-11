@@ -17,6 +17,12 @@ public class MyDataBaseHelper extends SQLiteOpenHelper {
             +"title text, "
             +"position integer)";
 
+    public static final String RECENT = "create table Recent ("
+            +"id integer primary key autoincrement, "
+            +"duration integer, "
+            +"singer text, "
+            +"title text, "
+            +"position integer)";
 
     public MyDataBaseHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
@@ -25,6 +31,7 @@ public class MyDataBaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(LIKE);
+        db.execSQL(RECENT);
     }
 
     @Override

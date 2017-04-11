@@ -25,7 +25,6 @@ public class MyApplication  extends Application{
     private File[] files;
     private int seekBarMax;
     private boolean isSeekBarTouch = false;
-    private String mode;
     private String bottomTitle;
     private int position = 0 ;
     private int progress;

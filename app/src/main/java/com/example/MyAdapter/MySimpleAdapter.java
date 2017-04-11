@@ -29,6 +29,7 @@ import com.example.mylatouttest.R;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -106,19 +107,25 @@ public class MySimpleAdapter extends BaseAdapter {
             viewHolder.bt4.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.e("position",position+"");
-                    myApplication.setPosition(position);
+
+                    myApplication.setPosition(Integer.parseInt(resource.get(position).get("position")));
                     myApplication.setIsPlay(true);
+
+                    Log.e("tag",resource.get(position).get("position")+"");
 
                     lyricThread.interrupt();
                     Intent intent = new Intent("com.example.MainActivity.STARTMUSIC");
-                    intent.putExtra("LOCATION", position);
+                    intent.putExtra("LOCATION", Integer.parseInt(resource.get(position).get("position")));
                     intent.putExtra("POSITION", true);
                     context.sendBroadcast(intent);                              //下面的方法找不到对应的position只能放上来
                     Intent intent1 = new Intent("com.example.LocalMusic.PLAY"); //点击后通知主界面更新图标
                     context.sendBroadcast(intent1);
                     Intent intent2 = new Intent("com.example.MusicService.NOTIFI");
                     context.sendBroadcast((intent2));
+
+                    Intent intent3 = new Intent("changeListView");
+                    context.sendBroadcast(intent3);
+
 
                 }
             });

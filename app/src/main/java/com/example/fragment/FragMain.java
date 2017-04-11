@@ -43,35 +43,15 @@ import java.util.Map;
 public class FragMain extends Fragment {
 
 
-    int max;  //seekbar的最大值
     ImageButton main_list_bt;
     ImageButton main_play_pause_bt;
     ImageButton main_like_bt;
     ImageButton main_recent_bt;
-    ImageButton bottomnext;
-    ImageView bottomhead;
     TextView main_count_tv;
-    TextView bottomtitle;
-    TextView bottomsinger;
     TextView lrc;
-    SeekBar bottomSeekbar;
-    View bottomPlayer;
-
-    ArrayList<Map<String, String>> data = null; //所有歌曲信息
-    Thread lyricThread = new Thread();  //播歌线程
-    String temptitle = "";
     MyApplication myApplication = MyApplication.getApplication();//全局变量
-
-    File file;
-    File[] files;
-
-    long time; //再按一次退出计时
-    int key = 0;//再按一次退出计数
-
-    private VolumnChangeReceiver volumnChangeReceiver;
     private MessageReceiver messageReceiver;
-    private MusicService musicService;
-    private WindowManager manager;
+
 
     @Nullable
     @Override
@@ -85,6 +65,13 @@ public class FragMain extends Fragment {
         main_recent_bt = (ImageButton) view.findViewById(R.id.main_recent_bt);
         main_count_tv = (TextView) view.findViewById(R.id.main_count_tv);
         lrc = (TextView) view.findViewById(R.id.lrc);
+
+        if(myApplication.isPlay()){
+            main_play_pause_bt.setImageResource(R.drawable.pausewhite);
+        }
+
+        main_count_tv.setText(myApplication.getData().size()+"");
+
         return view;
 
     }
@@ -103,6 +90,7 @@ public class FragMain extends Fragment {
         activity.registerReceiver(messageReceiver, intentFilter);
 
     }
+
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -156,21 +144,10 @@ public class FragMain extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
 
-            if (intent.getAction().equals("com.example.MusicService.DETIAL")) {
-                main_count_tv.setText(intent.getIntExtra("COUNT", 0) + "");
-                Log.e("fragmen", "recevier");
+//            if (intent.getAction().equals("com.example.MusicService.DETIAL")) {
+//                main_count_tv.setText(intent.getIntExtra("COUNT", 0) + "");
+//            } //接受并初始化/修改 当前歌曲 以及歌曲数目 歌词
 
-            } //接受并初始化/修改 当前歌曲 以及歌曲数目 歌词
-
-            if (intent.getAction().equals("com.example.LocalMusic.PLAY")) {
-                Log.e("fragmen", "recevier");
-            }
-
-            if (intent.getAction().equals("CHANGEMAINBUTTON")) {
-                Log.e("fragmen", "recevier");
-            }
-
-            //接受并初始化/修改 当前歌曲 以及歌曲数目 歌词
 
             if (intent.getAction().equals("com.example.LocalMusic.PLAY")) {
                 myApplication.setIsPlay(true);
@@ -179,6 +156,7 @@ public class FragMain extends Fragment {
 
             if (intent.getAction().equals("CHANGEMAINBUTTON")) {
                 if (myApplication.isPlay()) {
+
                     main_play_pause_bt.setImageResource(R.drawable.pausewhite);
                 } else
                     main_play_pause_bt.setImageResource(R.drawable.startwhite);

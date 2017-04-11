@@ -17,6 +17,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -104,13 +105,10 @@ public class Start extends Activity {
         @Override
         protected void onPostExecute(Void aVoid) {
 
-
             finish();
             Intent intent = new Intent("android.intent.action.MAINMUSIC");
             intent.addCategory("android.intent.category.DEFAULT");
             startActivity(intent);
-
-
             super.onPostExecute(aVoid);
         }
 
@@ -123,8 +121,6 @@ public class Start extends Activity {
             progressBar.setVisibility(View.GONE);
             yes.setBackgroundResource(R.drawable.yes);
 
-
-
         }
     }
 
@@ -135,7 +131,8 @@ public class Start extends Activity {
                 MediaStore.Audio.Media.DISPLAY_NAME, MediaStore.Audio.Media.DURATION};
 
         Cursor cursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, want, MediaStore.Audio.Media.DURATION + ">60000", null, MediaStore.Audio.Media.TITLE);
-        if (cursor != null && cursor.moveToFirst())
+        if (cursor != null && cursor.moveToFirst()) {
+
             do {
                 Map<String, String> map = new HashMap<>();
                 map.put("title", cursor.getString(0));
@@ -143,16 +140,21 @@ public class Start extends Activity {
                 map.put("singer", cursor.getString(2));
                 map.put("fulltitle", cursor.getString(3));
                 map.put("duration", cursor.getInt(4) + "");
-                map.put("isplay",false+"");
-                map.put("URL","http://lyrics.kugou.com/search?ver=1&man=yes&client=pc&keyword="+map.get("title")+"&duration="+map.get("duration")+"&hash=");
+                map.put("isplay", false + "");
+                map.put("URL", "http://lyrics.kugou.com/search?ver=1&man=yes&client=pc&keyword=" + map.get("title") + "&duration=" + map.get("duration") + "&hash=");
                 data.add(map);
 
             } while (cursor.moveToNext());
+        }
 
         for (int i = 0; i < data.size() - 1; i++) {
             if (data.get(i).get("title").equals(data.get(i + 1).get("title"))) {
                 data.remove(data.get(i));
             }
+        }
+
+        for(int i = 0 ; i <data.size() -1 ; i++){
+            data.get(i).put("position",i+"");
         }
 
         myApplication.setData(data);
