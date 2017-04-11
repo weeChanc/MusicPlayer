@@ -43,7 +43,9 @@ public class FragLocal extends Fragment {
                 new int[]{R.id.local_list_title,R.id.local_SingerName,R.id.local_list_add,R.id.local_list_like,R.id.local_list_del,R.id.local_list__button_play});
 
         ListView listview = (ListView) view.findViewById(R.id.local_music_listview);
+        listview.setDivider(null);
         listview.setAdapter(simpleAdapter);
+
 
         return view;
     }

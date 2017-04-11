@@ -57,6 +57,7 @@ public class MySimpleAdapter extends BaseAdapter {
 
         lyricThread=myApplication.getThread();
         data = myApplication.getData();
+        Log.e("count",data.size()+"");
     }
 
     @Override
@@ -107,6 +108,7 @@ public class MySimpleAdapter extends BaseAdapter {
             viewHolder.bt4.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
 
                     myApplication.setPosition(Integer.parseInt(resource.get(position).get("position")));
                     myApplication.setIsPlay(true);

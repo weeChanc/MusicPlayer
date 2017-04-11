@@ -26,6 +26,7 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.ImageButton;
 import android.widget.RemoteViews;
+import android.widget.Toast;
 
 import com.example.mylatouttest.MainActivity;
 import com.example.mylatouttest.MyApplication;
@@ -67,6 +68,16 @@ public class MusicService extends Service {
                     mediaPlayer.reset();
                 }
 
+                if(intent.getBooleanExtra("PRE",false)){
+                    if(position!=0) {
+                        position = position - 1;
+                        mediaPlayer.reset();
+                    }else
+                        Toast.makeText(context, "已经是第一首了", Toast.LENGTH_SHORT).show();
+
+                }
+
+
                 if (intent.getBooleanExtra("POSITION", false)) {
                     setPosition(intent.getIntExtra("LOCATION", 0));
                     mediaPlayer.reset(); //同样的 不reset就变成继续了
@@ -103,6 +114,8 @@ public class MusicService extends Service {
                     }
                 }).start();  //播放历史 加入数据库存下
 
+                Intent intentchangeMain = new Intent("CHANGEMAINBUTTON");
+                sendBroadcast(intentchangeMain);
             }
 
             progressCallBack();

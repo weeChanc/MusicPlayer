@@ -47,6 +47,7 @@ public class FragMain extends Fragment {
     ImageButton main_play_pause_bt;
     ImageButton main_like_bt;
     ImageButton main_recent_bt;
+    ImageButton main_search_bt;
     TextView main_count_tv;
     TextView lrc;
     MyApplication myApplication = MyApplication.getApplication();//全局变量
@@ -64,6 +65,7 @@ public class FragMain extends Fragment {
         main_like_bt = (ImageButton) view.findViewById(R.id.main_like_bt);
         main_recent_bt = (ImageButton) view.findViewById(R.id.main_recent_bt);
         main_count_tv = (TextView) view.findViewById(R.id.main_count_tv);
+        main_search_bt = (ImageButton)view.findViewById(R.id.main_search_bt);
         lrc = (TextView) view.findViewById(R.id.lrc);
 
         if(myApplication.isPlay()){
@@ -118,6 +120,13 @@ public class FragMain extends Fragment {
             }
         });
 
+        main_search_bt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((MainActivity)(getActivity())).fragDown();
+            }
+        });
+
         main_play_pause_bt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -135,6 +144,9 @@ public class FragMain extends Fragment {
                     getActivity().sendBroadcast(intentnotify1);
                     main_play_pause_bt.setImageResource(R.drawable.pausewhite);
                 }
+
+                Intent intentchangeMain = new Intent("CHANGEMAINBUTTON");
+                getActivity().sendBroadcast(intentchangeMain);
             }
         });
 

@@ -10,7 +10,7 @@
 
     <LinearLayout
         android:id="@+id/line2"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="64dp"
         android:background="@color/colorPrimaryDark"
         android:elevation="10dp"
@@ -18,10 +18,10 @@
 
         <ImageButton
             android:id="@+id/main_like_bt"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginTop="0dp"
-            android:layout_weight="1.60"
+            android:layout_weight="1"
             android:background="@drawable/click"
             android:foreground="?android:attr/selectableItemBackground"
             android:paddingTop="6dp"
@@ -30,15 +30,26 @@
 
         <ImageButton
             android:id="@+id/main_recent_bt"
-            android:layout_width="190dp"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginBottom="0dp"
             android:layout_marginTop="0dp"
+            android:layout_weight="1"
             android:background="@drawable/click"
             android:foreground="?android:attr/selectableItemBackground"
             android:paddingTop="6dp"
             android:scaleType="centerInside"
             app:srcCompat="@drawable/recent" />
+
+        <ImageButton
+            android:id="@+id/main_search_bt"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/click"
+            android:padding="4dp"
+            android:scaleType="centerInside"
+            app:srcCompat="@drawable/search" />
 
     </LinearLayout>
 
@@ -136,7 +147,7 @@
         android:id="@+id/frag_container"
         android:layout_width="match_parent"
         android:layout_height="311dp"
-        android:layout_weight="0.21"
+        android:layout_weight="0.43"
         android:orientation="vertical">
 
     </LinearLayout>

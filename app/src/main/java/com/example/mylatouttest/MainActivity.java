@@ -36,7 +36,7 @@ import android.widget.Toast;
 
 import com.example.MusicService.MusicService;
 import com.example.VolumechangeReceiver.VolumnChangeReceiver;
-import com.example.fragment.DownFragment;
+import com.example.fragment.FragDown;
 import com.example.fragment.FragLocal;
 import com.example.fragment.FragMain;
 import com.example.fragment.FragLike;
@@ -75,8 +75,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private MyApplication myApplication; //全局变量
     int max;  //seekbar的最大值
     ImageButton bottomnext;
-    ImageButton bottomstop;
-    ImageButton bottomplayqueue;
+    ImageButton bottomprivious;
+    ImageButton bottomplay_pause;
+
     ImageView bottomhead ;
     TextView bottomtitle ;
     TextView bottomsinger;
@@ -150,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                         FragmentManager fm = getSupportFragmentManager();
                         android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
-                        DownFragment downFragment = new DownFragment();
+                        FragDown downFragment = new FragDown();
                         ft.add(R.id.frag_container,downFragment);
                         Toast.makeText(MainActivity.this, "downloade succeed!", Toast.LENGTH_SHORT).show();
                     }
@@ -211,6 +212,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId()) {
 
             case R.id.main_like_bt:
+
                 Toast.makeText(this, "like", Toast.LENGTH_SHORT).show();
                 android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
                 FragLike fragLike = new FragLike();
@@ -221,7 +223,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
             case R.id.bottom_next:
-                Log.e("info", "next");
+
                 lyricThread.interrupt();
                 myApplication.setIsPlay(true);
                 bottomSeekbar.setProgress(0);
@@ -232,6 +234,41 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 sendBroadcast(intentnotify);
                 Intent intentchange = new Intent("CHANGEMAINBUTTON");
                 sendBroadcast(intentchange);
+                break;
+
+
+            case R.id.bottom_privious:
+
+                lyricThread.interrupt();
+                myApplication.setIsPlay(true);
+                bottomSeekbar.setProgress(0);
+                Intent intentpre = new Intent("com.example.MainActivity.STARTMUSIC");
+                intentpre.putExtra("PRE", true);
+                sendBroadcast(intentpre);
+                Intent intentnotify2 = new Intent("com.example.MusicService.NOTIFI");
+                sendBroadcast(intentnotify2);
+                Intent intentchanger = new Intent("CHANGEMAINBUTTON");
+                sendBroadcast(intentchanger);
+                break;
+
+            case R.id.bottom_play_pause:
+                Intent intent = new Intent("com.example.MainActivity.STARTMUSIC");
+                Intent intentnotify1 = new Intent("com.example.MusicService.NOTIFI");
+                if (myApplication.isPlay()) {
+                    myApplication.setIsPlay(false);
+                    musicService.pauseMusic();
+                    sendBroadcast(intentnotify1);
+                    bottomplay_pause.setImageResource(R.drawable.startwhite);
+                } else {
+                    myApplication.setIsPlay(true);
+                    intent.putExtra("ISPAUSE", true);
+                    sendBroadcast(intent);
+                    sendBroadcast(intentnotify1);
+                    bottomplay_pause.setImageResource(R.drawable.pausewhite);
+                }
+
+                Intent intentchangeMain = new Intent("CHANGEMAINBUTTON");
+                sendBroadcast(intentchangeMain);
                 break;
 
 
@@ -291,9 +328,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         bottomhead = (ImageView) findViewById(R.id.bottom_head);
         bottomnext = (ImageButton) findViewById(R.id.bottom_next);
         bottomsinger = (TextView)findViewById(R.id.bottomsinger);
-        bottomstop = (ImageButton)findViewById(R.id.bottom_play_queue);
         bottomSeekbar = (SeekBar)findViewById(R.id.bottom_seekbar);
-        bottomplayqueue = (ImageButton)findViewById(R.id.bottom_play_queue);
+        bottomplay_pause = (ImageButton)findViewById(R.id.bottom_play_pause);
+        bottomprivious = (ImageButton)findViewById(R.id.bottom_privious);
+
+        bottomplay_pause.setOnClickListener(this);
+        bottomprivious.setOnClickListener(this);
+
 
         bottomnext.setOnClickListener(this);
 
@@ -377,6 +418,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public class MessageReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
+
+            if(intent.getAction().equals("CHANGEMAINBUTTON")){
+                if(myApplication.isPlay())
+                bottomplay_pause.setImageResource(R.drawable.pausebule);
+                else
+                    bottomplay_pause.setImageResource(R.drawable.playblue);
+            }
 
             if (intent.getAction().equals("com.example.MusicService.PROGRESS")) {
                 bottomSeekbar.setProgress(myApplication.getProgress());
@@ -516,9 +564,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Intent intentnotify = new Intent("com.example.MusicService.NOTIFI");
                 sendBroadcast(intentnotify);
 
-
-
-
             }
         });
 
@@ -532,7 +577,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onStartTrackingTouch(SeekBar seekBar) {     //按下进度条 先调用onStartTrackingTouch一次，再调用onProgressChanged一次
                 seekBar.setMax(max);
                 if (!myApplication.isPlay()) {
-//                    main_play_pause_bt.setImageResource(R.drawable.pausewhite);
+                   bottomplay_pause.setImageResource(R.drawable.pausewhite);
                     myApplication.setIsPlay(true);
                 }
                 myApplication.setIsSeekBarTouch(true);
@@ -615,6 +660,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
         ft.setCustomAnimations(R.anim.right_in,R.anim.left_out,R.anim.left_in,R.anim.right_out);
         ft.replace(R.id.frag_container,new FragLocal());
+        ft.addToBackStack(null);
+        ft.commit();
+    }
+
+    public void fragDown(){
+        android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
+        ft.setCustomAnimations(R.anim.right_in,R.anim.left_out,R.anim.left_in,R.anim.right_out);
+        ft.replace(R.id.frag_container,new FragDown());
         ft.addToBackStack(null);
         ft.commit();
     }
