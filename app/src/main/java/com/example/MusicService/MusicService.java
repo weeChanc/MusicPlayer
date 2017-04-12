@@ -63,18 +63,24 @@ public class MusicService extends Service {
             if (intent.getAction().equals("com.example.MainActivity.STARTMUSIC")) {
 
                 if (intent.getBooleanExtra("NEXT", false)) {
+                    contentView.setImageViewResource(R.id.play_image, R.drawable.pause);
+                    notification = builder.setContent(contentView).build();
+                    startForeground(1, notification);
+
                     Log.e("info", "getnext");
                     setPosition();
                     mediaPlayer.reset();
                 }
 
                 if(intent.getBooleanExtra("PRE",false)){
+                    contentView.setImageViewResource(R.id.play_image, R.drawable.pause);
+                    notification = builder.setContent(contentView).build();
+                    startForeground(1, notification);
                     if(position!=0) {
                         position = position - 1;
                         mediaPlayer.reset();
                     }else
                         Toast.makeText(context, "已经是第一首了", Toast.LENGTH_SHORT).show();
-
                 }
 
                 if (intent.getBooleanExtra("POSITION", false)) {
@@ -122,61 +128,37 @@ public class MusicService extends Service {
             }
 
             if (intent.getAction().equals("notification_play_pause")) {
-                if (mediaPlayer.isPlaying()) {
+                if (mediaPlayer.isPlaying() && !intent.getBooleanExtra("LIST",false)) {
                     mediaPlayer.pause();
                     myApplication.setIsPlay(false);
-
-                    Intent intentchangeMain = new Intent("CHANGEMAINBUTTON");
-                    sendBroadcast(intentchangeMain);
-
-                } else {
-
+                    contentView.setImageViewResource(R.id.play_image, R.drawable.playdark);
+                    notification = builder.setContent(contentView).build();
+                      //设置前台服务图标
+                } else {                                                            //Notification的点击事件 无法自己修改自己的图标、只能通过发广播
                     myApplication.setIsPlay(true);
-
                     Intent intentstartmusic = new Intent("com.example.MainActivity.STARTMUSIC");
-                    sendBroadcast(intentstartmusic); //继续播放
-
-                    Intent intentchangeMain = new Intent("CHANGEMAINBUTTON");
-                    sendBroadcast(intentchangeMain);
-
+                    if(!intent.getBooleanExtra("LIST",false)){
+                        sendBroadcast(intentstartmusic);          //如果是列表中选择，则列表内启动服务播放。否则 继续播放
+                    }
+                    contentView.setImageViewResource(R.id.play_image, R.drawable.pause);
+                    notification = builder.setContent(contentView).build(); //设置Notification的图标
                 }
-
-                Intent intentnoti = new Intent("com.example.MusicService.NOTIFI");
-                context.sendBroadcast(intentnoti);
+                startForeground(1, notification);
+                Intent intentchangeMain = new Intent("CHANGEMAINBUTTON");
+                sendBroadcast(intentchangeMain);
             }
 
             if (intent.getAction().equals("CHANGENEXT")) {
 
+                myApplication.setIsPlay(true);
                 Intent intentplay = new Intent("com.example.MainActivity.STARTMUSIC");
                 intentplay.putExtra("NEXT", true);
                 sendBroadcast(intentplay);
-
-                myApplication.setIsPlay(true);
-                Intent intentchangeMain = new Intent("CHANGEMAINBUTTON");
-                sendBroadcast(intentchangeMain);
-
-                contentView.setImageViewResource(R.id.play_image, R.drawable.pause);
-                notification = builder.setContent(contentView).build();
-                startForeground(1, notification);
-            }
-
-            if (intent.getAction().equals("com.example.MusicService.NOTIFI")) {
-                Log.e("get", "get" + myApplication.isPlay());
-                if (myApplication.isPlay()) {
-                    contentView.setImageViewResource(R.id.play_image, R.drawable.pause);
-                    notification = builder.setContent(contentView).build();
-                    startForeground(1, notification);
-                } else {
-                    contentView.setImageViewResource(R.id.play_image, R.drawable.playdark);
-                    notification = builder.setContent(contentView).build();
-                    startForeground(1, notification);
-                }
             }
 
             if (intent.getAction().equals("com.example.MainActivity.REQUSETRES")) {
                 mainMessageCallBack();
             }
-
 
         }
     }
@@ -337,7 +319,6 @@ public class MusicService extends Service {
         intentFilter.addAction("com.example.LocalMusic.MODE");
         intentFilter.addAction("notification_play_pause");
         intentFilter.addAction("CHANGENEXT");
-        intentFilter.addAction("com.example.MusicService.NOTIFI");
         intentFilter.addAction("com.example.MainActivity.REQUSETRES");
         registerReceiver(musicReceiver, intentFilter);
     }
@@ -352,10 +333,10 @@ public class MusicService extends Service {
         contentView.setImageViewResource(R.id.head_image, R.drawable.music);
         contentView.setImageViewResource(R.id.play_image, R.drawable.playdark);
 
-        Intent intent = new Intent("notification_play_pause");
-        PendingIntent changependingIntent = PendingIntent.getBroadcast(MusicService.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT); //点击事件
-        contentView.setOnClickPendingIntent(R.id.play_image, changependingIntent);
 
+        Intent intent = new Intent("notification_play_pause");
+        contentView.setOnClickPendingIntent(R.id.play_image, PendingIntent.getBroadcast(MusicService.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT));
+                                                                                //点击事件
         Intent intent2 = new Intent("CHANGENEXT");
         contentView.setOnClickPendingIntent(R.id.next_image, PendingIntent.getBroadcast(this, 0, intent2, PendingIntent.FLAG_UPDATE_CURRENT));
 
@@ -370,6 +351,8 @@ public class MusicService extends Service {
                 .setSmallIcon(R.drawable.delete)
                 .build();
         startForeground(1, notification);
+
+
     }
 
     void upgradeDataNotification() {

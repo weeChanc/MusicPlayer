@@ -93,6 +93,7 @@ public class FragDown extends Fragment {
          listView = (ListView) view.findViewById(R.id.down_list);
          hashes = new ArrayList<>();
          titles = new ArrayList<>();
+         titles = new ArrayList<>();
 
         return view;
     }

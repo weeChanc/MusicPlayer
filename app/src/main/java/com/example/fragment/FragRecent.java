@@ -83,7 +83,6 @@ public class FragRecent extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals("ChangeRecent")) {
-                Log.e("tag","sdfasdfasdfasdfsdaf");
                 int position = myApplication.getPosition();
                 Map<String,String> map = new HashMap<>();
                 map.put("singer",myApplication.getData().get(position).get("singer"));

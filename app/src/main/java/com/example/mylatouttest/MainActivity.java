@@ -215,52 +215,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
             case R.id.bottom_next:
-
                 lyricThread.interrupt();
                 myApplication.setIsPlay(true);
                 bottomSeekbar.setProgress(0);
                 Intent intentnext = new Intent("com.example.MainActivity.STARTMUSIC");
                 intentnext.putExtra("NEXT", true);
                 sendBroadcast(intentnext);
-                Intent intentnotify = new Intent("com.example.MusicService.NOTIFI");
-                sendBroadcast(intentnotify);
                 Intent intentchange = new Intent("CHANGEMAINBUTTON");
                 sendBroadcast(intentchange);
                 break;
 
-
             case R.id.bottom_privious:
-
                 lyricThread.interrupt();
                 myApplication.setIsPlay(true);
                 bottomSeekbar.setProgress(0);
                 Intent intentpre = new Intent("com.example.MainActivity.STARTMUSIC");
                 intentpre.putExtra("PRE", true);
                 sendBroadcast(intentpre);
-                Intent intentnotify2 = new Intent("com.example.MusicService.NOTIFI");
-                sendBroadcast(intentnotify2);
                 Intent intentchanger = new Intent("CHANGEMAINBUTTON");
                 sendBroadcast(intentchanger);
                 break;
 
             case R.id.bottom_play_pause:
-                Intent intent = new Intent("com.example.MainActivity.STARTMUSIC");
-                Intent intentnotify1 = new Intent("com.example.MusicService.NOTIFI");
-                if (myApplication.isPlay()) {
-                    myApplication.setIsPlay(false);
-                    musicService.pauseMusic();
-                    sendBroadcast(intentnotify1);
-                    bottomplay_pause.setImageResource(R.drawable.startwhite);
-                } else {
-                    myApplication.setIsPlay(true);
-                    intent.putExtra("ISPAUSE", true);
-                    sendBroadcast(intent);
-                    sendBroadcast(intentnotify1);
-                    bottomplay_pause.setImageResource(R.drawable.pausewhite);
-                }
 
+                Intent intentnotify1 = new Intent("notification_play_pause");
                 Intent intentchangeMain = new Intent("CHANGEMAINBUTTON");
                 sendBroadcast(intentchangeMain);
+                sendBroadcast(intentnotify1);
                 break;
 
 
@@ -542,22 +523,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onClick(View v) {
 
-              lyricThread.interrupt();
-
-                myApplication.setIsPlay(true);
-                Log.e("info", "next");
-
-                Intent intentRecent = new Intent("ChangeRecent");
-                sendBroadcast(intentRecent);
-
+                lyricThread.interrupt();
                 bottomSeekbar.setProgress(0);
-
-                Intent intentnext = new Intent("com.example.MainActivity.STARTMUSIC");
-                intentnext.putExtra("NEXT", true);
+                Intent intentnext = new Intent("CHANGENEXT");
                 sendBroadcast(intentnext);
 
-                Intent intentnotify = new Intent("com.example.MusicService.NOTIFI");
-                sendBroadcast(intentnotify);
 
             }
         });

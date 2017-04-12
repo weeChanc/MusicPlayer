@@ -130,23 +130,11 @@ public class FragMain extends Fragment {
         main_play_pause_bt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent("com.example.MainActivity.STARTMUSIC");
-                Intent intentnotify1 = new Intent("com.example.MusicService.NOTIFI");
-                if (myApplication.isPlay()) {
-                    myApplication.setIsPlay(false);
-                    ((MainActivity) (getActivity())).stopMusic();
-                    getActivity().sendBroadcast(intentnotify1);
-                    main_play_pause_bt.setImageResource(R.drawable.startwhite);
-                } else {
-                    myApplication.setIsPlay(true);
-                    intent.putExtra("ISPAUSE", true);
-                    getActivity().sendBroadcast(intent);
-                    getActivity().sendBroadcast(intentnotify1);
-                    main_play_pause_bt.setImageResource(R.drawable.pausewhite);
-                }
 
+                Intent intentnotify = new Intent("notification_play_pause");
                 Intent intentchangeMain = new Intent("CHANGEMAINBUTTON");
                 getActivity().sendBroadcast(intentchangeMain);
+                getActivity().sendBroadcast(intentnotify);
             }
         });
 
