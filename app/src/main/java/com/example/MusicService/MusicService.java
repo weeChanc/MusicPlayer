@@ -174,7 +174,7 @@ public class MusicService extends Service {
 
         db = myApplication.getDp();
 
-        Log.e("info", "SERVICE create");
+
         registerMyReceiver();//注册广播
         mainMessageCallBack();// 初始化界面信息
 
@@ -193,7 +193,7 @@ public class MusicService extends Service {
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) { //音乐播放完毕的监听器
-                Log.e("info", "end of the music");
+
 
                 mediaPlayer.reset(); //音乐停后不会reset,先reset 否则不能下一首
 
@@ -215,13 +215,11 @@ public class MusicService extends Service {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        Log.e("info", "service bind");
         return mbind;
     }
 
     @Override
     public void onDestroy() {
-        Log.e("info", "service destory");
         unregisterReceiver(musicReceiver);
         super.onDestroy();
     }

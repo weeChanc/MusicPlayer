@@ -49,13 +49,13 @@ public class SongGetter {
     }
 
     public static void download(String hash,String name){
+        try {
         String MessageURL = "http://www.kugou.com/yy/index.php?r=play/getdata&hash="+hash+"&album_id=&_=1491830054690";
         Request request = new Request.Builder().url(MessageURL).build();
-        try {
-
 
                 Intent intent = new Intent("TOAST");
-                intent.putExtra("start", name);
+                intent.putExtra("READY",true);
+                intent.putExtra("NAME", name);
                 MyApplication.getContext().sendBroadcast(intent);
 
 
@@ -78,7 +78,7 @@ public class SongGetter {
             }
 
                 Intent intent2 = new Intent("TOAST");
-                intent2.putExtra("start", "");
+                intent2.putExtra("SUCCEED",true);
                 MyApplication.getContext().sendBroadcast(intent2);
 //            }
 //            else
@@ -86,8 +86,10 @@ public class SongGetter {
 //                 Intent intentPlay = new Intent("tryPlay");
 //                MyApplication.getContext().sendBroadcast(intentPlay);  //试听  位完成
 //            }
-
-        } catch (IOException e) {
+        } catch (Exception e) {
+            Intent intent3 = new Intent("TOAST");
+            intent3.putExtra("FAILE",true);
+            MyApplication.getContext().sendBroadcast(intent3);
             e.printStackTrace();
         }
 

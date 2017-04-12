@@ -1,6 +1,7 @@
 package com.example.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -17,6 +18,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.MyAdapter.DownLoadListAdapter;
 import com.example.mylatouttest.MyApplication;
@@ -48,7 +50,6 @@ public class FragDown extends Fragment {
         @Override
         public void handleMessage(Message msg) {
             downLoadListAdapter = new DownLoadListAdapter(getContext(),hashes,R.layout.downitem,new int[]{R.id.down_title,R.id.down_singer,R.id.down_bt});
-            adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, titles);
             listView.setAdapter(downLoadListAdapter);
         }
     };
@@ -63,15 +64,20 @@ public class FragDown extends Fragment {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        titles.clear();
-                        hashes = (ArrayList<Hash>) SongGetter.getAllSong(editText.getText().toString());
+                        try {
+                            titles.clear();
+                            hashes = (ArrayList<Hash>) SongGetter.getAllSong(editText.getText().toString());
 
-                        for(int i = 0 ; i < hashes.size() ; i++) {
-                            Log.e("tag", hashes.get(i).getFileName());
-                            titles.add(hashes.get(i).getFileName());
+                            for (int i = 0; i < hashes.size(); i++) {
+                                titles.add(hashes.get(i).getFileName());
+                            }
+                            handler.sendEmptyMessage(0);
+                        }catch(Exception e) {
+                            Intent intent = new Intent("TOAST");
+                            intent.putExtra("FAILESEARCH",true);
+                            getContext().sendBroadcast(intent);
+                            e.printStackTrace();
                         }
-
-                        handler.sendEmptyMessage(0);
                     }
                 }).start();
 

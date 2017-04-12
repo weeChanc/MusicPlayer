@@ -205,7 +205,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             case R.id.main_like_bt:
 
-                Toast.makeText(this, "like", Toast.LENGTH_SHORT).show();
                 android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
                 FragLike fragLike = new FragLike();
                 ft.add(R.id.frag_container, fragLike);
@@ -401,10 +400,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
 
             if(intent.getAction().equals("TOAST")){
-                if(!intent.getStringExtra("start").equals("")){
-                    Toast.makeText(MainActivity.this, "准备下载歌曲: " + intent.getStringExtra("start"), Toast.LENGTH_SHORT).show();
-                }else
+
+                if(intent.getBooleanExtra("READY",false))
+                    Toast.makeText(MainActivity.this, "准备下载歌曲" + intent.getStringExtra("NAME"), Toast.LENGTH_SHORT).show();
+
+                if(intent.getBooleanExtra("SUCCEED",false)){
                     Toast.makeText(MainActivity.this, "下载成功", Toast.LENGTH_SHORT).show();
+                }
+
+                if(intent.getBooleanExtra("FAILE",false)){
+                    Toast.makeText(MainActivity.this, "下载失败", Toast.LENGTH_SHORT).show();
+                }
+
+                if(intent.getBooleanExtra("FAILESEARCH",false)){
+                    Toast.makeText(MainActivity.this, "搜索失败", Toast.LENGTH_SHORT).show();
+                }
+
+
+
             }
 
             if (intent.getAction().equals("com.example.MusicService.PROGRESS")) {
