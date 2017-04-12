@@ -1,6 +1,11 @@
 package com.example.song;
 
+import android.content.Intent;
+import android.util.Log;
+import android.widget.Toast;
+
 import com.example.View.MLog;
+import com.example.mylatouttest.MainActivity;
 import com.example.mylatouttest.MyApplication;
 import com.google.gson.Gson;
 
@@ -43,10 +48,17 @@ public class SongGetter {
         return data.getData().getHashList();
     }
 
-    public static void download(String hash){
+    public static void download(String hash,String name){
         String MessageURL = "http://www.kugou.com/yy/index.php?r=play/getdata&hash="+hash+"&album_id=&_=1491830054690";
         Request request = new Request.Builder().url(MessageURL).build();
         try {
+
+
+                Intent intent = new Intent("TOAST");
+                intent.putExtra("start", name);
+                MyApplication.getContext().sendBroadcast(intent);
+
+
             response = client.newCall(request).execute();
             SongDataGetter songdata = gson.fromJson(response.body().string(), SongDataGetter.class);
             String download = songdata.getData().getPlay_url();
@@ -63,7 +75,17 @@ public class SongGetter {
                 FileOutputStream fos = new FileOutputStream(file);
             fos.write(song);
             fos.close();
-        }
+            }
+
+                Intent intent2 = new Intent("TOAST");
+                intent2.putExtra("start", "");
+                MyApplication.getContext().sendBroadcast(intent2);
+//            }
+//            else
+//            {
+//                 Intent intentPlay = new Intent("tryPlay");
+//                MyApplication.getContext().sendBroadcast(intentPlay);  //试听  位完成
+//            }
 
         } catch (IOException e) {
             e.printStackTrace();

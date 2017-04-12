@@ -94,18 +94,6 @@ public class FragDown extends Fragment {
          hashes = new ArrayList<>();
          titles = new ArrayList<>();
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        SongGetter.download(hashes.get(position).getFileHash());
-                    }
-                }).start();
-            }
-        });
-
         return view;
     }
 }

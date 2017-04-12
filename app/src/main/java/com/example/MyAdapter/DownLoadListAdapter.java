@@ -9,12 +9,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.mylatouttest.R;
 import com.example.song.Hash;
+import com.example.song.SongGetter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,13 +29,13 @@ import java.util.zip.Inflater;
 
 public class DownLoadListAdapter extends BaseAdapter {
 
-    ArrayList<Hash> resource;
-    Context context;
-    int[] to;
-    int layoutID;
-    ImageButton down_bt;
-    TextView down_title;
-    TextView down_singer;
+    private ArrayList<Hash> resource;
+    private Context context;
+    private int[] to;
+    private int layoutID;
+    private String title;
+    private String singer;
+
 
     public DownLoadListAdapter(Context context, ArrayList<Hash> resource, int layoutID, int[] to) {
         super();
@@ -59,7 +61,7 @@ public class DownLoadListAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         View view;
         ViewHolder viewHolder = new ViewHolder();
 
@@ -68,6 +70,7 @@ public class DownLoadListAdapter extends BaseAdapter {
             viewHolder.down_bt = (ImageButton) view.findViewById(R.id.down_bt);
             viewHolder.down_singer = (TextView) view.findViewById(R.id.down_singer);
             viewHolder.down_title = (TextView) view.findViewById(R.id.down_title);
+            viewHolder.down_play = (Button)view.findViewById(R.id.down_play);
             view.setTag(viewHolder);
 
         }else
@@ -77,16 +80,40 @@ public class DownLoadListAdapter extends BaseAdapter {
         }
 
 
-        String title = resource.get(position).getSongName();
+        title = resource.get(position).getSongName();
         title = title.replaceAll("<em>","");
         title = title.replaceAll("</em>","");
         viewHolder.down_title.setText(title);
 
-        String singer = resource.get(position).getSingerName();  //去除异常的字符串
+        singer = resource.get(position).getSingerName();  //去除异常的字符串
 
         singer = singer.replaceAll("<em>","");
         singer = singer.replaceAll("</em>","");
         viewHolder.down_singer.setText(singer);
+
+        viewHolder.down_bt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        SongGetter.download(resource.get(position).getFileHash(),title);
+                    }
+                }).start();
+            }
+        });
+
+        viewHolder.down_play.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        SongGetter.download(resource.get(position).getFileHash(),"~./");
+                    }
+                }).start();
+            }
+        });
 
 
         return view;
@@ -96,5 +123,6 @@ public class DownLoadListAdapter extends BaseAdapter {
         ImageButton down_bt;
         TextView down_title;
         TextView down_singer;
+        Button down_play;
     }
 }

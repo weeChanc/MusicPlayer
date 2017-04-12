@@ -281,6 +281,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         intentFilter.addAction("com.example.MusicService.DETIAL");
         intentFilter.addAction("com.example.LocalMusic.PLAY");
         intentFilter.addAction("CHANGEMAINBUTTON");
+        intentFilter.addAction("TOAST");
        registerReceiver(messageReceiver, intentFilter);
 
     }
@@ -418,19 +419,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     bottomplay_pause.setImageResource(R.drawable.playblue);
             }
 
+            if(intent.getAction().equals("TOAST")){
+                if(!intent.getStringExtra("start").equals("")){
+                    Toast.makeText(MainActivity.this, "准备下载歌曲: " + intent.getStringExtra("start"), Toast.LENGTH_SHORT).show();
+                }else
+                    Toast.makeText(MainActivity.this, "下载成功", Toast.LENGTH_SHORT).show();
+            }
+
             if (intent.getAction().equals("com.example.MusicService.PROGRESS")) {
                 bottomSeekbar.setProgress(myApplication.getProgress());
-            }
 
 
                 try {
 
                     if (!temptitle.equals(bottomtitle.getText().toString())) {
-                        temptitle =bottomtitle.getText().toString();
+                        temptitle = bottomtitle.getText().toString();
 
                         if (!seekLyric()) {
                             data = myApplication.getData();
-                            Log.e("tag","找不到歌词，准备搜索");
+                            Log.e("tag", "找不到歌词，准备搜索");
                             lrc.setText("成哥为你搜索歌词中");
 
                             new Thread(new Runnable() {
@@ -444,7 +451,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                         LyricMessageTaker lyricMessageTaker = gson.fromJson(response.body().string(), LyricMessageTaker.class);
 
                                         int lyricmount = lyricMessageTaker.getCandidates().size();
-                                        for (int i = 0; i < lyricmount  ; i++) {
+                                        for (int i = 0; i < lyricmount; i++) {
                                             if (lyricMessageTaker.getCandidates().get(i).getSinger().equals(data.get(myApplication.getPosition()).get("singer"))) {
 
                                                 request = new Request.Builder().url(lyricMessageTaker.getCandidates().get(i).initURL()).build();
@@ -463,13 +470,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                                 }
                                                 break;
                                             }
-                                            if( i == lyricmount - 1) {
-                                                Log.e("tag","找不到歌词");
+                                            if (i == lyricmount - 1) {
+                                                Log.e("tag", "找不到歌词");
                                                 lrc.setText("连成哥都不能帮你找到歌词了");
                                             }
                                         }
-                                        if(lyricmount == 0 ) {
-                                            Log.e("tag","找不到歌词");
+                                        if (lyricmount == 0) {
+                                            Log.e("tag", "找不到歌词");
                                             lrc.setText("对不起,找不到歌词");
                                         }
 
@@ -487,15 +494,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-//
-//
-//
-//
-//
+            }
+
 //            } // 修改进度de guangbo
 //
             if (intent.getAction().equals("com.example.MusicService.DETIAL")) {
-                Log.e("aws",myApplication.getBottomSinger());
                 bottomsinger.setText(myApplication.getBottomSinger());
                 bottomtitle.setText(myApplication.getBottomTitle());
                 max = myApplication.getSeekBarMax();

@@ -116,7 +116,6 @@ public class LocalMusic extends AppCompatActivity implements View.OnClickListene
         ViewPager viewpager = (ViewPager)findViewById(R.id.pager);
         viewpager.setAdapter(viewPagerAdapter);
 
-
     }
 
 

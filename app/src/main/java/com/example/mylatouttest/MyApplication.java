@@ -1,6 +1,7 @@
 package com.example.mylatouttest;
 
 import android.app.Application;
+import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
@@ -20,6 +21,7 @@ import java.util.Map;
 public class MyApplication  extends Application{
 
     private  static MyApplication myApplication;
+    private static Context context;
     private  ArrayList<Map<String, String>> data;
     private boolean isPlay = false ;
     private File[] files;
@@ -33,6 +35,10 @@ public class MyApplication  extends Application{
     private Thread thread;
     private SQLiteDatabase dp;
     private List<Hash> hashList;
+
+    public static Context getContext() {
+        return context;
+    }
 
     public List<Hash> getHashList() {
         return hashList;
@@ -149,5 +155,6 @@ public class MyApplication  extends Application{
     public void onCreate() {
         super.onCreate();
         myApplication = this;
+        context = getApplicationContext();
     }
 }

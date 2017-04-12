@@ -77,7 +77,6 @@ public class MusicService extends Service {
 
                 }
 
-
                 if (intent.getBooleanExtra("POSITION", false)) {
                     setPosition(intent.getIntExtra("LOCATION", 0));
                     mediaPlayer.reset(); //同样的 不reset就变成继续了
@@ -104,13 +103,6 @@ public class MusicService extends Service {
 
                         db.delete("Recent","title=?",new String[]{data.get(position).get("title")});
                         db.insert("Recent", null, values);  //同歌曲不加入啊
-
-//                        Map<String,String> map = new HashMap<>();
-//                        map.put("singer", data.get(position).get("singer"));
-//                        map.put("duration", data.get(position).get("duration"));
-//                        map.put("title", data.get(position).get("title"));
-//                        map.put("position", position+"");
-
                     }
                 }).start();  //播放历史 加入数据库存下
 
