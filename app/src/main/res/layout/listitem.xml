@@ -37,21 +37,21 @@
             android:elevation="0dp">
 
             <TextView
-                android:id="@+id/local_list_title"
+                android:id="@+id/down_title"
                 android:layout_width="250dp"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:layout_marginLeft="14dp"
                 android:layout_marginStart="14dp"
                 android:layout_marginTop="11dp"
-                android:layout_toRightOf="@+id/local_list_singer_head"
+                android:layout_toRightOf="@+id/down_head"
                 android:maxLines="1"
                 android:text="TextView"
                 android:textSize="16dp"
                 android:textStyle="bold" />
 
             <ImageView
-                android:id="@+id/local_list_singer_head"
+                android:id="@+id/down_head"
                 android:layout_width="74dp"
                 android:layout_height="match_parent"
 
@@ -67,8 +67,8 @@
                 android:layout_alignParentBottom="true"
                 android:layout_marginLeft="12dp"
                 android:layout_marginStart="12dp"
-                android:layout_toEndOf="@+id/local_SingerName"
-                android:layout_toRightOf="@+id/local_SingerName"
+                android:layout_toEndOf="@+id/down_singer"
+                android:layout_toRightOf="@+id/down_singer"
                 android:background="@color/colorAccent"
                 android:padding="2dp"
                 android:scaleType="centerInside"
@@ -102,11 +102,11 @@
                 app:srcCompat="@drawable/delete" />
 
             <TextView
-                android:id="@+id/local_SingerName"
+                android:id="@+id/down_singer"
                 android:layout_width="120dp"
                 android:layout_height="wrap_content"
-                android:layout_alignLeft="@+id/local_list_title"
-                android:layout_alignStart="@+id/local_list_title"
+                android:layout_alignLeft="@+id/down_title"
+                android:layout_alignStart="@+id/down_title"
                 android:layout_alignTop="@+id/local_list_add"
                 android:maxLines="1"
                 android:text="TextView" />

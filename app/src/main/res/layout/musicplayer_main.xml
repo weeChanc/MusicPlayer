@@ -52,17 +52,24 @@
         android:id="@+id/frag_container"
         android:layout_width="match_parent"
         android:layout_height="288dp"
-        android:orientation="vertical"
-        android:layout_weight="1.00">
+        android:layout_weight="1.00"
+        android:orientation="vertical">
 
     </LinearLayout>
+
+    <View
+        android:id="@+id/view"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/drak_gray"
+        android:elevation="10dp" />
+
+    <include layout="@layout/bottomplayer" />
 
     <TextView
         android:id="@+id/lrc"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="TextView" />
-
-    <include layout="@layout/bottomplayer" />
 
 </LinearLayout>

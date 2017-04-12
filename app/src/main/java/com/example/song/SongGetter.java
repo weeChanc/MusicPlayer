@@ -24,6 +24,7 @@ public class SongGetter {
     static Response response;
 
     public static List<Hash> getAllSong(String name){
+
         String ListURL = "http://songsearch.kugou.com/song_search_v2?callback=jQuery191013413509052461192_1491829959432&keyword="+name+"&page=1&pagesize=30&userid=-1&clientver=&platform=WebFilter&tag=em&filter=2&iscorrection=1&privilege_filter=0&_=1491829959434";
 
         Request request = new Request.Builder().url(ListURL).build();
@@ -34,16 +35,7 @@ public class SongGetter {
             response = client.newCall(request).execute();
             String dataFromJason = response.body().string();
           data = gson.fromJson(dataFromJason.substring(dataFromJason.indexOf('{'),dataFromJason.lastIndexOf('}')+1),Data.class);
-//
-//
-//
-//
-//
 
-            MLog.e("tag","getdata 显示list");
-            for(Hash e : data.getData().getHashList()){
-                MLog.e("tag",e.getFileName());
-            }
         } catch (IOException e) {
             e.printStackTrace();
         }

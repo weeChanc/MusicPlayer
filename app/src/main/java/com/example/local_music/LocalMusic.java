@@ -1,11 +1,9 @@
 package com.example.local_music;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
-import android.preference.PreferenceManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -16,14 +14,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 
 import com.example.MyAdapter.MySimpleAdapter;
 import com.example.MyAdapter.ViewPagerAdapter;
 import com.example.mylatouttest.MyApplication;
 import com.example.mylatouttest.R;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -93,7 +89,7 @@ public class LocalMusic extends AppCompatActivity implements View.OnClickListene
 
         data = new ArrayList<>();
         MySimpleAdapter simpleAdapter = new MySimpleAdapter(this, musicdata, R.layout.listitem,
-                new int[]{R.id.local_list_title,R.id.local_SingerName,R.id.local_list_add,R.id.local_list_like,R.id.local_list_del,R.id.local_list__button_play});
+                new int[]{R.id.down_title,R.id.down_singer,R.id.local_list_add,R.id.local_list_like,R.id.local_list_del,R.id.local_list__button_play});
         listView.setAdapter(simpleAdapter);
 
 

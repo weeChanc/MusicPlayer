@@ -145,15 +145,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-
-
                         myApplication.setHashList(  SongGetter.getAllSong(editText.getText().toString()));
-
-                        FragmentManager fm = getSupportFragmentManager();
-                        android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
-                        FragDown downFragment = new FragDown();
-                        ft.add(R.id.frag_container,downFragment);
-                        Toast.makeText(MainActivity.this, "downloade succeed!", Toast.LENGTH_SHORT).show();
                     }
                 }).start();
 

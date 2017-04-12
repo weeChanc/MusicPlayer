@@ -6,8 +6,18 @@ package com.example.song;
 
 public class Hash {
 
-    private   String FileHash;
-    private   String FileName;
+    private String FileHash;
+    private String FileName;
+    private String SongName;
+    private String SingerName;
+
+    public String getSingerName() {
+        return SingerName;
+    }
+
+    public String getSongName() {
+        return SongName;
+    }
 
     public String getFileHash() {
         return FileHash;

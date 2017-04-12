@@ -17,7 +17,6 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import com.example.MyAdapter.MySimpleAdapter;
-import com.example.mylatouttest.MainActivity;
 import com.example.mylatouttest.MyApplication;
 import com.example.mylatouttest.R;
 
@@ -61,7 +60,7 @@ public class FragRecent extends Fragment {
 
 
         mySimpleAdapter = new MySimpleAdapter(getContext(), data, R.layout.listitem,
-                        new int[]{R.id.local_list_title, R.id.local_SingerName, R.id.local_list_add, R.id.local_list_like, R.id.local_list_del, R.id.local_list__button_play});
+                        new int[]{R.id.down_title, R.id.down_singer, R.id.local_list_add, R.id.local_list_like, R.id.local_list_del, R.id.local_list__button_play});
 
         ListView listView = (ListView) view.findViewById(R.id.like_listview);
         listView.setAdapter(mySimpleAdapter);
