@@ -48,7 +48,7 @@ public class SongGetter {
         return data.getData().getHashList();
     }
 
-    public static void download(String hash,String name){
+    public static String download(String hash,String name){
         try {
         String MessageURL = "http://www.kugou.com/yy/index.php?r=play/getdata&hash="+hash+"&album_id=&_=1491830054690";
         Request request = new Request.Builder().url(MessageURL).build();
@@ -57,7 +57,6 @@ public class SongGetter {
                 intent.putExtra("READY",true);
                 intent.putExtra("NAME", name);
                 MyApplication.getContext().sendBroadcast(intent);
-
 
             response = client.newCall(request).execute();
             SongDataGetter songdata = gson.fromJson(response.body().string(), SongDataGetter.class);
@@ -69,7 +68,8 @@ public class SongGetter {
 
             byte[] song = response.body().bytes();
 
-            File file = new File(MyApplication.getApplication().getFile().getPath() + "//" + songdata.getData().getAudio_name() + ".mp3");
+            String path = MyApplication.getApplication().getFile().getPath() + "//" + songdata.getData().getAudio_name() + ".mp3";
+            File file = new File(path);
             if (!file.exists()){
                 file.createNewFile();
                 FileOutputStream fos = new FileOutputStream(file);
@@ -80,12 +80,9 @@ public class SongGetter {
                 Intent intent2 = new Intent("TOAST");
                 intent2.putExtra("SUCCEED",true);
                 MyApplication.getContext().sendBroadcast(intent2);
-//            }
-//            else
-//            {
-//                 Intent intentPlay = new Intent("tryPlay");
-//                MyApplication.getContext().sendBroadcast(intentPlay);  //试听  位完成
-//            }
+
+            return path;
+
         } catch (Exception e) {
             Intent intent3 = new Intent("TOAST");
             intent3.putExtra("FAILE",true);
@@ -93,7 +90,27 @@ public class SongGetter {
             e.printStackTrace();
         }
 
+        return "";
 
+    }
+
+    public static SongData getSongData(Hash hash){
+        SongDataGetter songdata = null;
+        try {
+            String MessageURL = "http://www.kugou.com/yy/index.php?r=play/getdata&hash="+hash+"&album_id=&_=1491830054690";
+            Request request = new Request.Builder().url(MessageURL).build();
+            response = client.newCall(request).execute();
+             songdata   = gson.fromJson(response.body().string(), SongDataGetter.class);
+
+
+        } catch (Exception e) {
+            Intent intent3 = new Intent("TOAST");
+            intent3.putExtra("FAILE",true);
+            MyApplication.getContext().sendBroadcast(intent3);
+            e.printStackTrace();
+        }
+
+        return songdata.getData();
     }
 
 

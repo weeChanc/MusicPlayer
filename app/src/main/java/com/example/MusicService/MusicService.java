@@ -12,19 +12,12 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
-import android.media.Image;
 import android.media.MediaPlayer;
 import android.os.Binder;
-import android.os.Environment;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
-import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.widget.ImageButton;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
@@ -62,12 +55,13 @@ public class MusicService extends Service {
 
             if (intent.getAction().equals("com.example.MainActivity.STARTMUSIC")) {
 
+                data = myApplication.getData();
+
                 if (intent.getBooleanExtra("NEXT", false)) {
                     contentView.setImageViewResource(R.id.play_image, R.drawable.pause);
                     notification = builder.setContent(contentView).build();
                     startForeground(1, notification);
 
-                    Log.e("info", "getnext");
                     setPosition();
                     mediaPlayer.reset();
                 }
@@ -158,6 +152,10 @@ public class MusicService extends Service {
 
             if (intent.getAction().equals("com.example.MainActivity.REQUSETRES")) {
                 mainMessageCallBack();
+            }
+
+            if(intent.getAction().equals("LISTEN")){
+                play(intent.getStringExtra("PATH"));
             }
 
         }
@@ -274,6 +272,24 @@ public class MusicService extends Service {
     }
 
 
+
+    public void play(String location){
+
+        try {
+            File file = new File(location);
+
+            if (mediaPlayer.isPlaying()) {
+                mediaPlayer.reset();              //播放特定歌曲
+            }
+            mediaPlayer.setDataSource(file.getPath());
+            mediaPlayer.prepare();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        mediaPlayer.start();
+    }
+
+
     public int setPosition() {
 
         if (play_mode == 'o') {
@@ -318,6 +334,7 @@ public class MusicService extends Service {
         intentFilter.addAction("notification_play_pause");
         intentFilter.addAction("CHANGENEXT");
         intentFilter.addAction("com.example.MainActivity.REQUSETRES");
+        intentFilter.addAction("LISTEN");
         registerReceiver(musicReceiver, intentFilter);
     }
 
@@ -359,6 +376,8 @@ public class MusicService extends Service {
         notification = builder.setContent(contentView).build();
         startForeground(1, notification);
     }
+
+
 
 
 }

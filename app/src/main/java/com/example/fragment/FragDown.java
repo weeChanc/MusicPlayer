@@ -9,15 +9,18 @@ import android.support.annotation.Nullable;
 
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.MyAdapter.DownLoadListAdapter;
@@ -58,34 +61,44 @@ public class FragDown extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        button.setOnClickListener(new View.OnClickListener() {
+        editText.requestFocus();
+        editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
-            public void onClick(View v) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            titles.clear();
-                            hashes = (ArrayList<Hash>) SongGetter.getAllSong(editText.getText().toString());
+            public boolean onEditorAction(final TextView v, int actionId, KeyEvent event) {
+                if(actionId == EditorInfo.IME_ACTION_SEARCH){
 
-                            for (int i = 0; i < hashes.size(); i++) {
-                                titles.add(hashes.get(i).getFileName());
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {          //设置 软键盘回车 搜索
+                            try {
+
+                                Log.e("tag",v.getText().toString());
+                                titles.clear();
+                                hashes = (ArrayList<Hash>) SongGetter.getAllSong(v.getText().toString());
+
+                                for (int i = 0; i < hashes.size(); i++) {
+                                    titles.add(hashes.get(i).getFileName());
+
+                                }
+                                handler.sendEmptyMessage(0);
+                            }catch(Exception e) {
+                                Intent intent = new Intent("TOAST");
+                                intent.putExtra("FAILESEARCH",true);
+                                getContext().sendBroadcast(intent);
+                                e.printStackTrace();
                             }
-                            handler.sendEmptyMessage(0);
-                        }catch(Exception e) {
-                            Intent intent = new Intent("TOAST");
-                            intent.putExtra("FAILESEARCH",true);
-                            getContext().sendBroadcast(intent);
-                            e.printStackTrace();
                         }
-                    }
-                }).start();
+                    }).start();
 
-
-
+                }
+                return true;
             }
 
+
         });
+
+        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
 
     }
 
@@ -101,6 +114,10 @@ public class FragDown extends Fragment {
          titles = new ArrayList<>();
          titles = new ArrayList<>();
 
+
+
         return view;
     }
+
+
 }

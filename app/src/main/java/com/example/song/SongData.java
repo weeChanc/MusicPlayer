@@ -13,6 +13,12 @@ public class SongData {
     private String song_name;
     private String lyrics;
     private String play_url;
+    private String timelength;
+
+    public String getTimelength() {
+        return timelength;
+    }
+
 
     public String getAlbum_name() {
         return album_name;

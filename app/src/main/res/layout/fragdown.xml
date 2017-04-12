@@ -13,8 +13,9 @@
             android:layout_width="306dp"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:inputType="textPersonName"
-            android:text="Name" />
+            android:hint="搜索歌名或歌手"
+            android:imeOptions="actionSearch"
+            android:inputType="textPersonName" />
 
         <Button
             android:id="@+id/button2"

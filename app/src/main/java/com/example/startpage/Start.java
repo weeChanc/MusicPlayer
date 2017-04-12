@@ -38,6 +38,7 @@ public class Start extends Activity {
     MyApplication myApplication;
     File file;
     private ArrayList<Map<String, String>> data = new ArrayList<>();
+    ImageView imageView;
 
 
     @Override
@@ -51,6 +52,8 @@ public class Start extends Activity {
         MyDataBaseHelper dpHelper = new MyDataBaseHelper(this,"list.db",null,1);
         SQLiteDatabase dp = dpHelper.getWritableDatabase();
         myApplication.setDp(dp);
+        imageView = (ImageView) findViewById(R.id.im);
+        imageView.setImageResource(R.drawable.icon);
 
         if (Build.VERSION.SDK_INT >= 21) {
             View decorView = getWindow().getDecorView();

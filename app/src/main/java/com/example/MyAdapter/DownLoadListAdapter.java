@@ -1,6 +1,7 @@
 package com.example.MyAdapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,11 +16,13 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.mylatouttest.MyApplication;
 import com.example.mylatouttest.R;
 import com.example.song.Hash;
 import com.example.song.SongGetter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.Inflater;
@@ -110,7 +113,32 @@ public class DownLoadListAdapter extends BaseAdapter {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        SongGetter.download(resource.get(position).getFileHash(),"~./");
+
+                        String path;
+
+                        path = SongGetter.download(resource.get(position).getFileHash(),"准备播放" +resource.get(position).getFileName().replaceAll("<em>","").replaceAll("</em>",""));
+
+                        MyApplication myApplication = MyApplication.getApplication();
+                        Map<String,String> map = new HashMap();
+                        map.put("title",resource.get(position).getSingerName().replaceAll("<em>","").replaceAll("</em>",""));
+                        map.put("data",path);
+                        map.put("singer",resource.get(position).getSingerName().replaceAll("<em>","").replaceAll("</em>",""));
+                        map.put("fulltitle",resource.get(position).getFileName().replaceAll("<em>","").replaceAll("</em>",""));
+                        map.put("duration","280000");
+
+                        ArrayList<Map<String,String >> data = new ArrayList<Map<String, String>>() ;
+                        for (int i = 0 ; i < myApplication.getData().size() ; i++ ){
+                            data.add(myApplication.getData().get(i));
+                        }
+                        data.add(map);
+                        myApplication.setData( data );
+
+                        Intent intent = new Intent("com.example.MainActivity.STARTMUSIC");
+                        intent.putExtra("POSITION",true);
+                        intent.putExtra("LOCATION",data.size()-1);
+                        MyApplication.getContext().sendBroadcast(intent);
+
+
                     }
                 }).start();
             }
