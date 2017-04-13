@@ -48,6 +48,7 @@ public class MusicService extends Service {
     private PendingIntent pendingIntent;
     private NotificationCompat.Builder builder;
     private SQLiteDatabase db;
+    public int pos = -1;
 
     MusicReceiver musicReceiver = new MusicReceiver();
 
@@ -67,8 +68,9 @@ public class MusicService extends Service {
                     contentView.setImageViewResource(R.id.play_image, R.drawable.pause);
                     notification = builder.setContent(contentView).build();
                     startForeground(1, notification);
-                    if(position <= data.size()-2)
-                        position = position +1;
+                    if(position < data.size()-1) {
+                        position = position + 1;  // 避免最后一首 选择下一首崩溃的情况
+                    }
                     mediaPlayer.reset();
                 }
 
@@ -113,6 +115,14 @@ public class MusicService extends Service {
 
                 Intent intentchangeMain = new Intent("CHANGEMAINBUTTON");
                 sendBroadcast(intentchangeMain);
+
+                if(pos != -1 && pos != position ) {
+                    data.get(pos).remove("isplay");
+                    data.get(pos).put("isplay", "F");
+                    myApplication.getAdapter().notifyDataSetChanged();
+                }
+                pos = position;
+
             }
 
             progressCallBack();
@@ -154,7 +164,6 @@ public class MusicService extends Service {
             if (intent.getAction().equals("com.example.MainActivity.REQUSETRES")) {
                 mainMessageCallBack();
             }
-
 
         }
     }
@@ -285,8 +294,9 @@ public class MusicService extends Service {
     public int setPosition() {
 
         if (play_mode == ORDER) {
-            if(position <= data.size()-2)
-            position++;
+            if(position < data.size()-1) {
+                position++;                                          // 避免最后一首 选择下一首崩溃的情况
+            }
             mediaPlayer.reset();          //根据模式选择下一首播放歌曲的位置
         } else if (play_mode == RANDOM) {
             position = (int) (Math.rint(Math.random() * data.size()));

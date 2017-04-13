@@ -12,6 +12,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
@@ -47,6 +49,10 @@ public class MySimpleAdapter extends BaseAdapter {
     private MyApplication myApplication = MyApplication.getApplication();
     private Thread lyricThread;
     private ArrayList<Map<String,String>> data;
+    private Animation spin;
+    private Animation translate;
+
+
 
     public MySimpleAdapter(Context context, List<Map<String, String>> resource, int layoutID,int[] to) {
         this.context = context;
@@ -58,6 +64,10 @@ public class MySimpleAdapter extends BaseAdapter {
         lyricThread=myApplication.getThread();
         data = myApplication.getData();
         Log.e("count",data.size()+"");
+
+        spin = AnimationUtils.loadAnimation(context,R.anim.spin);
+        translate = AnimationUtils.loadAnimation(context,R.anim.left_in);
+        myApplication.setAdapter(MySimpleAdapter.this);
     }
 
     @Override
@@ -93,7 +103,6 @@ public class MySimpleAdapter extends BaseAdapter {
                     viewHolder.bt3 = (ImageButton)view.findViewById(to[4]);
                     viewHolder.bt4 = (Button)view.findViewById(to[5]);
                     view.setTag(viewHolder);
-
         }
         else {
             view = convertView;
@@ -102,18 +111,22 @@ public class MySimpleAdapter extends BaseAdapter {
 
         viewHolder.singer_tv.setText(resource.get(position).get("singer"));
         viewHolder.title_tv.setText(resource.get(position).get("title"));
+        viewHolder.title_tv.setTextColor(Color.BLACK);
+
+
+
+        if(data.get(position).get("isplay").equals("T")){
+            viewHolder.title_tv.setTextColor(Color.RED);
+        }
 
             addListener(viewHolder);
 
             viewHolder.bt4.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    v.setAnimation(translate);
                     myApplication.setPosition(Integer.parseInt(resource.get(position).get("position")));
                     myApplication.setIsPlay(true);
-
-                    Log.e("tag",resource.get(position).get("position")+"");
-
                     lyricThread.interrupt();
                     Intent intent = new Intent("com.example.MainActivity.STARTMUSIC");
                     intent.putExtra("LOCATION", Integer.parseInt(resource.get(position).get("position")));
@@ -126,6 +139,11 @@ public class MySimpleAdapter extends BaseAdapter {
                     intent2.putExtra("LIST",true);
                     context.sendBroadcast(intent2);
 
+                    data.get(position).remove("isplay");
+                    data.get(position).put("isplay","T");
+                    myApplication.setData(data);
+                    MySimpleAdapter.this.notifyDataSetChanged();
+
 
                 }
             });
@@ -133,6 +151,7 @@ public class MySimpleAdapter extends BaseAdapter {
         viewHolder.bt2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                v.setAnimation(translate);
                 SQLiteDatabase db = myApplication.getDp();
                 Cursor cursor =  db.query("Like",null,null,null,null,null,null,null);
                 ContentValues values = new ContentValues();
@@ -149,7 +168,6 @@ public class MySimpleAdapter extends BaseAdapter {
                                     common = true;
                         }
                     }while(cursor.moveToNext());
-
                 }
                 if(!common)
                     db.insert("Like",null,values);
@@ -190,13 +208,6 @@ public class MySimpleAdapter extends BaseAdapter {
                 }
 
 
-            });
-
-            viewHolder.bt2.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.e("info", "love");
-                }
             });
 
             viewHolder.bt3.setOnClickListener(new View.OnClickListener() {

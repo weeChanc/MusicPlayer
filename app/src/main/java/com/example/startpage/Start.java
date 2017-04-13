@@ -153,7 +153,7 @@ public class Start extends Activity {
                 map.put("singer", cursor.getString(2));
                 map.put("fulltitle", cursor.getString(3));
                 map.put("duration", cursor.getInt(4) + "");
-                map.put("isplay", false + "");
+                map.put("isplay", "F");
                 map.put("URL", "http://lyrics.kugou.com/search?ver=1&man=yes&client=pc&keyword=" + map.get("title") + "&duration=" + map.get("duration") + "&hash=");
                 data.add(map);
 

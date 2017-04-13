@@ -62,7 +62,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/drak_gray"
-        android:elevation="10dp" />
+      />
 
     <include layout="@layout/bottomplayer" />
 
