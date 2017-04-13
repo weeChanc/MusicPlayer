@@ -22,8 +22,6 @@ public class MyApplication  extends Application{
 
 
     public static final int ORDER = 1;
-    public static final int LOOP = 2;
-    public static final int REPEAT = 3;
 
 
     private  static MyApplication myApplication;
@@ -42,13 +40,13 @@ public class MyApplication  extends Application{
     private SQLiteDatabase dp;
     private List<Hash> hashList;
 
-    private String play_mode;
+    private int play_mode;
 
-    public String getPlay_mode() {
+    public int getPlay_mode() {
         return play_mode;
     }
 
-    public void setPlay_mode(String play_mode) {
+    public void setPlay_mode(int play_mode) {
         this.play_mode = play_mode;
     }
 

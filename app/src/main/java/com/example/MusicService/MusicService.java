@@ -33,10 +33,14 @@ import java.util.Map;
 
 public class MusicService extends Service {
 
+    public static final int ORDER = 1;
+    public static final int LOOP = 3;
+    public static final int RANDOM = 2;
+
     private MyApplication myApplication;
     private MediaPlayer mediaPlayer = new MediaPlayer();
     private ArrayList<Map<String, String>> data = new ArrayList<>();
-    private char play_mode = 'o';  // o 顺序播放 r 随机播放 l 单曲循环
+    private int play_mode = ORDER;  // o 顺序播放 r 随机播放 l 单曲循环
     private MBind mbind = new MBind();
     public int position = 0; //当前播放曲目的位置
     private RemoteViews contentView;
@@ -53,6 +57,8 @@ public class MusicService extends Service {
         @Override
         public void onReceive(Context context, Intent intent) {
 
+            play_mode= myApplication.getPlay_mode();
+
             if (intent.getAction().equals("com.example.MainActivity.STARTMUSIC")) {
 
                 data = myApplication.getData();
@@ -61,8 +67,8 @@ public class MusicService extends Service {
                     contentView.setImageViewResource(R.id.play_image, R.drawable.pause);
                     notification = builder.setContent(contentView).build();
                     startForeground(1, notification);
-
-                    setPosition();
+                    if(position <= data.size()-2)
+                        position = position +1;
                     mediaPlayer.reset();
                 }
 
@@ -99,7 +105,6 @@ public class MusicService extends Service {
                         values.put("duration", data.get(position).get("duration"));
                         values.put("title", data.get(position).get("title"));
                         values.put("position", position);
-                        Cursor cursor = db.query("Recent",null,null,null,null,null,null,null);
 
                         db.delete("Recent","title=?",new String[]{data.get(position).get("title")});
                         db.insert("Recent", null, values);  //同歌曲不加入啊
@@ -115,10 +120,6 @@ public class MusicService extends Service {
 
             if (intent.getBooleanExtra("SEEK", false)) {
                 mediaPlayer.seekTo(intent.getIntExtra("PROGRESS", 0));
-            }
-
-            if (intent.getAction().equals("com.example.LocalMusic.MODE")) {
-                play_mode = intent.getCharExtra("MODE", 'o');
             }
 
             if (intent.getAction().equals("notification_play_pause")) {
@@ -166,7 +167,7 @@ public class MusicService extends Service {
 
         myApplication = (MyApplication) getApplication();
         data = myApplication.getData();
-
+        play_mode = myApplication.getPlay_mode();
         db = myApplication.getDp();
 
 
@@ -178,12 +179,6 @@ public class MusicService extends Service {
         sendBroadcast(arraylistIntent);            //将歌曲信息列表传给其他活动！
 
 
-        try {
-            SharedPreferences share = getSharedPreferences("data", MODE_PRIVATE);
-            play_mode = share.getString("MODE", "orl").charAt(2);
-        } catch (Exception e) {             //根据上次退出的选择模式
-            e.printStackTrace();
-        }
 
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
@@ -289,10 +284,11 @@ public class MusicService extends Service {
 
     public int setPosition() {
 
-        if (play_mode == 'o') {
+        if (play_mode == ORDER) {
+            if(position <= data.size()-2)
             position++;
             mediaPlayer.reset();          //根据模式选择下一首播放歌曲的位置
-        } else if (play_mode == 'r') {
+        } else if (play_mode == RANDOM) {
             position = (int) (Math.rint(Math.random() * data.size()));
         }
 

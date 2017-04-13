@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.AlarmManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -40,7 +41,7 @@ public class Start extends Activity {
     File file;
     private ArrayList<Map<String, String>> data = new ArrayList<>();
     ImageView imageView;
-    ArrayList<Map<String,Integer>> lover;
+    ArrayList<SingerCount> singerCounts = new ArrayList<>();
 
 
     @Override
@@ -56,7 +57,14 @@ public class Start extends Activity {
         myApplication.setDp(dp);
         imageView = (ImageView) findViewById(R.id.im);
         imageView.setImageResource(R.drawable.icon);
-        lover = new ArrayList<>();
+
+        try {
+            SharedPreferences share = getSharedPreferences("data", MODE_PRIVATE);
+            myApplication.setPlay_mode(share.getInt("MODE",MyApplication.ORDER));
+
+        } catch (Exception e) {             //根据上次退出的选择模式
+            e.printStackTrace();
+        }
 
         if (Build.VERSION.SDK_INT >= 21) {
             View decorView = getWindow().getDecorView();
@@ -150,7 +158,9 @@ public class Start extends Activity {
                 data.add(map);
 
 
-                lover.add(map.get("singer",lover.get("singer",));
+//                singerCounts.add();
+
+//                lover.add(map.get("singer",lover.get("singer",));
 
             } while (cursor.moveToNext());
 
@@ -165,6 +175,12 @@ public class Start extends Activity {
 
         if (cursor != null)
             cursor.close();
+    }
+
+    public static class SingerCount{
+        public static String singer;
+        public static int count;
+
     }
 
 
