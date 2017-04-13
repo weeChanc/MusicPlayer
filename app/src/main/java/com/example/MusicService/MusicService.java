@@ -154,9 +154,6 @@ public class MusicService extends Service {
                 mainMessageCallBack();
             }
 
-            if(intent.getAction().equals("LISTEN")){
-                play(intent.getStringExtra("PATH"));
-            }
 
         }
     }

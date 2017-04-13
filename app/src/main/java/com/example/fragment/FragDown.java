@@ -8,6 +8,7 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -39,7 +40,7 @@ import java.util.List;
 
 public class FragDown extends Fragment {
 
-
+    SwipeRefreshLayout refreshLayout;
     EditText editText;
     Button button;
     ListView listView;
@@ -52,6 +53,7 @@ public class FragDown extends Fragment {
     public Handler  handler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
+            refreshLayout.setRefreshing(false);
             downLoadListAdapter = new DownLoadListAdapter(getContext(),hashes,R.layout.downitem,new int[]{R.id.down_title,R.id.down_singer,R.id.down_bt});
             listView.setAdapter(downLoadListAdapter);
         }
@@ -71,15 +73,7 @@ public class FragDown extends Fragment {
                         @Override
                         public void run() {          //设置 软键盘回车 搜索
                             try {
-
-                                Log.e("tag",v.getText().toString());
-                                titles.clear();
                                 hashes = (ArrayList<Hash>) SongGetter.getAllSong(v.getText().toString());
-
-                                for (int i = 0; i < hashes.size(); i++) {
-                                    titles.add(hashes.get(i).getFileName());
-
-                                }
                                 handler.sendEmptyMessage(0);
                             }catch(Exception e) {
                                 Intent intent = new Intent("TOAST");
@@ -98,8 +92,20 @@ public class FragDown extends Fragment {
         });
 
         InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+        imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS); //自动弹出软键盘
 
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        hashes = (ArrayList<Hash>) SongGetter.getAllSong(editText.getText().toString());
+                        handler.sendEmptyMessage(0);
+                    }
+                }).start();
+            }
+        });
     }
 
     @Nullable
@@ -110,7 +116,9 @@ public class FragDown extends Fragment {
          editText = (EditText) view.findViewById(R.id.edit);
          button = (Button) view.findViewById(R.id.button2);
          listView = (ListView) view.findViewById(R.id.down_list);
-         hashes = new ArrayList<>();
+         refreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.Refesh);
+
+        hashes = new ArrayList<>();
          titles = new ArrayList<>();
          titles = new ArrayList<>();
 

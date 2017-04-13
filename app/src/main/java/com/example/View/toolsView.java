@@ -23,6 +23,8 @@ import static android.content.Context.MODE_PRIVATE;
 
 public class toolsView extends LinearLayout {
 
+
+
       String mode = "orl";
       ImageButton mode_bt;
       Context context;

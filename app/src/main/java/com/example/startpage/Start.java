@@ -29,6 +29,7 @@ import com.example.mylatouttest.MyApplication;
 import com.example.mylatouttest.R;
 
 import java.io.File;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,6 +40,7 @@ public class Start extends Activity {
     File file;
     private ArrayList<Map<String, String>> data = new ArrayList<>();
     ImageView imageView;
+    ArrayList<Map<String,Integer>> lover;
 
 
     @Override
@@ -54,6 +56,7 @@ public class Start extends Activity {
         myApplication.setDp(dp);
         imageView = (ImageView) findViewById(R.id.im);
         imageView.setImageResource(R.drawable.icon);
+        lover = new ArrayList<>();
 
         if (Build.VERSION.SDK_INT >= 21) {
             View decorView = getWindow().getDecorView();
@@ -147,7 +150,10 @@ public class Start extends Activity {
                 data.add(map);
 
 
+                lover.add(map.get("singer",lover.get("singer",));
+
             } while (cursor.moveToNext());
+
         }
 
             Log.e("start",data.size()+"");
