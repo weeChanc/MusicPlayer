@@ -30,7 +30,8 @@ public class SongGetter {
 
     public static List<Hash> getAllSong(String name){
 
-        String ListURL = "http://songsearch.kugou.com/song_search_v2?callback=jQuery191013413509052461192_1491829959432&keyword="+name+"&page=1&pagesize=30&userid=-1&clientver=&platform=WebFilter&tag=em&filter=2&iscorrection=1&privilege_filter=0&_=1491829959434";
+        String ListURL = "http://songsearch.kugou.com/song_search_v2?callback=jQuery191013413509052461192_1491829959432&keyword="+name
+                +"&page=1&pagesize=30&userid=-1&clientver=&platform=WebFilter&tag=em&filter=2&iscorrection=1&privilege_filter=0&_=1491829959434";
 
         Request request = new Request.Builder().url(ListURL).build();
         gson = new Gson();
@@ -39,7 +40,10 @@ public class SongGetter {
         try {
             response = client.newCall(request).execute();
             String dataFromJason = response.body().string();
-          data = gson.fromJson(dataFromJason.substring(dataFromJason.indexOf('{'),dataFromJason.lastIndexOf('}')+1),Data.class);
+            data = gson.fromJson(dataFromJason.substring(dataFromJason.indexOf('{'),dataFromJason.lastIndexOf('}')+1),Data.class);
+
+            for(Hash hash : data.getData().getHashList())
+                Log.e("tag",hash.getSongName());
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -81,7 +85,7 @@ public class SongGetter {
                 intent2.putExtra("SUCCEED",true);
                 MyApplication.getContext().sendBroadcast(intent2);
 
-            return path;
+            return path; //返回对应文件路径
 
         } catch (Exception e) {
             Intent intent3 = new Intent("TOAST");

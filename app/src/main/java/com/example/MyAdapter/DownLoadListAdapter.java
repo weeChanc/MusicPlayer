@@ -120,7 +120,7 @@ public class DownLoadListAdapter extends BaseAdapter {
 
                         MyApplication myApplication = MyApplication.getApplication();
                         Map<String,String> map = new HashMap<>();
-                        map.put("title",resource.get(position).getSingerName().replaceAll("<em>","").replaceAll("</em>",""));
+                        map.put("title",resource.get(position).getSongName().replaceAll("<em>","").replaceAll("</em>",""));
                         map.put("data",path);
                         map.put("singer",resource.get(position).getSingerName().replaceAll("<em>","").replaceAll("</em>",""));
                         map.put("fulltitle",resource.get(position).getFileName().replaceAll("<em>","").replaceAll("</em>",""));
@@ -131,10 +131,22 @@ public class DownLoadListAdapter extends BaseAdapter {
                         data.add(map);
                         myApplication.setData( data );
 
+
+
+
+
+                        myApplication.setIsPlay(true);
+
+                        myApplication.setPosition(position);
+                        myApplication.setIsPlay(true);
+                        myApplication.getThread().interrupt();
                         Intent intent = new Intent("com.example.MainActivity.STARTMUSIC");
                         intent.putExtra("POSITION",true);
                         intent.putExtra("LOCATION",data.size()-1);
                         MyApplication.getContext().sendBroadcast(intent);
+                        Intent intent2 = new Intent("notification_play_pause");
+                        intent2.putExtra("LIST", true);
+                        MyApplication.getContext().sendBroadcast(intent2);
 
 
                     }

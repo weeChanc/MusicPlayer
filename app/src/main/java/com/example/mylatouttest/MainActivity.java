@@ -45,6 +45,9 @@ import com.example.fragment.FragLike;
 import com.example.fragment.FragRecent;
 import com.example.mylatouttest.Lyric.LyricJson;
 import com.example.mylatouttest.Lyric.LyricMessageTaker;
+import com.example.song.Hash;
+import com.example.song.SongData;
+import com.example.song.SongDataGetter;
 import com.example.song.SongGetter;
 import com.google.gson.Gson;
 
@@ -54,6 +57,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -233,15 +237,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Intent intentpre = new Intent("com.example.MainActivity.STARTMUSIC");
                 intentpre.putExtra("PRE", true);
                 sendBroadcast(intentpre);
-                Intent intentchanger = new Intent("CHANGEMAINBUTTON");
-                sendBroadcast(intentchanger);
                 break;
 
             case R.id.bottom_play_pause:
 
                 Intent intentnotify1 = new Intent("notification_play_pause");
-                Intent intentchangeMain = new Intent("CHANGEMAINBUTTON");
-                sendBroadcast(intentchangeMain);
                 sendBroadcast(intentnotify1);
                 break;
 
@@ -377,8 +377,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         int pos = 0;
         Log.e("tag",temptitle);
         for (; pos <= files.length; pos++) {
-            if (files.length > 0 && files[pos].getAbsolutePath().contains(temptitle)) {
-                Log.e("tag", "找到了歌词");
+            String absoulutePath = files[pos].getAbsolutePath();
+            if (files.length > 0 && absoulutePath.contains(temptitle) && !absoulutePath.contains(".mp3")) {
+                Log.e("tag", files[pos].getAbsolutePath());
                 getLRC(files[pos], lyricInfo);   //找到并导入对应歌词到类中
                 lyricThread.start();
                 return true;  //找到返回true
@@ -432,55 +433,88 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         temptitle = bottomtitle.getText().toString();
 
                         if (!seekLyric()) {
-                            data = myApplication.getData();
+                             data = myApplication.getData();
                             Log.e("tag", "找不到歌词，准备搜索");
                             lrc.setText("成哥为你搜索歌词中");
 
                             new Thread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    try {
-                                        OkHttpClient okHttpClient = new OkHttpClient();
-                                        Request request = new Request.Builder().url(data.get(myApplication.getPosition()).get("URL")).build();
-                                        Response response = okHttpClient.newCall(request).execute();
-                                        Gson gson = new Gson();
-                                        LyricMessageTaker lyricMessageTaker = gson.fromJson(response.body().string(), LyricMessageTaker.class);
-
-                                        int lyricmount = lyricMessageTaker.getCandidates().size();
-                                        for (int i = 0; i < lyricmount; i++) {
-                                            if (lyricMessageTaker.getCandidates().get(i).getSinger().equals(data.get(myApplication.getPosition()).get("singer"))) {
-
-                                                request = new Request.Builder().url(lyricMessageTaker.getCandidates().get(i).initURL()).build();
-                                                response = okHttpClient.newCall(request).execute();
-                                                LyricJson lyricJson = gson.fromJson(response.body().string(), LyricJson.class);
-                                                byte[] lyric = Base64.decode(lyricJson.getContent(), Base64.DEFAULT);
-                                                File file = new File(Environment.getExternalStorageDirectory().getPath() + "//MyLyric//" + data.get(myApplication.getPosition()).get("title") + ".lrc");
+                                    String title = bottomtitle.getText().toString();
+                                    String singer = bottomsinger.getText().toString();
+                                    String lyric;
+                                    SongDataGetter songDataGetter ;
+                                    ArrayList<Hash> hashes = (ArrayList<Hash>) SongGetter.getAllSong(title);
+                                    for(Hash hash : hashes){
+                                        if(hash.getSingerName().contains(singer)) {
+                                            Log.e("string",hash.getSingerName());
+                                            songDataGetter = SongGetter.getSongData(hash.getFileHash());
+                                            SongData songData = songDataGetter.getData();
+                                            lyric = songData.getLyrics();
+                                            try {
+                                                File file = new File(Environment.getExternalStorageDirectory().getPath() + "//MyLyric//" + title + ".lrc");
                                                 if (!file.exists()) {
                                                     Log.e("tag", "网络上找到了歌词，写入中");
                                                     file.createNewFile();
                                                     FileOutputStream fos = new FileOutputStream(file);
-                                                    fos.write(lyric);
+                                                    fos.write(lyric.getBytes());
                                                     Log.e("tag", "写入成功");
                                                     fos.close();
-                                                    seekLyric();
+                                                    seekLyric(); // 找到歌词播放
                                                 }
-                                                break;
-                                            }
-                                            if (i == lyricmount - 1) {
-                                                Log.e("tag", "找不到歌词");
-                                                lrc.setText("连成哥都不能帮你找到歌词了");
+                                            }catch (Exception e){
+                                                e.printStackTrace();
                                             }
                                         }
-                                        if (lyricmount == 0) {
-                                            Log.e("tag", "找不到歌词");
-                                            lrc.setText("对不起,找不到歌词");
-                                        }
-
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
                                     }
                                 }
                             }).start();
+
+//                            new Thread(new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    try {
+//                                        OkHttpClient okHttpClient = new OkHttpClient();
+//                                        Request request = new Request.Builder().url(data.get(myApplication.getPosition()).get("URL")).build();
+//                                        Response response = okHttpClient.newCall(request).execute();
+//                                        Gson gson = new Gson();
+//                                        LyricMessageTaker lyricMessageTaker = gson.fromJson(response.body().string(), LyricMessageTaker.class);
+//
+//                                        int lyricmount = lyricMessageTaker.getCandidates().size();
+//                                        for (int i = 0; i < lyricmount; i++) {
+//                                            if (lyricMessageTaker.getCandidates().get(i).getSinger().equals(data.get(myApplication.getPosition()).get("singer"))) {
+//
+//                                                request = new Request.Builder().url(lyricMessageTaker.getCandidates().get(i).initURL()).build();
+//                                                response = okHttpClient.newCall(request).execute();
+//                                                LyricJson lyricJson = gson.fromJson(response.body().string(), LyricJson.class);
+//                                                byte[] lyric = Base64.decode(lyricJson.getContent(), Base64.DEFAULT);
+//                                                File file = new File(Environment.getExternalStorageDirectory().getPath() + "//MyLyric//" + data.get(myApplication.getPosition()).get("title") + ".lrc");
+//                                                if (!file.exists()) {
+//                                                    Log.e("tag", "网络上找到了歌词，写入中");
+//                                                    file.createNewFile();
+//                                                    FileOutputStream fos = new FileOutputStream(file);
+//                                                    fos.write(lyric);
+//                                                    Log.e("tag", "写入成功");
+//                                                    fos.close();
+//                                                    seekLyric();
+//                                                }
+//                                                break;
+//                                            }
+//                                            if (i == lyricmount - 1) {
+//                                                Log.e("tag", "找不到歌词");
+//                                                lrc.setText("连成哥都不能帮你找到歌词了");
+//                                            }
+//                                        }
+//                                        if (lyricmount == 0) {
+//                                            Log.e("tag", "找不到歌词");
+//                                            lrc.setText("对不起,找不到歌词");
+//                                        }
+//
+//                                    } catch (Exception e) {
+//                                        e.printStackTrace();
+//                                    }
+//                                }
+//                            }).start();
 
 
                         }

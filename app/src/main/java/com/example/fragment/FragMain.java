@@ -85,9 +85,7 @@ public class FragMain extends Fragment {
         IntentFilter intentFilter = new IntentFilter();
         messageReceiver = new MessageReceiver();
 
-        intentFilter.addAction("com.example.MusicService.PROGRESS");
         intentFilter.addAction("com.example.MusicService.DETIAL");
-        intentFilter.addAction("com.example.LocalMusic.PLAY");
         intentFilter.addAction("CHANGEMAINBUTTON");
         activity.registerReceiver(messageReceiver, intentFilter);
 
@@ -134,8 +132,6 @@ public class FragMain extends Fragment {
             public void onClick(View v) {
 
                 Intent intentnotify = new Intent("notification_play_pause");
-                Intent intentchangeMain = new Intent("CHANGEMAINBUTTON");
-                getActivity().sendBroadcast(intentchangeMain);
                 getActivity().sendBroadcast(intentnotify);
             }
         });
@@ -151,14 +147,8 @@ public class FragMain extends Fragment {
 //            } //接受并初始化/修改 当前歌曲 以及歌曲数目 歌词
 
 
-            if (intent.getAction().equals("com.example.LocalMusic.PLAY")) {
-                myApplication.setIsPlay(true);
-                main_play_pause_bt.setImageResource(R.drawable.pausewhite);
-            }
-
             if (intent.getAction().equals("CHANGEMAINBUTTON")) {
                 if (myApplication.isPlay()) {
-
                     main_play_pause_bt.setImageResource(R.drawable.pausewhite);
                 } else
                     main_play_pause_bt.setImageResource(R.drawable.startwhite);

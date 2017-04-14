@@ -135,9 +135,7 @@ public class MySimpleAdapter extends BaseAdapter {
                     intent.putExtra("LOCATION", Integer.parseInt(resource.get(position).get("position")));
 
                 context.sendBroadcast(intent);                              //下面的方法找不到对应的position只能放上来
-                Intent intent1 = new Intent("com.example.LocalMusic.PLAY"); //点击后通知主界面更新图标
-                context.sendBroadcast(intent1);
-
+                                                                                //点击后通知主界面更新图标
                 Intent intent2 = new Intent("notification_play_pause");
                 intent2.putExtra("LIST", true);
                 context.sendBroadcast(intent2);

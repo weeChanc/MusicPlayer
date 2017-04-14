@@ -62,11 +62,7 @@ public class MusicService extends Service {
 
             if (intent.getAction().equals("com.example.MainActivity.STARTMUSIC")) {
 
-                data = myApplication.getData();
-
-                for(Map e : data){
-                    Log.e("Tag",e.get("title").toString());
-                }
+                data = myApplication.getData(); //更新来自新下载的歌曲
 
                 if (intent.getBooleanExtra("NEXT", false)) {
                     contentView.setImageViewResource(R.id.play_image, R.drawable.pause);
@@ -91,17 +87,18 @@ public class MusicService extends Service {
 
                 if (intent.getBooleanExtra("POSITION", false)) {
                     setPosition(intent.getIntExtra("LOCATION", 0));
-                    mediaPlayer.reset(); //同样的 不reset就变成继续了
+                    if(mediaPlayer.isPlaying()) {
+                        mediaPlayer.reset(); //同样的 不reset就变成继续了
+                    }
                 }
 
-                upgradeDataNotification();
+                upgradeDataNotification(); //notification 标题
 
-                mainMessageCallBack();
+                mainMessageCallBack(); // 发送 歌曲数量 以及 当前歌曲
 
                 initMediaPlayer(data.get(position).get("data"));
 
-                Intent intentRecent = new Intent("ChangeRecent");
-                sendBroadcast(intentRecent);
+                progressCallBack();
 
                 new Thread(new Runnable() {
                     @Override
@@ -117,19 +114,8 @@ public class MusicService extends Service {
                     }
                 }).start();  //播放历史 加入数据库存下
 
-                Intent intentchangeMain = new Intent("CHANGEMAINBUTTON");
-                sendBroadcast(intentchangeMain);
-
-//                if(pos != -1 && pos != position ) {
-//                    data.get(pos).remove("isplay");
-//                    data.get(pos).put("isplay", "F");
-//                    myApplication.getAdapter().notifyDataSetChanged();
-//                }
-//                pos = position;
 
             }
-
-            progressCallBack();
 
 
             if (intent.getBooleanExtra("SEEK", false)) {
@@ -158,10 +144,12 @@ public class MusicService extends Service {
             }
 
             if (intent.getAction().equals("CHANGENEXT")) {
-
                 myApplication.setIsPlay(true);
                 Intent intentplay = new Intent("com.example.MainActivity.STARTMUSIC");
                 intentplay.putExtra("NEXT", true);
+
+                Intent intentchangeMain = new Intent("CHANGEMAINBUTTON");
+                sendBroadcast(intentchangeMain);
                 sendBroadcast(intentplay);
             }
 
