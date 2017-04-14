@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
@@ -54,9 +55,6 @@ public class MySimpleAdapter extends BaseAdapter {
     private LayoutInflater inflater;
     private MyApplication myApplication = MyApplication.getApplication();
     private Thread lyricThread;
-    private Animation popuquit;
-    private Animation quick_left_in;
-    private Animation right_out;
     private Animation spin;
 
 
@@ -69,8 +67,6 @@ public class MySimpleAdapter extends BaseAdapter {
 
         lyricThread = myApplication.getThread();
 
-        quick_left_in = AnimationUtils.loadAnimation(context, R.anim.quick_left_in);
-        popuquit = AnimationUtils.loadAnimation(context, R.anim.exit);
         spin = AnimationUtils.loadAnimation(context,R.anim.spin);
 
         data = myApplication.getData();
@@ -116,11 +112,10 @@ public class MySimpleAdapter extends BaseAdapter {
             viewHolder = (ViewHolder) view.getTag();
         }
 
-        view.setAnimation(spin);
+        //view.setAnimation(spin);
         viewHolder.singer_tv.setText(resource.get(position).get("singer"));
         viewHolder.title_tv.setText(resource.get(position).get("title"));
         viewHolder.title_tv.setTextColor(Color.BLACK);
-
 
         addListener(viewHolder);
 

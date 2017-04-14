@@ -145,7 +145,7 @@ public class Start extends Activity {
                 MediaStore.Audio.Media.DISPLAY_NAME, MediaStore.Audio.Media.DURATION};
 
         Cursor cursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, want, MediaStore.Audio.Media.DURATION + ">60000", null, MediaStore.Audio.Media.TITLE);
-        if (cursor != null && cursor.moveToFirst()) {
+        if (cursor.moveToFirst()) {
             int i = 0;
             do {
                 if(i++>15)break;
@@ -160,6 +160,16 @@ public class Start extends Activity {
                 data.add(map);
 
             } while (cursor.moveToNext());
+
+            if(i==0){
+                Map<String, String> map = new HashMap<>();
+                map.put("title","找不到本地歌曲");
+                map.put("data", "");           //读取音乐文件
+                map.put("singer", "");
+                map.put("fulltitle", "");
+                map.put("duration", "0");
+                data.add(map);
+            }
 
         }
 

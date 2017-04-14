@@ -116,20 +116,18 @@ public class DownLoadListAdapter extends BaseAdapter {
 
                         String path;
 
-                        path = SongGetter.download(resource.get(position).getFileHash(),"准备播放" +resource.get(position).getFileName().replaceAll("<em>","").replaceAll("</em>",""));
+                        path = SongGetter.download(resource.get(position).getFileHash(),"准备播放: " +resource.get(position).getFileName().replaceAll("<em>","").replaceAll("</em>",""));
 
                         MyApplication myApplication = MyApplication.getApplication();
-                        Map<String,String> map = new HashMap();
+                        Map<String,String> map = new HashMap<>();
                         map.put("title",resource.get(position).getSingerName().replaceAll("<em>","").replaceAll("</em>",""));
                         map.put("data",path);
                         map.put("singer",resource.get(position).getSingerName().replaceAll("<em>","").replaceAll("</em>",""));
                         map.put("fulltitle",resource.get(position).getFileName().replaceAll("<em>","").replaceAll("</em>",""));
-                        map.put("duration","280000");
+                        map.put("duration",SongGetter.getSongData(resource.get(position).getFileHash()).getData().getTimelength());
 
-                        ArrayList<Map<String,String >> data = new ArrayList<Map<String, String>>() ;
-                        for (int i = 0 ; i < myApplication.getData().size() ; i++ ){
-                            data.add(myApplication.getData().get(i));
-                        }
+                        ArrayList<Map<String,String >> data = myApplication.getData();
+
                         data.add(map);
                         myApplication.setData( data );
 

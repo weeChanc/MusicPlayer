@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <set xmlns:android="http://schemas.android.com/apk/res/android">
     <rotate
-        android:duration="300"
+        android:duration="200"
         android:fromDegrees="0"
         android:pivotX="50%"
         android:pivotY="50%"
@@ -9,19 +9,21 @@
         android:fillAfter="true"/>
 
     <rotate
-        android:duration="300"
+        android:duration="200"
         android:fromDegrees="5"
         android:pivotX="50%"
         android:pivotY="50%"
         android:toDegrees="-5"
-        android:startOffset="300"/>
+        android:startOffset="200"/>
 
     <rotate
-        android:duration="300"
+        android:duration="200"
         android:fromDegrees="-5"
         android:pivotX="50%"
         android:pivotY="50%"
         android:toDegrees="0"
-        android:startOffset="600"/>
+        android:startOffset="400"/>
+
+
 
 </set>

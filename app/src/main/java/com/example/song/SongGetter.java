@@ -94,14 +94,13 @@ public class SongGetter {
 
     }
 
-    public static SongData getSongData(Hash hash){
+    public static SongDataGetter getSongData(String hash){
         SongDataGetter songdata = null;
         try {
             String MessageURL = "http://www.kugou.com/yy/index.php?r=play/getdata&hash="+hash+"&album_id=&_=1491830054690";
             Request request = new Request.Builder().url(MessageURL).build();
             response = client.newCall(request).execute();
              songdata   = gson.fromJson(response.body().string(), SongDataGetter.class);
-
 
         } catch (Exception e) {
             Intent intent3 = new Intent("TOAST");
@@ -110,7 +109,7 @@ public class SongGetter {
             e.printStackTrace();
         }
 
-        return songdata.getData();
+        return songdata;
     }
 
 

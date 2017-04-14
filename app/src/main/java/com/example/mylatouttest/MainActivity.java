@@ -25,6 +25,8 @@ import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -531,6 +533,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         bottomhead.setImageResource(R.drawable.add);
 
         manager.addView(bottomPlayer,layoutParams);
+
+        Animation animation = AnimationUtils.loadAnimation(this,R.anim.right_in);
+        bottomhead.setAnimation(animation);
+        bottomhead.startAnimation(animation);
 
         bottomnext.setOnClickListener(new View.OnClickListener() {
             @Override

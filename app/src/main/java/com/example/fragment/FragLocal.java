@@ -7,6 +7,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.widget.ListView;
 
 import com.example.MyAdapter.MySimpleAdapter;
@@ -38,6 +40,10 @@ public class FragLocal extends Fragment {
                 new int[]{R.id.down_title,R.id.down_singer,R.id.local_list_add,R.id.local_list_like,R.id.local_list_del,R.id.local_list__button_play});
 
         ListView listview = (ListView) view.findViewById(R.id.local_music_listview);
+        LayoutAnimationController lac = new LayoutAnimationController(AnimationUtils.loadAnimation(getContext(),R.anim.spin));
+        lac.setOrder(LayoutAnimationController.ORDER_NORMAL);
+
+        listview.setLayoutAnimation(lac);
         listview.setDivider(null);
         listview.setAdapter(simpleAdapter);
 

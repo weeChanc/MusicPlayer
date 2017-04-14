@@ -177,7 +177,7 @@ public class MusicService extends Service {
     public void onCreate() {
 
         super.onCreate();
-
+        try{
         myApplication = (MyApplication) getApplication();
         data = myApplication.getData();
         play_mode = myApplication.getPlay_mode();
@@ -185,34 +185,39 @@ public class MusicService extends Service {
 
 
         registerMyReceiver();//注册广播
-        mainMessageCallBack();// 初始化界面信息
 
-        Intent arraylistIntent = new Intent("com.example.MusicService.ARRAY");
-        arraylistIntent.putExtra("ARRAY", data);
-        sendBroadcast(arraylistIntent);            //将歌曲信息列表传给其他活动！
+            mainMessageCallBack();// 初始化界面信息
 
 
 
-        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) { //音乐播放完毕的监听器
+            Intent arraylistIntent = new Intent("com.example.MusicService.ARRAY");
+            arraylistIntent.putExtra("ARRAY", data);
+            sendBroadcast(arraylistIntent);            //将歌曲信息列表传给其他活动！
 
 
-                mediaPlayer.reset(); //音乐停后不会reset,先reset 否则不能下一首
-
-                setPosition();  //播放完根据模式选择位置
-
-                Intent intent = new Intent("com.example.MusicService.PROGRESS"); //复位进度条
-                sendBroadcast(intent);
-
-                Intent intent2 = new Intent("com.example.MainActivity.STARTMUSIC"); //自动播放
-                sendBroadcast(intent2);
-            }
-        });
+            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) { //音乐播放完毕的监听器
 
 
-        initNotification();
+                    mediaPlayer.reset(); //音乐停后不会reset,先reset 否则不能下一首
 
+                    setPosition();  //播放完根据模式选择位置
+
+                    Intent intent = new Intent("com.example.MusicService.PROGRESS"); //复位进度条
+                    sendBroadcast(intent);
+
+                    Intent intent2 = new Intent("com.example.MainActivity.STARTMUSIC"); //自动播放
+                    sendBroadcast(intent2);
+                }
+            });
+
+
+            initNotification();
+        }catch (Exception e){
+            e.printStackTrace();
+            onDestroy();
+        }
     }
 
     @Nullable
