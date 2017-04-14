@@ -8,11 +8,14 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.media.Image;
 import android.os.Build;
+import android.support.annotation.UiThread;
 import android.support.v7.widget.CardView;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
@@ -20,6 +23,7 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
@@ -50,22 +54,25 @@ public class MySimpleAdapter extends BaseAdapter {
     private LayoutInflater inflater;
     private MyApplication myApplication = MyApplication.getApplication();
     private Thread lyricThread;
+    private Animation popuquit;
+    private Animation quick_left_in;
+    private Animation right_out;
     private Animation spin;
-    private Animation translate;
 
 
-
-    public MySimpleAdapter(Context context, List<Map<String, String>> resource, int layoutID,int[] to) {
+    public MySimpleAdapter(Context context, List<Map<String, String>> resource, int layoutID, int[] to) {
         this.context = context;
         this.resource = resource;
         this.layoutID = layoutID;
         this.to = to;
         inflater = LayoutInflater.from(context);
 
-        lyricThread=myApplication.getThread();
+        lyricThread = myApplication.getThread();
 
+        quick_left_in = AnimationUtils.loadAnimation(context, R.anim.quick_left_in);
+        popuquit = AnimationUtils.loadAnimation(context, R.anim.exit);
         spin = AnimationUtils.loadAnimation(context,R.anim.spin);
-        translate = AnimationUtils.loadAnimation(context,R.anim.left_in);
+
         data = myApplication.getData();
 //        myApplication.setAdapter(MySimpleAdapter.this);
     }
@@ -86,9 +93,9 @@ public class MySimpleAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, final View convertView, ViewGroup parent) {
 
-        View view;
+        final View view;
         final ViewHolder viewHolder;
 
         if (convertView == null) {
@@ -96,54 +103,49 @@ public class MySimpleAdapter extends BaseAdapter {
             view = inflater.inflate(layoutID, parent, false);
             viewHolder = new ViewHolder();
 
-                    viewHolder.title_tv = (TextView) view.findViewById(to[0]);
-                    viewHolder.singer_tv = (TextView) view.findViewById(to[1]);
-                    viewHolder.bt1 = (ImageButton)view.findViewById(to[2]);
-                    viewHolder.bt2 = (ImageButton)view.findViewById(to[3]);
-                    viewHolder.del = (ImageButton)view.findViewById(to[4]);
-                    viewHolder.bt4 = (Button)view.findViewById(to[5]);
-                    viewHolder.card = (CardView) view.findViewById(R.id.card);
-                    view.setTag(viewHolder);
-        }
-        else {
+            viewHolder.title_tv = (TextView) view.findViewById(to[0]);
+            viewHolder.singer_tv = (TextView) view.findViewById(to[1]);
+            viewHolder.bt1 = (ImageButton) view.findViewById(to[2]);
+            viewHolder.bt2 = (ImageButton) view.findViewById(to[3]);
+            viewHolder.del = (ImageButton) view.findViewById(to[4]);
+            viewHolder.bt4 = (Button) view.findViewById(to[5]);
+            viewHolder.card = (CardView) view.findViewById(R.id.card);
+            view.setTag(viewHolder);
+        } else {
             view = convertView;
             viewHolder = (ViewHolder) view.getTag();
         }
 
+        view.setAnimation(spin);
         viewHolder.singer_tv.setText(resource.get(position).get("singer"));
         viewHolder.title_tv.setText(resource.get(position).get("title"));
         viewHolder.title_tv.setTextColor(Color.BLACK);
 
 
+        addListener(viewHolder);
 
-//        if(data.get(position).get("isplay").equals("T")){
-//            viewHolder.title_tv.setTextColor(Color.RED);
-//        }
+        viewHolder.bt4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
-            addListener(viewHolder);
+                // MySimpleAdapter.this.notifyDataSetChanged();
+                myApplication.setPosition(position);
+                myApplication.setIsPlay(true);
+                lyricThread.interrupt();
+                Intent intent = new Intent("com.example.MainActivity.STARTMUSIC");
+                intent.putExtra("POSITION", true);
+                if (resource.get(position).get("title").equals(data.get(position).get("title")))
+                    intent.putExtra("LOCATION", position);
+                else
+                    intent.putExtra("LOCATION", Integer.parseInt(resource.get(position).get("position")));
 
-            viewHolder.bt4.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+                context.sendBroadcast(intent);                              //下面的方法找不到对应的position只能放上来
+                Intent intent1 = new Intent("com.example.LocalMusic.PLAY"); //点击后通知主界面更新图标
+                context.sendBroadcast(intent1);
 
-                            // MySimpleAdapter.this.notifyDataSetChanged();
-                    myApplication.setPosition(position);
-                    myApplication.setIsPlay(true);
-                    lyricThread.interrupt();
-                    Intent intent = new Intent("com.example.MainActivity.STARTMUSIC");
-                    intent.putExtra("POSITION", true);
-                    if(resource.get(position).get("title").equals(data.get(position).get("title")))
-                        intent.putExtra("LOCATION", position);
-                    else
-                        intent.putExtra("LOCATION",Integer.parseInt(resource.get(position).get("position")));
-
-                    context.sendBroadcast(intent);                              //下面的方法找不到对应的position只能放上来
-                    Intent intent1 = new Intent("com.example.LocalMusic.PLAY"); //点击后通知主界面更新图标
-                    context.sendBroadcast(intent1);
-
-                    Intent intent2 = new Intent("notification_play_pause");
-                    intent2.putExtra("LIST",true);
-                    context.sendBroadcast(intent2);
+                Intent intent2 = new Intent("notification_play_pause");
+                intent2.putExtra("LIST", true);
+                context.sendBroadcast(intent2);
 
 //                    data.get(position).remove("isplay");
 //                    data.get(position).put("isplay","T");
@@ -151,34 +153,34 @@ public class MySimpleAdapter extends BaseAdapter {
 //                    MySimpleAdapter.this.notifyDataSetChanged();
 
 
-                }
-            });
+            }
+        });
 
         viewHolder.bt2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 SQLiteDatabase db = myApplication.getDp();
-                Cursor cursor =  db.query("Like",null,null,null,null,null,null,null);
+                Cursor cursor = db.query("Like", null, null, null, null, null, null, null);
                 ContentValues values = new ContentValues();
-                values.put("title",resource.get(position).get("title"));
-                values.put("singer",resource.get(position).get("singer"));
-                values.put("duration",resource.get(position).get("duration"));
-                values.put("position",position);
+                values.put("title", resource.get(position).get("title"));
+                values.put("singer", resource.get(position).get("singer"));
+                values.put("duration", resource.get(position).get("duration"));
+                values.put("position", position);
 
                 boolean common = false;
-                if(cursor.moveToFirst()) {
+                if (cursor.moveToFirst()) {
                     do {
-                        if(cursor.getString(cursor.getColumnIndex("title")).equals(values.get("title")) &&
-                                cursor.getString(cursor.getColumnIndex("duration")).equals(values.get("duration"))){
-                                    common = true;
+                        if (cursor.getString(cursor.getColumnIndex("title")).equals(values.get("title")) &&
+                                cursor.getString(cursor.getColumnIndex("duration")).equals(values.get("duration"))) {
+                            common = true;
                         }
-                    }while(cursor.moveToNext());
+                    } while (cursor.moveToNext());
                 }
-                if(!common)
-                    db.insert("Like",null,values);
+                if (!common)
+                    db.insert("Like", null, values);
                 cursor.close();
-                }
+            }
 
         });
 
@@ -186,35 +188,56 @@ public class MySimpleAdapter extends BaseAdapter {
             @Override
             public void onClick(View v) {
 
-
-                SQLiteDatabase db = myApplication.getDp();
-
-                db.delete("Like","title=?",new String[]{resource.get(position).get("title")});
-                db.delete("Recent","title=?",new String[]{resource.get(position).get("title")});
-
-                resource.remove(position);
-                MySimpleAdapter.this.notifyDataSetChanged();
             }
         });
 
 
         viewHolder.bt4.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
-            public boolean onLongClick(View v) {
+            public boolean onLongClick(final View v) {
 
-                Log.e("taga","longclicncm");
+                View rootView = LayoutInflater.from(context).inflate(R.layout.musicplayer_main, null);
+                View contentView = LayoutInflater.from(context).inflate(R.layout.popup, null);
+                final PopupWindow popupWindow = new PopupWindow(contentView, 400, WindowManager.LayoutParams.WRAP_CONTENT, true);
+
+                popupWindow.setAnimationStyle(R.style.popup);
+                popupWindow.showAsDropDown(viewHolder.del, -360, -20);
+                Button ensure = (Button) contentView.findViewById(R.id.ensure);
+                Button quit = (Button) contentView.findViewById(R.id.quit);
+
+                ensure.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        SQLiteDatabase db = myApplication.getDp();
+                        db.delete("Like", "title=?", new String[]{resource.get(position).get("title")});
+                        db.delete("Recent", "title=?", new String[]{resource.get(position).get("title")});
+
+                        resource.remove(position);
+                        MySimpleAdapter.this.notifyDataSetChanged();
+
+                        popupWindow.dismiss();
+
+
+                    }
+                });
+
+                quit.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        popupWindow.dismiss();
+                    }
+                });
 
                 return true;
             }
         });
 
-            return view;
+        return view;
     }
 
 
-
-
-   private class ViewHolder{
+    private class ViewHolder {
         TextView title_tv;
         TextView singer_tv;
         ImageButton bt1;
@@ -224,24 +247,24 @@ public class MySimpleAdapter extends BaseAdapter {
         CardView card;
     }
 
-        private void addListener (ViewHolder viewHolder){
-            viewHolder.bt1.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    SQLiteDatabase db = myApplication.getDp();
-                    Cursor cursor =  db.query("Like",null,null,null,null,null,null,null);
+    private void addListener(ViewHolder viewHolder) {
+        viewHolder.bt1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SQLiteDatabase db = myApplication.getDp();
+                Cursor cursor = db.query("Like", null, null, null, null, null, null, null);
 
-                    if(cursor.moveToFirst()){
-                        do {
-                            Log.e("message",cursor.getString(cursor.getColumnIndex("title")));
+                if (cursor.moveToFirst()) {
+                    do {
+                        Log.e("message", cursor.getString(cursor.getColumnIndex("title")));
 
-                        }while(cursor.moveToNext());
-                    }
-                    cursor.close();
+                    } while (cursor.moveToNext());
                 }
+                cursor.close();
+            }
 
 
-            });
+        });
 
 
     }

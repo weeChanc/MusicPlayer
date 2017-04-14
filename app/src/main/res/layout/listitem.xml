@@ -88,6 +88,13 @@
                 android:scaleType="centerInside"
                 app:srcCompat="@drawable/love_dark" />
 
+            <View
+                android:id="@+id/middle"
+                android:layout_width="1dp"
+                android:layout_height="1dp"
+                android:layout_alignParentBottom="true"
+                android:layout_centerInParent="true" />
+
             <ImageButton
                 android:id="@+id/local_list_del"
                 android:layout_width="32dp"
@@ -111,6 +118,7 @@
                 android:layout_alignTop="@+id/local_list_add"
                 android:maxLines="1"
                 android:text="TextView" />
+
 
         </RelativeLayout>
 

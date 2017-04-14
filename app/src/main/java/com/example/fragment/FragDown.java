@@ -100,8 +100,13 @@ public class FragDown extends Fragment {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        hashes = (ArrayList<Hash>) SongGetter.getAllSong(editText.getText().toString());
-                        handler.sendEmptyMessage(0);
+                        try {
+                            hashes = (ArrayList<Hash>) SongGetter.getAllSong(editText.getText().toString());
+                            handler.sendEmptyMessage(0);
+                        }catch (Exception e)
+                        {
+                            e.printStackTrace();
+                        }
                     }
                 }).start();
             }
