@@ -8,8 +8,8 @@
     android:weightSum="1">
 
     <com.example.View.toolsView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"></com.example.View.toolsView>
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"/>
 
 
     <ListView

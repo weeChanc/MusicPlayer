@@ -64,6 +64,10 @@ public class MusicService extends Service {
 
                 data = myApplication.getData();
 
+                for(Map e : data){
+                    Log.e("Tag",e.get("title").toString());
+                }
+
                 if (intent.getBooleanExtra("NEXT", false)) {
                     contentView.setImageViewResource(R.id.play_image, R.drawable.pause);
                     notification = builder.setContent(contentView).build();
@@ -116,12 +120,12 @@ public class MusicService extends Service {
                 Intent intentchangeMain = new Intent("CHANGEMAINBUTTON");
                 sendBroadcast(intentchangeMain);
 
-                if(pos != -1 && pos != position ) {
-                    data.get(pos).remove("isplay");
-                    data.get(pos).put("isplay", "F");
-                    myApplication.getAdapter().notifyDataSetChanged();
-                }
-                pos = position;
+//                if(pos != -1 && pos != position ) {
+//                    data.get(pos).remove("isplay");
+//                    data.get(pos).put("isplay", "F");
+//                    myApplication.getAdapter().notifyDataSetChanged();
+//                }
+//                pos = position;
 
             }
 

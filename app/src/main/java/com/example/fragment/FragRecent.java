@@ -101,7 +101,6 @@ public class FragRecent extends Fragment {
                 }
 
                 data.add(0,map);
-                mySimpleAdapter.notifyDataSetChanged();
 
             }
         }

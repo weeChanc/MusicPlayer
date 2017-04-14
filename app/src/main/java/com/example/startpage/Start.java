@@ -146,7 +146,9 @@ public class Start extends Activity {
 
         Cursor cursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, want, MediaStore.Audio.Media.DURATION + ">60000", null, MediaStore.Audio.Media.TITLE);
         if (cursor != null && cursor.moveToFirst()) {
+            int i = 0;
             do {
+                if(i++>15)break;
                 Map<String, String> map = new HashMap<>();
                 map.put("title", cursor.getString(0));
                 map.put("data", cursor.getString(1));           //读取音乐文件
@@ -156,11 +158,6 @@ public class Start extends Activity {
                 map.put("isplay", "F");
                 map.put("URL", "http://lyrics.kugou.com/search?ver=1&man=yes&client=pc&keyword=" + map.get("title") + "&duration=" + map.get("duration") + "&hash=");
                 data.add(map);
-
-
-//                singerCounts.add();
-
-//                lover.add(map.get("singer",lover.get("singer",));
 
             } while (cursor.moveToNext());
 

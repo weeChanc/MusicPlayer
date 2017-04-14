@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.media.Image;
 import android.os.Build;
+import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,12 +44,12 @@ public class MySimpleAdapter extends BaseAdapter {
 
     private Context context;
     private List<Map<String, String>> resource;
+    private List<Map<String, String>> data;
     private int layoutID;
     private int[] to;
     private LayoutInflater inflater;
     private MyApplication myApplication = MyApplication.getApplication();
     private Thread lyricThread;
-    private ArrayList<Map<String,String>> data;
     private Animation spin;
     private Animation translate;
 
@@ -62,12 +63,11 @@ public class MySimpleAdapter extends BaseAdapter {
         inflater = LayoutInflater.from(context);
 
         lyricThread=myApplication.getThread();
-        data = myApplication.getData();
-        Log.e("count",data.size()+"");
 
         spin = AnimationUtils.loadAnimation(context,R.anim.spin);
         translate = AnimationUtils.loadAnimation(context,R.anim.left_in);
-        myApplication.setAdapter(MySimpleAdapter.this);
+        data = myApplication.getData();
+//        myApplication.setAdapter(MySimpleAdapter.this);
     }
 
     @Override
@@ -89,7 +89,7 @@ public class MySimpleAdapter extends BaseAdapter {
     public View getView(final int position, View convertView, ViewGroup parent) {
 
         View view;
-        ViewHolder viewHolder;
+        final ViewHolder viewHolder;
 
         if (convertView == null) {
 
@@ -100,8 +100,9 @@ public class MySimpleAdapter extends BaseAdapter {
                     viewHolder.singer_tv = (TextView) view.findViewById(to[1]);
                     viewHolder.bt1 = (ImageButton)view.findViewById(to[2]);
                     viewHolder.bt2 = (ImageButton)view.findViewById(to[3]);
-                    viewHolder.bt3 = (ImageButton)view.findViewById(to[4]);
+                    viewHolder.del = (ImageButton)view.findViewById(to[4]);
                     viewHolder.bt4 = (Button)view.findViewById(to[5]);
+                    viewHolder.card = (CardView) view.findViewById(R.id.card);
                     view.setTag(viewHolder);
         }
         else {
@@ -115,22 +116,27 @@ public class MySimpleAdapter extends BaseAdapter {
 
 
 
-        if(data.get(position).get("isplay").equals("T")){
-            viewHolder.title_tv.setTextColor(Color.RED);
-        }
+//        if(data.get(position).get("isplay").equals("T")){
+//            viewHolder.title_tv.setTextColor(Color.RED);
+//        }
 
             addListener(viewHolder);
 
             viewHolder.bt4.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    v.setAnimation(translate);
-                    myApplication.setPosition(Integer.parseInt(resource.get(position).get("position")));
+
+                            // MySimpleAdapter.this.notifyDataSetChanged();
+                    myApplication.setPosition(position);
                     myApplication.setIsPlay(true);
                     lyricThread.interrupt();
                     Intent intent = new Intent("com.example.MainActivity.STARTMUSIC");
-                    intent.putExtra("LOCATION", Integer.parseInt(resource.get(position).get("position")));
                     intent.putExtra("POSITION", true);
+                    if(resource.get(position).get("title").equals(data.get(position).get("title")))
+                        intent.putExtra("LOCATION", position);
+                    else
+                        intent.putExtra("LOCATION",Integer.parseInt(resource.get(position).get("position")));
+
                     context.sendBroadcast(intent);                              //下面的方法找不到对应的position只能放上来
                     Intent intent1 = new Intent("com.example.LocalMusic.PLAY"); //点击后通知主界面更新图标
                     context.sendBroadcast(intent1);
@@ -139,10 +145,10 @@ public class MySimpleAdapter extends BaseAdapter {
                     intent2.putExtra("LIST",true);
                     context.sendBroadcast(intent2);
 
-                    data.get(position).remove("isplay");
-                    data.get(position).put("isplay","T");
-                    myApplication.setData(data);
-                    MySimpleAdapter.this.notifyDataSetChanged();
+//                    data.get(position).remove("isplay");
+//                    data.get(position).put("isplay","T");
+//                    myApplication.setData(data);
+//                    MySimpleAdapter.this.notifyDataSetChanged();
 
 
                 }
@@ -151,13 +157,13 @@ public class MySimpleAdapter extends BaseAdapter {
         viewHolder.bt2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                v.setAnimation(translate);
+
                 SQLiteDatabase db = myApplication.getDp();
                 Cursor cursor =  db.query("Like",null,null,null,null,null,null,null);
                 ContentValues values = new ContentValues();
-                values.put("title",data.get(position).get("title"));
-                values.put("singer",data.get(position).get("singer"));
-                values.put("duration",data.get(position).get("duration"));
+                values.put("title",resource.get(position).get("title"));
+                values.put("singer",resource.get(position).get("singer"));
+                values.put("duration",resource.get(position).get("duration"));
                 values.put("position",position);
 
                 boolean common = false;
@@ -176,10 +182,36 @@ public class MySimpleAdapter extends BaseAdapter {
 
         });
 
+        viewHolder.del.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
+
+                SQLiteDatabase db = myApplication.getDp();
+
+                db.delete("Like","title=?",new String[]{resource.get(position).get("title")});
+                db.delete("Recent","title=?",new String[]{resource.get(position).get("title")});
+
+                resource.remove(position);
+                MySimpleAdapter.this.notifyDataSetChanged();
+            }
+        });
+
+
+        viewHolder.bt4.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+
+                Log.e("taga","longclicncm");
+
+                return true;
+            }
+        });
 
             return view;
     }
+
+
 
 
    private class ViewHolder{
@@ -187,8 +219,9 @@ public class MySimpleAdapter extends BaseAdapter {
         TextView singer_tv;
         ImageButton bt1;
         ImageButton bt2;
-        ImageButton bt3;
+        ImageButton del;
         Button bt4;
+        CardView card;
     }
 
         private void addListener (ViewHolder viewHolder){
@@ -208,13 +241,6 @@ public class MySimpleAdapter extends BaseAdapter {
                 }
 
 
-            });
-
-            viewHolder.bt3.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.e("info", "delete");
-                }
             });
 
 
