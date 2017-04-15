@@ -116,16 +116,13 @@ public class MySimpleAdapter extends BaseAdapter {
 
 
         for(Integer a : pos){
-            if(position == a)
+            if(resource.get(position).get("position").equals(a.toString()))
             {
-                viewHolder.love_bt.setImageResource(R.drawable.ic_love);
-                MySimpleAdapter.this.notifyDataSetChanged();
+                viewHolder.love_bt.setImageResource(R.drawable.love);
                 break;
             }
         }
 
-
-        addListener(viewHolder);
 
         viewHolder.play_bt.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -149,12 +146,6 @@ public class MySimpleAdapter extends BaseAdapter {
                 context.sendBroadcast(intent2);
 
 
-
-//                    data.get(position).remove("isplay");
-//                    data.get(position).put("isplay","T");
-//                    myApplication.setData(data);
-//                    MySimpleAdapter.this.notifyDataSetChanged();
-
             }
         });
 
@@ -169,7 +160,7 @@ public class MySimpleAdapter extends BaseAdapter {
                 values.put("title", resource.get(position).get("title"));
                 values.put("singer", resource.get(position).get("singer"));
                 values.put("duration", resource.get(position).get("duration"));
-                values.put("position", position);
+                values.put("position", resource.get(position).get("position"));
 
                 boolean common = false;
                 if (cursor.moveToFirst()) {
@@ -184,7 +175,10 @@ public class MySimpleAdapter extends BaseAdapter {
                     db.insert("Like", null, values);
                 cursor.close();
 
-                pos.add(position);
+                resource.get(position).remove("like");
+                resource.get(position).put("like","T");
+                pos.add(Integer.valueOf(resource.get(position).get("position")));
+                MySimpleAdapter.this.notifyDataSetChanged();
             }
 
         });
@@ -193,8 +187,6 @@ public class MySimpleAdapter extends BaseAdapter {
             @Override
             public boolean onLongClick(final View v) {
 
-
-                View rootView = LayoutInflater.from(context).inflate(R.layout.musicplayer_main, null);
                 View contentView = LayoutInflater.from(context).inflate(R.layout.popup, null);
                 final PopupWindow popupWindow = new PopupWindow(contentView, 620, WindowManager.LayoutParams.WRAP_CONTENT, true);
                 popupWindow.setAnimationStyle(R.style.popup);
@@ -212,7 +204,6 @@ public class MySimpleAdapter extends BaseAdapter {
                         if( checkBox.isChecked()){
 
                             String path = data.get(Integer.parseInt(resource.get(position).get("position"))).get("data");
-                            Log.e("tag",path);
                             File file = new File(path);
 
                             if(file.delete()){
@@ -226,6 +217,16 @@ public class MySimpleAdapter extends BaseAdapter {
                         db.delete("Like", "title=?", new String[]{resource.get(position).get("title")});
                         db.delete("Recent", "title=?", new String[]{resource.get(position).get("title")});
 
+                        for(Integer p : pos){
+                            Log.e("find1",p.toString());
+                            Log.e("find2",Integer.valueOf(resource.get(position).get("position")).toString());
+                            if(p == Integer.valueOf(resource.get(position).get("position"))) {
+                                pos.remove(p);
+                                Log.e("find3","find");
+                                break;
+                            }
+                        }
+                        Log.e("find4",position+"");
                         resource.remove(position);
                         MySimpleAdapter.this.notifyDataSetChanged();
 
@@ -258,28 +259,5 @@ public class MySimpleAdapter extends BaseAdapter {
         Button play_bt;
         CardView card;
     }
-
-    private void addListener(ViewHolder viewHolder) {
-        viewHolder.love_bt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SQLiteDatabase db = myApplication.getDp();
-                Cursor cursor = db.query("Like", null, null, null, null, null, null, null);
-
-                if (cursor.moveToFirst()) {
-                    do {
-                        Log.e("message", cursor.getString(cursor.getColumnIndex("title")));
-
-                    } while (cursor.moveToNext());
-                }
-                cursor.close();
-            }
-
-
-        });
-
-
-    }
-
 
 }
