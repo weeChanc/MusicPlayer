@@ -12,5 +12,6 @@
     <color name="item_pressed">#15f1f1f1</color>
     <color name="color_gap">#0096da</color>
     <color name="drak_gray">#5c5a5a</color>
+    <color name="color_top">#ec0072a6</color>
 </resources>
 

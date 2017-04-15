@@ -4,13 +4,13 @@
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimaryDark">@color/colortoolbarBlue</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <!--<item name="android:statusBarColor">@color/color_top</item>-->
         <item name="android:textColorPrimary">@android:color/white</item>
     </style>
     
     <style name="popup">
-
         <item name="android:windowEnterAnimation">@anim/popup</item>
         <item name="android:windowExitAnimation">@anim/popupquit</item>
     </style>

@@ -159,6 +159,8 @@ public class ViewPagerAdapter extends PagerAdapter {
                Intent intentpre = new Intent("com.example.MainActivity.STARTMUSIC");
                intentpre.putExtra("PRE", true);
                context.sendBroadcast(intentpre);
+               Intent intentchange = new Intent("CHANGEMAINBUTTON");
+               context.sendBroadcast(intentchange);
 
            }
        });
@@ -177,14 +179,6 @@ public class ViewPagerAdapter extends PagerAdapter {
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
         container.addView(list.get(position));
-
-        Log.e("tag",position+" " + container.toString());
-        if(position == 0){
-            View view = list.get(0);
-
-        }
-
-
         return list.get(position);
     }
 

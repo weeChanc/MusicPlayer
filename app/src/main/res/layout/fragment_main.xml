@@ -8,12 +8,41 @@
     android:orientation="vertical"
     android:weightSum="1">
 
+
+    <android.support.v7.widget.Toolbar
+
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:background="@color/colortoolbarBlue"
+        android:elevation="5dp"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        android:weightSum="1">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.78">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:text="扣扣音乐"
+                android:textColor="@color/colorWhite"
+                android:textSize="20sp" />
+        </RelativeLayout>
+
+    </android.support.v7.widget.Toolbar>
+
     <LinearLayout
         android:id="@+id/line2"
         android:layout_width="match_parent"
         android:layout_height="64dp"
         android:background="@color/colorPrimaryDark"
-        android:elevation="10dp"
+        android:elevation="5dp"
         android:orientation="horizontal">
 
         <ImageButton
@@ -61,7 +90,7 @@
         android:layout_marginRight="0dp"
         android:layout_marginTop="0dp"
         android:background="@color/colorPrimaryDark"
-        android:elevation="10dp">
+        android:elevation="5dp">
 
         <ImageButton
             android:id="@+id/main_list_bt"

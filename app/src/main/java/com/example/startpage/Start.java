@@ -56,7 +56,7 @@ public class Start extends Activity {
         SQLiteDatabase dp = dpHelper.getWritableDatabase();
         myApplication.setDp(dp);
         imageView = (ImageView) findViewById(R.id.im);
-        imageView.setImageResource(R.drawable.icon);
+        imageView.setImageResource(R.drawable.ic_start);
 
         try {
             SharedPreferences share = getSharedPreferences("data", MODE_PRIVATE);

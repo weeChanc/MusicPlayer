@@ -11,43 +11,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="24dp"
-        android:background="@color/color_gap"
-        android:elevation="10dp" />
-
-    <android.support.v7.widget.Toolbar
-
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="64dp"
-        android:background="@color/colortoolbarBlue"
-        android:elevation="10dp"
-        android:minHeight="?attr/actionBarSize"
-        android:theme="?attr/actionBarTheme"
-        android:weightSum="1">
-
-        <EditText
-            android:id="@+id/editText"
-            android:layout_width="300dp"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:text="Name"
-            android:textAllCaps="true"
-            android:textColor="@android:color/white"
-            android:layout_weight="0.06" />
-
-        <Button
-            android:id="@+id/button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="2.41"
-            android:background="@color/colortoolbarBlue"
-            android:text="Button"
-            android:textColor="@android:color/white" />
-
-    </android.support.v7.widget.Toolbar>
-
-
+        android:background="@color/color_top" />
     <LinearLayout
         android:id="@+id/frag_container"
         android:layout_width="match_parent"
