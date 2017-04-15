@@ -30,6 +30,7 @@ public class MyApplication  extends Application{
     private static Context context;
     private  ArrayList<Map<String, String>> data;
     private ArrayList<Map<String, String>> finaldata = new ArrayList<>();
+    private ArrayList<Integer> pos =  new ArrayList<>();
     private boolean isPlay = false ;
     private File[] files;
     private int seekBarMax;
@@ -43,6 +44,13 @@ public class MyApplication  extends Application{
     private SQLiteDatabase dp;
     private List<Hash> hashList;
 
+    public ArrayList<Integer> getPos() {
+        return pos;
+    }
+
+    public void setPos(ArrayList<Integer> pos) {
+        this.pos = pos;
+    }
 
     public ArrayList<Map<String, String>> getFinaldata() {
         return finaldata;

@@ -86,9 +86,6 @@ public class ViewPagerAdapter extends PagerAdapter {
         lyric2 = (TextView) viewlyric.findViewById(R.id.lyric2);
         this.context = context;
 
-
-
-
         myApplication = MyApplication.getApplication();
         lyricThread = myApplication.getThread();
 

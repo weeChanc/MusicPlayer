@@ -26,6 +26,9 @@ import com.example.mylatouttest.MyApplication;
 import com.example.mylatouttest.R;
 
 import java.io.File;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -43,6 +46,7 @@ public class MySimpleAdapter extends BaseAdapter {
     private MyApplication myApplication = MyApplication.getApplication();
     private Thread lyricThread;
     private Animation spin;
+    private ArrayList<Integer> pos = myApplication.getPos();
 
 
     public MySimpleAdapter(Context context, List<Map<String, String>> resource, int layoutID) {
@@ -108,6 +112,18 @@ public class MySimpleAdapter extends BaseAdapter {
             strdur = strdur+"0";
         viewHolder.duration.setText(strdur);
 
+        viewHolder.love_bt.setImageResource(R.drawable.love_dark);
+
+
+        for(Integer a : pos){
+            if(position == a)
+            {
+                viewHolder.love_bt.setImageResource(R.drawable.ic_love);
+                MySimpleAdapter.this.notifyDataSetChanged();
+                break;
+            }
+        }
+
 
         addListener(viewHolder);
 
@@ -132,11 +148,12 @@ public class MySimpleAdapter extends BaseAdapter {
                 intent2.putExtra("LIST", true);
                 context.sendBroadcast(intent2);
 
+
+
 //                    data.get(position).remove("isplay");
 //                    data.get(position).put("isplay","T");
 //                    myApplication.setData(data);
 //                    MySimpleAdapter.this.notifyDataSetChanged();
-
 
             }
         });
@@ -159,13 +176,15 @@ public class MySimpleAdapter extends BaseAdapter {
                     do {
                         if (cursor.getString(cursor.getColumnIndex("title")).equals(values.get("title")) &&
                                 cursor.getString(cursor.getColumnIndex("duration")).equals(values.get("duration"))) {
-                            common = true;
+                             common = true;
                         }
                     } while (cursor.moveToNext());
                 }
                 if (!common)
                     db.insert("Like", null, values);
                 cursor.close();
+
+                pos.add(position);
             }
 
         });

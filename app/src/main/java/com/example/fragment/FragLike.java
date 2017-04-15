@@ -39,11 +39,12 @@ public class FragLike extends Fragment  {
 
         if(cursor.moveToFirst()){
             do{
-                Map<String,String> map = new HashMap();
+                Map<String,String> map = new HashMap<>();
                 map.put("singer",cursor.getString(cursor.getColumnIndex("singer")));
                 map.put("title",cursor.getString(cursor.getColumnIndex("title")));
                 map.put("position",cursor.getString(cursor.getColumnIndex("position")));
                 map.put("duration",cursor.getString(cursor.getColumnIndex("duration")));
+                map.put("like",cursor.getString(cursor.getColumnIndex("like")));
 
                 data.add(map);
             }while(cursor.moveToNext());

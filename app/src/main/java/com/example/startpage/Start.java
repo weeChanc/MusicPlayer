@@ -105,6 +105,7 @@ public class Start extends Activity {
             myApplication.setFile(file);
 
             readMusicData();
+            readLovePos();
 
             myApplication.setData(data);
 
@@ -181,8 +182,19 @@ public class Start extends Activity {
 
         myApplication.setData(data);
         myApplication.setFinaldata(finaldata);
+    }
 
+    private void readLovePos(){
 
+        ArrayList<Integer> pos = myApplication.getPos();
+        SQLiteDatabase db = myApplication.getDp();
+        Cursor cursor = db.query("Like", null, null, null, null, null, null, null);
+        if(cursor.moveToFirst()){
+            do{
+                pos.add(Integer.valueOf(cursor.getString(cursor.getColumnIndex("position"))));
+            }while(cursor.moveToNext());
+        }
+        cursor.close();
     }
 
     public static class SingerCount{
