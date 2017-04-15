@@ -47,12 +47,15 @@ public class FragRecent extends Fragment {
                 map.put("singer", cursor.getString(cursor.getColumnIndex("singer")));
                 map.put("title", cursor.getString(cursor.getColumnIndex("title")));
                 map.put("position", cursor.getString(cursor.getColumnIndex("position")));
+                map.put("duration",cursor.getString(cursor.getColumnIndex("duration")));
                 data.add(map);
                 if(i++ == 20){
                     break;   //最多截取20首
                 }
             } while (cursor.moveToPrevious());
+
         }
+        cursor.close();
 
 
         mySimpleAdapter = new MySimpleAdapter(getContext(), data, R.layout.listitem);

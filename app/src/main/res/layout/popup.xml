@@ -13,9 +13,14 @@
     <Button
         android:id="@+id/ensure"
         android:layout_width="match_parent"
-        android:layout_height="42dp"
+        android:layout_height="32dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
         android:background="@color/colorAccent"
+        android:paddingLeft="32dp"
         android:text="确认删除"
+        android:textAlignment="viewStart"
         android:textColor="@android:color/background_light"
         android:textSize="18sp"
         android:textStyle="bold" />
@@ -28,13 +33,34 @@
     <Button
         android:id="@+id/quit"
         android:layout_width="match_parent"
-        android:layout_height="42dp"
+        android:layout_height="32dp"
         android:layout_gravity="bottom"
         android:background="@color/colorAccent"
+        android:paddingLeft="32dp"
         android:text="取消"
+        android:textAlignment="viewStart"
         android:textColor="@android:color/background_light"
         android:textSize="18sp"
         android:textStyle="bold" />
+
+    <View
+        android:id="@+id/view2"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/background_light" />
+
+    <CheckBox
+        android:id="@+id/checkBox"
+        android:layout_width="match_parent"
+        android:layout_height="24dp"
+        android:layout_alignBaseline="@+id/ensure"
+        android:layout_alignBottom="@+id/ensure"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:paddingLeft="0dp"
+        android:text="同时删除本地文件"
+        android:textAlignment="textStart"
+        android:textColor="@android:color/background_light" />
 </LinearLayout>
 
 

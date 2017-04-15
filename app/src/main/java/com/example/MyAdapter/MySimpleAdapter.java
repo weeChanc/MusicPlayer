@@ -16,13 +16,16 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.mylatouttest.MyApplication;
 import com.example.mylatouttest.R;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -98,7 +101,12 @@ public class MySimpleAdapter extends BaseAdapter {
         viewHolder.title_tv.setTextColor(Color.BLACK);
 
         int duration = Integer.parseInt(resource.get(position).get("duration"));
-        viewHolder.duration.setText( duration/1000/60 +" : "+ duration%60 +"" );
+        String strdur = duration/1000/60 +":"+ duration%60 +"";
+        if(strdur.indexOf(':') == 1)
+            strdur = "0"+strdur;
+        if(strdur.length()<5)
+            strdur = strdur+"0";
+        viewHolder.duration.setText(strdur);
 
 
         addListener(viewHolder);
@@ -139,6 +147,7 @@ public class MySimpleAdapter extends BaseAdapter {
 
                 SQLiteDatabase db = myApplication.getDp();
                 Cursor cursor = db.query("Like", null, null, null, null, null, null, null);
+
                 ContentValues values = new ContentValues();
                 values.put("title", resource.get(position).get("title"));
                 values.put("singer", resource.get(position).get("singer"));
@@ -165,18 +174,34 @@ public class MySimpleAdapter extends BaseAdapter {
             @Override
             public boolean onLongClick(final View v) {
 
+
                 View rootView = LayoutInflater.from(context).inflate(R.layout.musicplayer_main, null);
                 View contentView = LayoutInflater.from(context).inflate(R.layout.popup, null);
-                final PopupWindow popupWindow = new PopupWindow(contentView, 400, WindowManager.LayoutParams.WRAP_CONTENT, true);
-
+                final PopupWindow popupWindow = new PopupWindow(contentView, 620, WindowManager.LayoutParams.WRAP_CONTENT, true);
                 popupWindow.setAnimationStyle(R.style.popup);
                 popupWindow.showAsDropDown(viewHolder.love_bt, -360, -20);
+
+                 final CheckBox checkBox = (CheckBox) contentView.findViewById(R.id.checkBox);
+
                 Button ensure = (Button) contentView.findViewById(R.id.ensure);
                 Button quit = (Button) contentView.findViewById(R.id.quit);
 
                 ensure.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+
+                        if( checkBox.isChecked()){
+
+                            String path = data.get(Integer.parseInt(resource.get(position).get("position"))).get("data");
+                            Log.e("tag",path);
+                            File file = new File(path);
+
+                            if(file.delete()){
+                                Toast.makeText(context, "删除成功", Toast.LENGTH_SHORT).show();
+                            }else{
+                                Toast.makeText(context, "删除失败", Toast.LENGTH_SHORT).show();;
+                            }
+                        }
 
                         SQLiteDatabase db = myApplication.getDp();
                         db.delete("Like", "title=?", new String[]{resource.get(position).get("title")});
@@ -212,7 +237,6 @@ public class MySimpleAdapter extends BaseAdapter {
         TextView duration;
         ImageButton love_bt;
         Button play_bt;
-
         CardView card;
     }
 

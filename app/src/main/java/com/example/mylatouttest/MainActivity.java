@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity{
         views.add(lyric);
 
         ViewPager viewPager = (ViewPager) findViewById(R.id.viewPager);
-        ViewPagerAdapter adapter = new ViewPagerAdapter(views);
+        ViewPagerAdapter adapter = new ViewPagerAdapter(views,this);
         viewPager.setAdapter(adapter);
 
         android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();

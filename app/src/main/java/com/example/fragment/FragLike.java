@@ -43,10 +43,12 @@ public class FragLike extends Fragment  {
                 map.put("singer",cursor.getString(cursor.getColumnIndex("singer")));
                 map.put("title",cursor.getString(cursor.getColumnIndex("title")));
                 map.put("position",cursor.getString(cursor.getColumnIndex("position")));
+                map.put("duration",cursor.getString(cursor.getColumnIndex("duration")));
 
                 data.add(map);
             }while(cursor.moveToNext());
         }
+        cursor.close();
 
         MySimpleAdapter mySimpleAdapter =
                 new MySimpleAdapter(getContext(),data,R.layout.listitem);

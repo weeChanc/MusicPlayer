@@ -187,6 +187,7 @@ public class MusicService extends Service {
     @Override
     public void onDestroy() {
         unregisterReceiver(musicReceiver);
+
         super.onDestroy();
     }
 

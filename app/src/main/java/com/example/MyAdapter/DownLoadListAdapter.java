@@ -131,10 +131,10 @@ public class DownLoadListAdapter extends BaseAdapter {
                         Intent intent = new Intent("com.example.MainActivity.STARTMUSIC");
                         intent.putExtra("POSITION",true);
                         intent.putExtra("LOCATION",data.size()-1);
-                        MyApplication.getContext().sendBroadcast(intent);
+                        context.sendBroadcast(intent);
                         Intent intent2 = new Intent("notification_play_pause");
                         intent2.putExtra("LIST", true);
-                        MyApplication.getContext().sendBroadcast(intent2);
+                        context.sendBroadcast(intent2);
 
 
                     }

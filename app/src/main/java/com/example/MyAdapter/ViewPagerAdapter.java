@@ -70,7 +70,7 @@ public class ViewPagerAdapter extends PagerAdapter {
 
 
 
-    public ViewPagerAdapter(List<View> list) {
+    public ViewPagerAdapter(List<View> list, final Context context) {
         this.list = list;
 
         View view = list.get(0);
@@ -84,13 +84,13 @@ public class ViewPagerAdapter extends PagerAdapter {
         bottomprivious = (ImageButton)view.findViewById(R.id.bottom_privious);
         lyric1 = (TextView)viewlyric.findViewById(R.id.lyric1);
         lyric2 = (TextView) viewlyric.findViewById(R.id.lyric2);
+        this.context = context;
 
 
 
 
         myApplication = MyApplication.getApplication();
         lyricThread = myApplication.getThread();
-        context = MyApplication.getContext();
 
         lyricInfo = new LyricInfo();
         lyricInfo.lineinfo = new ArrayList<>();
@@ -322,7 +322,7 @@ public class ViewPagerAdapter extends PagerAdapter {
                         Message message2 = new Message();
                         message1.obj = "";
                         message2.obj="";
-                        Thread.sleep(350);
+                        Thread.sleep(100);
 
                         for (int j = 0; j < lyricInfo.lineinfo.size() - 1; j++) {
 
