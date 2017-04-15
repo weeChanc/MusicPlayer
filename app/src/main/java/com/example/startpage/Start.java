@@ -146,9 +146,7 @@ public class Start extends Activity {
 
         Cursor cursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, want, MediaStore.Audio.Media.DURATION + ">60000", null, MediaStore.Audio.Media.TITLE);
         if (cursor.moveToFirst()) {
-            int i = 0;
             do {
-                if(i++>15)break;
                 Map<String, String> map = new HashMap<>();
                 map.put("title", cursor.getString(0));
                 map.put("data", cursor.getString(1));           //读取音乐文件
@@ -156,12 +154,12 @@ public class Start extends Activity {
                 map.put("fulltitle", cursor.getString(3));
                 map.put("duration", cursor.getInt(4) + "");
                 map.put("isplay", "F");
-                map.put("URL", "http://lyrics.kugou.com/search?ver=1&man=yes&client=pc&keyword=" + map.get("title") + "&duration=" + map.get("duration") + "&hash=");
                 data.add(map);
 
             } while (cursor.moveToNext());
+            cursor.close();
 
-            if(i==0){
+            if(data.size()==0){
                 Map<String, String> map = new HashMap<>();
                 map.put("title","找不到本地歌曲");
                 map.put("data", "");           //读取音乐文件
@@ -173,15 +171,13 @@ public class Start extends Activity {
 
         }
 
-            Log.e("start",data.size()+"");
         for(int i = 0 ; i < data.size()  ; i++){
             data.get(i).put("position",i+"");
         }
 
         myApplication.setData(data);
 
-        if (cursor != null)
-            cursor.close();
+
     }
 
     public static class SingerCount{

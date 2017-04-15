@@ -249,7 +249,6 @@ public class MusicService extends Service {
         myApplication.setBottomTitle(data.get(position).get("title"));
         myApplication.setBottomSinger(data.get(position).get("singer"));
 
-        detialIntent.putExtra("COUNT", data.size());
         sendBroadcast(detialIntent);
     }
 
@@ -329,12 +328,9 @@ public class MusicService extends Service {
     void registerMyReceiver() {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction("com.example.MainActivity.STARTMUSIC");
-        intentFilter.addAction("com.example.MainActivity.NEXTMUSIC");
-        intentFilter.addAction("com.example.LocalMusic.MODE");
         intentFilter.addAction("notification_play_pause");
         intentFilter.addAction("CHANGENEXT");
         intentFilter.addAction("com.example.MainActivity.REQUSETRES");
-        intentFilter.addAction("LISTEN");
         registerReceiver(musicReceiver, intentFilter);
     }
 

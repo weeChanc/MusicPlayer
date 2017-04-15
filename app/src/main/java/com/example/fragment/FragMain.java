@@ -68,11 +68,15 @@ public class FragMain extends Fragment {
         main_search_bt = (ImageButton)view.findViewById(R.id.main_search_bt);
         lrc = (TextView) view.findViewById(R.id.lrc);
 
+
+        Log.e("tag",myApplication.getData().size()+"");
+        main_count_tv.setText(String.valueOf(myApplication.getData().size()));
+
         if(myApplication.isPlay()){
             main_play_pause_bt.setImageResource(R.drawable.pausewhite);
         }
 
-        main_count_tv.setText(myApplication.getData().size()+"");
+
 
         return view;
 
@@ -85,8 +89,8 @@ public class FragMain extends Fragment {
         IntentFilter intentFilter = new IntentFilter();
         messageReceiver = new MessageReceiver();
 
-        intentFilter.addAction("com.example.MusicService.DETIAL");
         intentFilter.addAction("CHANGEMAINBUTTON");
+        intentFilter.addAction("com.example.MusicService.DETIAL");
         activity.registerReceiver(messageReceiver, intentFilter);
 
     }
@@ -142,16 +146,15 @@ public class FragMain extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
 
-//            if (intent.getAction().equals("com.example.MusicService.DETIAL")) {
-//                main_count_tv.setText(intent.getIntExtra("COUNT", 0) + "");
-//            } //接受并初始化/修改 当前歌曲 以及歌曲数目 歌词
-
-
             if (intent.getAction().equals("CHANGEMAINBUTTON")) {
                 if (myApplication.isPlay()) {
                     main_play_pause_bt.setImageResource(R.drawable.pausewhite);
                 } else
                     main_play_pause_bt.setImageResource(R.drawable.startwhite);
+            }
+
+            if(intent.getAction().equals("com.example.MusicService.DETIAL")){
+                main_count_tv.setText(myApplication.getData().size()+"");
             }
 
         }

@@ -64,6 +64,7 @@
         android:background="@color/drak_gray"
       />
 
+
     <include layout="@layout/bottomplayer" />
 
     <TextView

@@ -43,8 +43,7 @@ import com.example.fragment.FragLocal;
 import com.example.fragment.FragMain;
 import com.example.fragment.FragLike;
 import com.example.fragment.FragRecent;
-import com.example.mylatouttest.Lyric.LyricJson;
-import com.example.mylatouttest.Lyric.LyricMessageTaker;
+
 import com.example.song.Hash;
 import com.example.song.SongData;
 import com.example.song.SongDataGetter;
@@ -124,10 +123,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         myApplication = (MyApplication) getApplication();
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.musicplayer_main);
 
-        Intent intent = new Intent("com.example.MainActivity.REQUSETRES");
-        sendBroadcast(intent);
+        setContentView(R.layout.musicplayer_main);
 
         lyricInfo = new LyricInfo();
         lyricInfo.lineinfo = new ArrayList<>();
@@ -261,7 +258,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         intentFilter.addAction("com.example.MusicService.PROGRESS");
         intentFilter.addAction("com.example.MusicService.DETIAL");
-        intentFilter.addAction("com.example.LocalMusic.PLAY");
         intentFilter.addAction("CHANGEMAINBUTTON");
         intentFilter.addAction("TOAST");
        registerReceiver(messageReceiver, intentFilter);

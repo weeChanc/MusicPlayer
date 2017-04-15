@@ -42,9 +42,6 @@ public class SongGetter {
             String dataFromJason = response.body().string();
             data = gson.fromJson(dataFromJason.substring(dataFromJason.indexOf('{'),dataFromJason.lastIndexOf('}')+1),Data.class);
 
-            for(Hash hash : data.getData().getHashList())
-                Log.e("tag",hash.getSongName());
-
         } catch (IOException e) {
             e.printStackTrace();
         }

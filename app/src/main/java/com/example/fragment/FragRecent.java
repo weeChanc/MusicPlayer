@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
+import com.example.MyAdapter.DownLoadListAdapter;
 import com.example.MyAdapter.MySimpleAdapter;
 import com.example.mylatouttest.MyApplication;
 import com.example.mylatouttest.R;
@@ -32,7 +33,7 @@ public class FragRecent extends Fragment {
     MySimpleAdapter mySimpleAdapter;
     MyApplication myApplication = MyApplication.getApplication();
     ArrayList<Map<String, String>> data;
-    RecentReceiver recentReceiver;
+//    RecentReceiver recentReceiver;
 
     @Nullable
     @Override
@@ -75,36 +76,42 @@ public class FragRecent extends Fragment {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction("ChangeRecent");
 
-        recentReceiver = new RecentReceiver();
-        activity.registerReceiver(recentReceiver,intentFilter);
+//        recentReceiver = new RecentReceiver();
+//        activity.registerReceiver(recentReceiver,intentFilter);
     }
 
-    class RecentReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals("ChangeRecent")) {
-                int position = myApplication.getPosition();
-                Map<String,String> map = new HashMap<>();
-                map.put("singer",myApplication.getData().get(position).get("singer"));
-                map.put("title",myApplication.getData().get(position).get("title"));
-                map.put("position",position+"");
-                for(int i = 0 ; i < data.size() ; i++)
-                {
-                    if(data.get(i).get("position").equals(position+"")) {
-                        data.remove(i);
-                        break;
-                    }
-                    if(i == 19){
-                        data.remove(19);  //控制历史记录的数量
-                        break;
-                    }
-                }
-
-                data.add(0,map);
-
-            }
-        }
+    @Override
+    public void onDetach() {
+        super.onDetach();
+//        getActivity().unregisterReceiver(recentReceiver);
     }
+
+//    class RecentReceiver extends BroadcastReceiver {
+//        @Override
+//        public void onReceive(Context context, Intent intent) {
+//            if (intent.getAction().equals("ChangeRecent")) {
+//                int position = myApplication.getPosition();
+//                Map<String,String> map = new HashMap<>();
+//                map.put("singer",myApplication.getData().get(position).get("singer"));
+//                map.put("title",myApplication.getData().get(position).get("title"));
+//                map.put("position",position+"");
+//                for(int i = 0 ; i < data.size() ; i++)
+//                {
+//                    if(data.get(i).get("position").equals(position+"")) {
+//                        data.remove(i);
+//                        break;
+//                    }
+//                    if(i == 19){
+//                        data.remove(19);  //控制历史记录的数量
+//                        break;
+//                    }
+//                }
+//                data.add(0,map);
+//                mySimpleAdapter.notifyDataSetChanged();
+//
+//            }
+//        }
+//    }
 
 }
 

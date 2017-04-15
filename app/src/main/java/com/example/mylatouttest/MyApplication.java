@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 
+import com.example.MyAdapter.DownLoadListAdapter;
 import com.example.MyAdapter.MySimpleAdapter;
 import com.example.dataBase.MyDataBaseHelper;
 import com.example.song.Hash;
@@ -40,15 +41,7 @@ public class MyApplication  extends Application{
     private Thread thread;
     private SQLiteDatabase dp;
     private List<Hash> hashList;
-    private MySimpleAdapter adapter;
 
-    public MySimpleAdapter getAdapter() {
-        return adapter;
-    }
-
-    public void setAdapter(MySimpleAdapter adapter) {
-        this.adapter = adapter;
-    }
 
     private int play_mode;
 

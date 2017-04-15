@@ -129,12 +129,8 @@ public class DownLoadListAdapter extends BaseAdapter {
                         ArrayList<Map<String,String >> data = myApplication.getData();
 
                         data.add(map);
+
                         myApplication.setData( data );
-
-
-
-
-
                         myApplication.setIsPlay(true);
 
                         myApplication.setPosition(position);

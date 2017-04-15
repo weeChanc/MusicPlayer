@@ -48,7 +48,6 @@ public class FragDown extends Fragment {
     List<String> titles;
     MyApplication myApplication = MyApplication.getApplication();
     DownLoadListAdapter downLoadListAdapter;
-    ArrayAdapter<String> adapter;
 
     public Handler  handler = new Handler(){
         @Override
@@ -123,11 +122,8 @@ public class FragDown extends Fragment {
          listView = (ListView) view.findViewById(R.id.down_list);
          refreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.Refesh);
 
-        hashes = new ArrayList<>();
+         hashes = new ArrayList<>();
          titles = new ArrayList<>();
-         titles = new ArrayList<>();
-
-
 
         return view;
     }
