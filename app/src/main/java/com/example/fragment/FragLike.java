@@ -49,8 +49,7 @@ public class FragLike extends Fragment  {
         }
 
         MySimpleAdapter mySimpleAdapter =
-                new MySimpleAdapter(getContext(),data,R.layout.listitem,
-                        new int[]{R.id.down_title,R.id.down_singer,R.id.local_list_add,R.id.local_list_like,R.id.local_list_del,R.id.local_list__button_play});
+                new MySimpleAdapter(getContext(),data,R.layout.listitem);
 
         ListView listView = (ListView) view.findViewById(R.id.like_listview);
         listView.setAdapter(mySimpleAdapter);

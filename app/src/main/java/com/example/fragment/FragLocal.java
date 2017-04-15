@@ -25,7 +25,7 @@ import java.util.Map;
 public class FragLocal extends Fragment {
 
 
-    ArrayList<Map<String, String>> data;
+    ArrayList<Map<String, String>> finaldata;
     MyApplication myApplication;
 
     @Nullable
@@ -34,10 +34,11 @@ public class FragLocal extends Fragment {
 
         View view = inflater.inflate(R.layout.fraglocal,container,false);
         myApplication = MyApplication.getApplication();
-        data = myApplication.getData();
+        finaldata = myApplication.getFinaldata();
 
-        MySimpleAdapter simpleAdapter = new MySimpleAdapter(getContext(), data, R.layout.listitem,
-                new int[]{R.id.down_title,R.id.down_singer,R.id.local_list_add,R.id.local_list_like,R.id.local_list_del,R.id.local_list__button_play});
+
+
+        MySimpleAdapter simpleAdapter = new MySimpleAdapter(getContext(), finaldata, R.layout.listitem);
 
         ListView listview = (ListView) view.findViewById(R.id.local_music_listview);
         LayoutAnimationController lac = new LayoutAnimationController(AnimationUtils.loadAnimation(getContext(),R.anim.spin));

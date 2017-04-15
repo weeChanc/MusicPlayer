@@ -2,18 +2,12 @@ package com.example.MyAdapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.mylatouttest.MyApplication;
@@ -23,9 +17,7 @@ import com.example.song.SongGetter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.zip.Inflater;
 
 /**
  * Created by 铖哥 on 2017/4/10.
@@ -73,7 +65,7 @@ public class DownLoadListAdapter extends BaseAdapter {
             view = LayoutInflater.from(context).inflate(layoutID,parent,false);
             viewHolder.down_bt = (ImageButton) view.findViewById(R.id.down_bt);
             viewHolder.down_singer = (TextView) view.findViewById(R.id.down_singer);
-            viewHolder.down_title = (TextView) view.findViewById(R.id.down_title);
+            viewHolder.down_title = (TextView) view.findViewById(R.id.item_title);
             viewHolder.down_play = (Button)view.findViewById(R.id.down_play);
             view.setTag(viewHolder);
 

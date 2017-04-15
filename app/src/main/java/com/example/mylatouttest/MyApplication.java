@@ -29,6 +29,7 @@ public class MyApplication  extends Application{
     private  static MyApplication myApplication;
     private static Context context;
     private  ArrayList<Map<String, String>> data;
+    private ArrayList<Map<String, String>> finaldata = new ArrayList<>();
     private boolean isPlay = false ;
     private File[] files;
     private int seekBarMax;
@@ -42,6 +43,14 @@ public class MyApplication  extends Application{
     private SQLiteDatabase dp;
     private List<Hash> hashList;
 
+
+    public ArrayList<Map<String, String>> getFinaldata() {
+        return finaldata;
+    }
+
+    public void setFinaldata(ArrayList<Map<String, String>> finaldata) {
+        this.finaldata = finaldata;
+    }
 
     private int play_mode;
 

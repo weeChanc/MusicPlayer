@@ -87,36 +87,16 @@ public class MusicService extends Service {
 
                 if (intent.getBooleanExtra("POSITION", false)) {
                     setPosition(intent.getIntExtra("LOCATION", 0));
-                    if(mediaPlayer.isPlaying()) {
                         mediaPlayer.reset(); //同样的 不reset就变成继续了
-                    }
                 }
 
-
-
-
                 initMediaPlayer(data.get(position).get("data"));
-
                 mainMessageCallBack(); // 发送 歌曲数量 以及 当前歌曲
                 upgradeDataNotification(); //notification 标题
                 progressCallBack();
-
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        ContentValues values = new ContentValues();
-                        values.put("singer", data.get(position).get("singer"));
-                        values.put("duration", data.get(position).get("duration"));
-                        values.put("title", data.get(position).get("title"));
-                        values.put("position", position);
-
-                        db.delete("Recent","title=?",new String[]{data.get(position).get("title")});
-                        db.insert("Recent", null, values);  //同歌曲不加入啊
-                    }
-                }).start();  //播放历史 加入数据库存下
-
-
+                putInDatabase();
             }
+
 
 
             if (intent.getBooleanExtra("SEEK", false)) {
@@ -170,17 +150,8 @@ public class MusicService extends Service {
         play_mode = myApplication.getPlay_mode();
         db = myApplication.getDp();
 
-
-        registerMyReceiver();//注册广播
-
+            registerMyReceiver();//注册广播
             mainMessageCallBack();// 初始化界面信息
-
-
-
-            Intent arraylistIntent = new Intent("com.example.MusicService.ARRAY");
-            arraylistIntent.putExtra("ARRAY", data);
-            sendBroadcast(arraylistIntent);            //将歌曲信息列表传给其他活动！
-
 
             mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
@@ -269,20 +240,21 @@ public class MusicService extends Service {
 
 
 
-    public void play(String location){
+    public void putInDatabase(){
 
-        try {
-            File file = new File(location);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ContentValues values = new ContentValues();
+                values.put("singer", data.get(position).get("singer"));
+                values.put("duration", data.get(position).get("duration"));
+                values.put("title", data.get(position).get("title"));
+                values.put("position", position);
 
-            if (mediaPlayer.isPlaying()) {
-                mediaPlayer.reset();              //播放特定歌曲
+                db.delete("Recent","title=?",new String[]{data.get(position).get("title")});
+                db.insert("Recent", null, values);  //同歌曲不加入啊
             }
-            mediaPlayer.setDataSource(file.getPath());
-            mediaPlayer.prepare();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        mediaPlayer.start();
+        }).start();  //播放历史 加入数据库存下
     }
 
 

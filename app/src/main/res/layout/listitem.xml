@@ -25,7 +25,7 @@
             android:layout_height="75dp">
 
             <Button
-                android:id="@+id/local_list__button_play"
+                android:id="@+id/item_play"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@drawable/itemclick"
@@ -38,21 +38,22 @@
             android:elevation="0dp">
 
             <TextView
-                android:id="@+id/down_title"
+                android:id="@+id/item_title"
                 android:layout_width="250dp"
                 android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
+                android:layout_above="@+id/item_love"
+                android:layout_marginBottom="11dp"
                 android:layout_marginLeft="14dp"
                 android:layout_marginStart="14dp"
-                android:layout_marginTop="11dp"
-                android:layout_toRightOf="@+id/down_head"
+                android:layout_toEndOf="@+id/item_head"
+                android:layout_toRightOf="@+id/item_head"
                 android:maxLines="1"
                 android:text="TextView"
                 android:textSize="16dp"
                 android:textStyle="bold" />
 
             <ImageView
-                android:id="@+id/down_head"
+                android:id="@+id/item_head"
                 android:layout_width="74dp"
                 android:layout_height="match_parent"
 
@@ -62,31 +63,16 @@
                 app:srcCompat="@drawable/ic_player" />
 
             <ImageButton
-                android:id="@+id/local_list_add"
+                android:id="@+id/item_love"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:layout_alignParentBottom="true"
-                android:layout_marginLeft="12dp"
-                android:layout_marginStart="12dp"
-                android:layout_toEndOf="@+id/down_singer"
-                android:layout_toRightOf="@+id/down_singer"
                 android:background="@color/colorAccent"
                 android:padding="2dp"
                 android:scaleType="centerInside"
-                app:srcCompat="@drawable/add" />
-
-            <ImageButton
-                android:id="@+id/local_list_like"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                app:srcCompat="@drawable/love_dark"
                 android:layout_alignParentBottom="true"
-                android:layout_marginLeft="2dp"
-                android:layout_toEndOf="@+id/local_list_add"
-                android:layout_toRightOf="@+id/local_list_add"
-                android:background="@color/colorAccent"
-                android:padding="2dp"
-                android:scaleType="centerInside"
-                app:srcCompat="@drawable/love_dark" />
+                android:layout_alignRight="@+id/item_title"
+                android:layout_alignEnd="@+id/item_title" />
 
             <View
                 android:id="@+id/middle"
@@ -95,29 +81,26 @@
                 android:layout_alignParentBottom="true"
                 android:layout_centerInParent="true" />
 
-            <ImageButton
-                android:id="@+id/local_list_del"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_alignParentBottom="true"
-                android:layout_marginLeft="2dp"
-                android:layout_toEndOf="@+id/local_list_like"
-                android:layout_toRightOf="@+id/local_list_like"
-                android:background="@color/colorAccent"
-                android:baselineAlignBottom="false"
-                android:padding="2dp"
-                android:scaleType="centerCrop"
-                app:srcCompat="@drawable/delete" />
-
             <TextView
-                android:id="@+id/down_singer"
+                android:id="@+id/item_singer"
                 android:layout_width="120dp"
                 android:layout_height="wrap_content"
-                android:layout_alignLeft="@+id/down_title"
-                android:layout_alignStart="@+id/down_title"
-                android:layout_alignTop="@+id/local_list_add"
+                android:layout_alignLeft="@+id/item_title"
+                android:layout_alignStart="@+id/item_title"
+                android:layout_alignTop="@+id/item_love"
                 android:maxLines="1"
                 android:text="TextView" />
+
+            <TextView
+                android:id="@+id/item_duration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TextView"
+                android:layout_above="@+id/middle"
+                android:layout_toRightOf="@+id/item_singer"
+                android:layout_toEndOf="@+id/item_singer"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp" />
 
 
         </RelativeLayout>

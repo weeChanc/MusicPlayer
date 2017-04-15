@@ -9,20 +9,16 @@ import android.support.annotation.Nullable;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.MyAdapter.DownLoadListAdapter;
 import com.example.mylatouttest.MyApplication;
@@ -53,7 +49,7 @@ public class FragDown extends Fragment {
         @Override
         public void handleMessage(Message msg) {
             refreshLayout.setRefreshing(false);
-            downLoadListAdapter = new DownLoadListAdapter(getContext(),hashes,R.layout.downitem,new int[]{R.id.down_title,R.id.down_singer,R.id.down_bt});
+            downLoadListAdapter = new DownLoadListAdapter(getContext(),hashes,R.layout.downitem,new int[]{R.id.item_title,R.id.down_singer,R.id.down_bt});
             listView.setAdapter(downLoadListAdapter);
         }
     };

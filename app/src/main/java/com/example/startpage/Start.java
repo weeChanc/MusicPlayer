@@ -40,6 +40,7 @@ public class Start extends Activity {
     MyApplication myApplication;
     File file;
     private ArrayList<Map<String, String>> data = new ArrayList<>();
+    private ArrayList<Map<String, String>> finaldata = new ArrayList<>();
     ImageView imageView;
     ArrayList<SingerCount> singerCounts = new ArrayList<>();
 
@@ -155,6 +156,7 @@ public class Start extends Activity {
                 map.put("duration", cursor.getInt(4) + "");
                 map.put("isplay", "F");
                 data.add(map);
+                finaldata.add(map);
 
             } while (cursor.moveToNext());
             cursor.close();
@@ -167,15 +169,18 @@ public class Start extends Activity {
                 map.put("fulltitle", "");
                 map.put("duration", "0");
                 data.add(map);
+                finaldata.add(map);
             }
 
         }
 
         for(int i = 0 ; i < data.size()  ; i++){
             data.get(i).put("position",i+"");
+            finaldata.get(i).put("position",i+"");
         }
 
         myApplication.setData(data);
+        myApplication.setFinaldata(finaldata);
 
 
     }

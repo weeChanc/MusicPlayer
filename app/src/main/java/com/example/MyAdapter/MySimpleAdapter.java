@@ -6,38 +6,23 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
-import android.media.Image;
-import android.os.Build;
-import android.support.annotation.UiThread;
 import android.support.v7.widget.CardView;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.animation.LayoutAnimationController;
-import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ListView;
 import android.widget.PopupWindow;
-import android.widget.RelativeLayout;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
-import com.example.dataBase.MyDataBaseHelper;
-import com.example.mylatouttest.MainActivity;
 import com.example.mylatouttest.MyApplication;
 import com.example.mylatouttest.R;
 
-import org.w3c.dom.Text;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -51,20 +36,17 @@ public class MySimpleAdapter extends BaseAdapter {
     private List<Map<String, String>> resource;
     private List<Map<String, String>> data;
     private int layoutID;
-    private int[] to;
     private LayoutInflater inflater;
     private MyApplication myApplication = MyApplication.getApplication();
     private Thread lyricThread;
     private Animation spin;
 
 
-    public MySimpleAdapter(Context context, List<Map<String, String>> resource, int layoutID, int[] to) {
+    public MySimpleAdapter(Context context, List<Map<String, String>> resource, int layoutID) {
         this.context = context;
         this.resource = resource;
         this.layoutID = layoutID;
-        this.to = to;
         inflater = LayoutInflater.from(context);
-
         lyricThread = myApplication.getThread();
 
         spin = AnimationUtils.loadAnimation(context,R.anim.spin);
@@ -99,27 +81,29 @@ public class MySimpleAdapter extends BaseAdapter {
             view = inflater.inflate(layoutID, parent, false);
             viewHolder = new ViewHolder();
 
-            viewHolder.title_tv = (TextView) view.findViewById(to[0]);
-            viewHolder.singer_tv = (TextView) view.findViewById(to[1]);
-            viewHolder.bt1 = (ImageButton) view.findViewById(to[2]);
-            viewHolder.bt2 = (ImageButton) view.findViewById(to[3]);
-            viewHolder.del = (ImageButton) view.findViewById(to[4]);
-            viewHolder.bt4 = (Button) view.findViewById(to[5]);
+            viewHolder.title_tv = (TextView) view.findViewById(R.id.item_title);
+            viewHolder.singer_tv = (TextView) view.findViewById(R.id.item_singer);
+            viewHolder.love_bt = (ImageButton) view.findViewById(R.id.item_love);
+            viewHolder.play_bt = (Button) view.findViewById(R.id.item_play);
             viewHolder.card = (CardView) view.findViewById(R.id.card);
+            viewHolder.duration = (TextView)view.findViewById(R.id.item_duration);
             view.setTag(viewHolder);
         } else {
             view = convertView;
             viewHolder = (ViewHolder) view.getTag();
         }
 
-        //view.setAnimation(spin);
         viewHolder.singer_tv.setText(resource.get(position).get("singer"));
         viewHolder.title_tv.setText(resource.get(position).get("title"));
         viewHolder.title_tv.setTextColor(Color.BLACK);
 
+        int duration = Integer.parseInt(resource.get(position).get("duration"));
+        viewHolder.duration.setText( duration/1000/60 +" : "+ duration%60 +"" );
+
+
         addListener(viewHolder);
 
-        viewHolder.bt4.setOnClickListener(new View.OnClickListener() {
+        viewHolder.play_bt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -130,7 +114,7 @@ public class MySimpleAdapter extends BaseAdapter {
                 Intent intent = new Intent("com.example.MainActivity.STARTMUSIC");
                 intent.putExtra("POSITION", true);
                 if (resource.get(position).get("title").equals(data.get(position).get("title")))
-                    intent.putExtra("LOCATION", position);
+                    intent.putExtra("LOCATION", position);//本地列表                                      //为本地列表与其他列表做区分
                 else
                     intent.putExtra("LOCATION", Integer.parseInt(resource.get(position).get("position")));
 
@@ -149,7 +133,7 @@ public class MySimpleAdapter extends BaseAdapter {
             }
         });
 
-        viewHolder.bt2.setOnClickListener(new View.OnClickListener() {
+        viewHolder.love_bt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -177,15 +161,7 @@ public class MySimpleAdapter extends BaseAdapter {
 
         });
 
-        viewHolder.del.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
-
-
-        viewHolder.bt4.setOnLongClickListener(new View.OnLongClickListener() {
+        viewHolder.play_bt.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(final View v) {
 
@@ -194,7 +170,7 @@ public class MySimpleAdapter extends BaseAdapter {
                 final PopupWindow popupWindow = new PopupWindow(contentView, 400, WindowManager.LayoutParams.WRAP_CONTENT, true);
 
                 popupWindow.setAnimationStyle(R.style.popup);
-                popupWindow.showAsDropDown(viewHolder.del, -360, -20);
+                popupWindow.showAsDropDown(viewHolder.love_bt, -360, -20);
                 Button ensure = (Button) contentView.findViewById(R.id.ensure);
                 Button quit = (Button) contentView.findViewById(R.id.quit);
 
@@ -233,15 +209,15 @@ public class MySimpleAdapter extends BaseAdapter {
     private class ViewHolder {
         TextView title_tv;
         TextView singer_tv;
-        ImageButton bt1;
-        ImageButton bt2;
-        ImageButton del;
-        Button bt4;
+        TextView duration;
+        ImageButton love_bt;
+        Button play_bt;
+
         CardView card;
     }
 
     private void addListener(ViewHolder viewHolder) {
-        viewHolder.bt1.setOnClickListener(new View.OnClickListener() {
+        viewHolder.love_bt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 SQLiteDatabase db = myApplication.getDp();
