@@ -13,6 +13,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -22,6 +23,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -37,6 +39,7 @@ import android.widget.Toast;
 
 
 import com.example.MusicService.MusicService;
+import com.example.MyAdapter.ViewPagerAdapter;
 import com.example.VolumechangeReceiver.VolumnChangeReceiver;
 import com.example.fragment.FragDown;
 import com.example.fragment.FragLocal;
@@ -79,14 +82,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private MyApplication myApplication; //全局变量
     int max;  //seekbar的最大值
-    ImageButton bottomnext;
-    ImageButton bottomprivious;
-    ImageButton bottomplay_pause;
-
-    ImageView bottomhead ;
-    TextView bottomtitle ;
-    TextView bottomsinger;
-    SeekBar bottomSeekbar;
+//    ImageButton bottomnext;
+//    ImageButton bottomprivious;
+//    ImageButton bottomplay_pause;
+//
+//    ImageView bottomhead ;
+//    TextView bottomtitle ;
+//    TextView bottomsinger;
+//    SeekBar bottomSeekbar;
     View bottomPlayer;
 
 
@@ -133,7 +136,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         files = file.listFiles();
 
         readytoplay();
-//        initWindows();
+
+        LayoutInflater layoutInflater = LayoutInflater.from(this);
+        View bottomPlayer = layoutInflater.inflate(R.layout.bottomplayer,null);
+        View lyric = layoutInflater.inflate(R.layout.lyric,null);
+        ArrayList<View> views = new ArrayList<>();
+        views.add(bottomPlayer);
+        views.add(lyric);
+
+        ViewPager viewPager = (ViewPager) findViewById(R.id.viewPager);
+        ViewPagerAdapter adapter = new ViewPagerAdapter(views);
+        viewPager.setAdapter(adapter);
 
         final EditText editText = (EditText) findViewById(R.id.editText);
         Button button = (Button) findViewById(R.id.button);
@@ -163,31 +176,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
-        bottomSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                myApplication.setProgress(progress);
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {     //按下进度条 先调用onStartTrackingTouch一次，再调用onProgressChanged一次
-                seekBar.setMax(max);
-                if (!myApplication.isPlay()) {
-                    myApplication.setIsPlay(true);
-                }
-                myApplication.setIsSeekBarTouch(true);
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                Intent intent2 = new Intent("com.example.MainActivity.STARTMUSIC");
-                intent2.putExtra("PROGRESS", seekBar.getProgress() - 1);
-                intent2.putExtra("SEEK", true);
-                sendBroadcast(intent2);
-                myApplication.setIsSeekBarTouch(false);
-
-            }
-        });
+//        bottomSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+//            @Override
+//            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+//                myApplication.setProgress(progress);
+//            }
+//
+//            @Override
+//            public void onStartTrackingTouch(SeekBar seekBar) {     //按下进度条 先调用onStartTrackingTouch一次，再调用onProgressChanged一次
+//                seekBar.setMax(max);
+//                if (!myApplication.isPlay()) {
+//                    myApplication.setIsPlay(true);
+//                }
+//                myApplication.setIsSeekBarTouch(true);
+//            }
+//
+//            @Override
+//            public void onStopTrackingTouch(SeekBar seekBar) {
+//                Intent intent2 = new Intent("com.example.MainActivity.STARTMUSIC");
+//                intent2.putExtra("PROGRESS", seekBar.getProgress() - 1);
+//                intent2.putExtra("SEEK", true);
+//                sendBroadcast(intent2);
+//                myApplication.setIsSeekBarTouch(false);
+//
+//            }
+//        });
 
 
     }
@@ -216,31 +229,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
 
-            case R.id.bottom_next:
-                lyricThread.interrupt();
-                myApplication.setIsPlay(true);
-                bottomSeekbar.setProgress(0);
-                Intent intentnext = new Intent("com.example.MainActivity.STARTMUSIC");
-                intentnext.putExtra("NEXT", true);
-                sendBroadcast(intentnext);
-                Intent intentchange = new Intent("CHANGEMAINBUTTON");
-                sendBroadcast(intentchange);
-                break;
-
-            case R.id.bottom_privious:
-                lyricThread.interrupt();
-                myApplication.setIsPlay(true);
-                bottomSeekbar.setProgress(0);
-                Intent intentpre = new Intent("com.example.MainActivity.STARTMUSIC");
-                intentpre.putExtra("PRE", true);
-                sendBroadcast(intentpre);
-                break;
-
-            case R.id.bottom_play_pause:
-
-                Intent intentnotify1 = new Intent("notification_play_pause");
-                sendBroadcast(intentnotify1);
-                break;
+//            case R.id.bottom_next:
+//                lyricThread.interrupt();
+//                myApplication.setIsPlay(true);
+//                bottomSeekbar.setProgress(0);
+//                Intent intentnext = new Intent("com.example.MainActivity.STARTMUSIC");
+//                intentnext.putExtra("NEXT", true);
+//                sendBroadcast(intentnext);
+//                Intent intentchange = new Intent("CHANGEMAINBUTTON");
+//                sendBroadcast(intentchange);
+//                break;
+//
+//            case R.id.bottom_privious:
+//                lyricThread.interrupt();
+//                myApplication.setIsPlay(true);
+//                bottomSeekbar.setProgress(0);
+//                Intent intentpre = new Intent("com.example.MainActivity.STARTMUSIC");
+//                intentpre.putExtra("PRE", true);
+//                sendBroadcast(intentpre);
+//                break;
+//
+//            case R.id.bottom_play_pause:
+//
+//                Intent intentnotify1 = new Intent("notification_play_pause");
+//                sendBroadcast(intentnotify1);
+//                break;
 
 
 
@@ -294,20 +307,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         actionBar = getSupportActionBar();
 
         lrc = (TextView) findViewById(R.id.lrc);
-
-        bottomtitle = (TextView)findViewById(R.id.bottom_title);
-        bottomhead = (ImageView) findViewById(R.id.bottom_head);
-        bottomnext = (ImageButton) findViewById(R.id.bottom_next);
-        bottomsinger = (TextView)findViewById(R.id.bottomsinger);
-        bottomSeekbar = (SeekBar)findViewById(R.id.bottom_seekbar);
-        bottomplay_pause = (ImageButton)findViewById(R.id.bottom_play_pause);
-        bottomprivious = (ImageButton)findViewById(R.id.bottom_privious);
-
-        bottomplay_pause.setOnClickListener(this);
-        bottomprivious.setOnClickListener(this);
-
-
-        bottomnext.setOnClickListener(this);
+//
+//        bottomtitle = (TextView)findViewById(R.id.bottom_title);
+//        bottomhead = (ImageView) findViewById(R.id.bottom_head);
+//        bottomnext = (ImageButton) findViewById(R.id.bottom_next);
+//        bottomsinger = (TextView)findViewById(R.id.bottomsinger);
+//        bottomSeekbar = (SeekBar)findViewById(R.id.bottom_seekbar);
+//        bottomplay_pause = (ImageButton)findViewById(R.id.bottom_play_pause);
+//        bottomprivious = (ImageButton)findViewById(R.id.bottom_privious);
+//
+//        bottomplay_pause.setOnClickListener(this);
+//        bottomprivious.setOnClickListener(this);
+//
+//
+//        bottomnext.setOnClickListener(this);
 
     }
 
@@ -391,223 +404,175 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         public void onReceive(Context context, Intent intent) {
 
-            if(intent.getAction().equals("CHANGEMAINBUTTON")){
-                if(myApplication.isPlay())
-                bottomplay_pause.setImageResource(R.drawable.pausebule);
-                else
-                    bottomplay_pause.setImageResource(R.drawable.playblue);
-            }
+//            if(intent.getAction().equals("CHANGEMAINBUTTON")){
+//                if(myApplication.isPlay())
+//                bottomplay_pause.setImageResource(R.drawable.pausebule);
+//                else
+//                    bottomplay_pause.setImageResource(R.drawable.playblue);
+//            }
 
-            if(intent.getAction().equals("TOAST")){
+//            if(intent.getAction().equals("TOAST")){
+//
+//                if(intent.getBooleanExtra("READY",false))
+//                    Toast.makeText(MainActivity.this, "准备下载歌曲" + intent.getStringExtra("NAME"), Toast.LENGTH_SHORT).show();
+//
+//                if(intent.getBooleanExtra("SUCCEED",false)){
+//                    Toast.makeText(MainActivity.this, "下载成功", Toast.LENGTH_SHORT).show();
+//                }
+//
+//                if(intent.getBooleanExtra("FAILE",false)){
+//                    Toast.makeText(MainActivity.this, "下载失败", Toast.LENGTH_SHORT).show();
+//                }
+//
+//                if(intent.getBooleanExtra("FAILESEARCH",false)){
+//                    Toast.makeText(MainActivity.this, "搜索失败", Toast.LENGTH_SHORT).show();
+//                }
+//
+//            }
 
-                if(intent.getBooleanExtra("READY",false))
-                    Toast.makeText(MainActivity.this, "准备下载歌曲" + intent.getStringExtra("NAME"), Toast.LENGTH_SHORT).show();
-
-                if(intent.getBooleanExtra("SUCCEED",false)){
-                    Toast.makeText(MainActivity.this, "下载成功", Toast.LENGTH_SHORT).show();
-                }
-
-                if(intent.getBooleanExtra("FAILE",false)){
-                    Toast.makeText(MainActivity.this, "下载失败", Toast.LENGTH_SHORT).show();
-                }
-
-                if(intent.getBooleanExtra("FAILESEARCH",false)){
-                    Toast.makeText(MainActivity.this, "搜索失败", Toast.LENGTH_SHORT).show();
-                }
-
-
-
-            }
-
-            if (intent.getAction().equals("com.example.MusicService.PROGRESS")) {
-                bottomSeekbar.setProgress(myApplication.getProgress());
-
-
-                try {
-
-                    if (!temptitle.equals(bottomtitle.getText().toString())) {
-                        temptitle = bottomtitle.getText().toString();
-
-                        if (!seekLyric()) {
-                             data = myApplication.getData();
-                            Log.e("tag", "找不到歌词，准备搜索");
-                            lrc.setText("成哥为你搜索歌词中");
-
-                            new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    String title = bottomtitle.getText().toString();
-                                    String singer = bottomsinger.getText().toString();
-                                    String lyric;
-                                    SongDataGetter songDataGetter ;
-                                    ArrayList<Hash> hashes = (ArrayList<Hash>) SongGetter.getAllSong(title);
-                                    for(Hash hash : hashes){
-                                        if(hash.getSingerName().contains(singer)) {
-                                            Log.e("string",hash.getSingerName());
-                                            songDataGetter = SongGetter.getSongData(hash.getFileHash());
-                                            SongData songData = songDataGetter.getData();
-                                            lyric = songData.getLyrics();
-                                            try {
-                                                File file = new File(Environment.getExternalStorageDirectory().getPath() + "//MyLyric//" + title + ".lrc");
-                                                if (!file.exists()) {
-                                                    Log.e("tag", "网络上找到了歌词，写入中");
-                                                    file.createNewFile();
-                                                    FileOutputStream fos = new FileOutputStream(file);
-                                                    fos.write(lyric.getBytes());
-                                                    Log.e("tag", "写入成功");
-                                                    fos.close();
-                                                    seekLyric(); // 找到歌词播放
-                                                }
-                                            }catch (Exception e){
-                                                e.printStackTrace();
-                                            }
-                                        }
-                                    }
-                                }
-                            }).start();
-
+//            if (intent.getAction().equals("com.example.MusicService.PROGRESS")) {
+//                bottomSeekbar.setProgress(myApplication.getProgress());
+//
+//
+//                try {
+//
+//                    if (!temptitle.equals(bottomtitle.getText().toString())) {
+//                        temptitle = bottomtitle.getText().toString();
+//
+//                        if (!seekLyric()) {
+//                             data = myApplication.getData();
+//                            Log.e("tag", "找不到歌词，准备搜索");
+//                            lrc.setText("成哥为你搜索歌词中");
+//
 //                            new Thread(new Runnable() {
 //                                @Override
 //                                public void run() {
-//                                    try {
-//                                        OkHttpClient okHttpClient = new OkHttpClient();
-//                                        Request request = new Request.Builder().url(data.get(myApplication.getPosition()).get("URL")).build();
-//                                        Response response = okHttpClient.newCall(request).execute();
-//                                        Gson gson = new Gson();
-//                                        LyricMessageTaker lyricMessageTaker = gson.fromJson(response.body().string(), LyricMessageTaker.class);
-//
-//                                        int lyricmount = lyricMessageTaker.getCandidates().size();
-//                                        for (int i = 0; i < lyricmount; i++) {
-//                                            if (lyricMessageTaker.getCandidates().get(i).getSinger().equals(data.get(myApplication.getPosition()).get("singer"))) {
-//
-//                                                request = new Request.Builder().url(lyricMessageTaker.getCandidates().get(i).initURL()).build();
-//                                                response = okHttpClient.newCall(request).execute();
-//                                                LyricJson lyricJson = gson.fromJson(response.body().string(), LyricJson.class);
-//                                                byte[] lyric = Base64.decode(lyricJson.getContent(), Base64.DEFAULT);
-//                                                File file = new File(Environment.getExternalStorageDirectory().getPath() + "//MyLyric//" + data.get(myApplication.getPosition()).get("title") + ".lrc");
+//                                    String title = bottomtitle.getText().toString();
+//                                    String singer = bottomsinger.getText().toString();
+//                                    String lyric;
+//                                    SongDataGetter songDataGetter ;
+//                                    ArrayList<Hash> hashes = (ArrayList<Hash>) SongGetter.getAllSong(title);
+//                                    for(Hash hash : hashes){
+//                                        if(hash.getSingerName().contains(singer)) {
+//                                            Log.e("string",hash.getSingerName());
+//                                            songDataGetter = SongGetter.getSongData(hash.getFileHash());
+//                                            SongData songData = songDataGetter.getData();
+//                                            lyric = songData.getLyrics();
+//                                            try {
+//                                                File file = new File(Environment.getExternalStorageDirectory().getPath() + "//MyLyric//" + title + ".lrc");
 //                                                if (!file.exists()) {
 //                                                    Log.e("tag", "网络上找到了歌词，写入中");
 //                                                    file.createNewFile();
 //                                                    FileOutputStream fos = new FileOutputStream(file);
-//                                                    fos.write(lyric);
+//                                                    fos.write(lyric.getBytes());
 //                                                    Log.e("tag", "写入成功");
 //                                                    fos.close();
-//                                                    seekLyric();
+//                                                    seekLyric(); // 找到歌词播放
 //                                                }
-//                                                break;
-//                                            }
-//                                            if (i == lyricmount - 1) {
-//                                                Log.e("tag", "找不到歌词");
-//                                                lrc.setText("连成哥都不能帮你找到歌词了");
+//                                            }catch (Exception e){
+//                                                e.printStackTrace();
 //                                            }
 //                                        }
-//                                        if (lyricmount == 0) {
-//                                            Log.e("tag", "找不到歌词");
-//                                            lrc.setText("对不起,找不到歌词");
-//                                        }
-//
-//                                    } catch (Exception e) {
-//                                        e.printStackTrace();
 //                                    }
 //                                }
 //                            }).start();
-
-
-                        }
-
-                    }
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
+//
+//
+//                        }
+//
+//                    }
+//
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//            }
 
 //            } // 修改进度de guangbo
 //
-            if (intent.getAction().equals("com.example.MusicService.DETIAL")) {
-                bottomsinger.setText(myApplication.getBottomSinger());
-                bottomtitle.setText(myApplication.getBottomTitle());
-                max = myApplication.getSeekBarMax();
-                bottomSeekbar.setMax(max);
-
-            }
+//            if (intent.getAction().equals("com.example.MusicService.DETIAL")) {
+//                bottomsinger.setText(myApplication.getBottomSinger());
+//                bottomtitle.setText(myApplication.getBottomTitle());
+//                max = myApplication.getSeekBarMax();
+//                bottomSeekbar.setMax(max);
+//
+//            }
 //
     }
     }
 
-    private void initWindows(){
-        manager = (WindowManager)getSystemService(Context.WINDOW_SERVICE);
-        WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
-        Display display = manager.getDefaultDisplay();
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        display.getMetrics(displayMetrics);
-
-        layoutParams.gravity = Gravity.LEFT| Gravity.BOTTOM;
-        layoutParams.x= 0;
-        layoutParams.y= 0;
-        layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT;
-        layoutParams.height = displayMetrics.heightPixels / 9;
-        layoutParams.type = WindowManager.LayoutParams.TYPE_PHONE;
-        layoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
-                | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-                | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED;
-
-        bottomPlayer = View.inflate(getApplicationContext(),R.layout.bottomplayer,null);
-        bottomtitle = (TextView)bottomPlayer.findViewById(R.id.bottom_title);
-        bottomhead = (ImageView) bottomPlayer.findViewById(R.id.bottom_head);
-        bottomnext = (ImageButton) bottomPlayer.findViewById(R.id.bottom_next);
-        bottomsinger = (TextView) bottomPlayer.findViewById(R.id.bottomsinger);
-        bottomSeekbar = (SeekBar)bottomPlayer.findViewById(R.id.bottom_seekbar);
-        bottomnext.setImageResource(R.drawable.nextbule);
-        bottomtitle.setText("标题");
-        bottomhead.setImageResource(R.drawable.add);
-
-        manager.addView(bottomPlayer,layoutParams);
-
-        Animation animation = AnimationUtils.loadAnimation(this,R.anim.right_in);
-        bottomhead.setAnimation(animation);
-        bottomhead.startAnimation(animation);
-
-        bottomnext.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                lyricThread.interrupt();
-                bottomSeekbar.setProgress(0);
-                Intent intentnext = new Intent("CHANGENEXT");
-                sendBroadcast(intentnext);
-
-
-            }
-        });
-
-        bottomSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                myApplication.setProgress(progress);
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {     //按下进度条 先调用onStartTrackingTouch一次，再调用onProgressChanged一次
-                seekBar.setMax(max);
-                if (!myApplication.isPlay()) {
-                   bottomplay_pause.setImageResource(R.drawable.pausewhite);
-                    myApplication.setIsPlay(true);
-                }
-                myApplication.setIsSeekBarTouch(true);
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                Intent intent2 = new Intent("com.example.MainActivity.STARTMUSIC");
-                intent2.putExtra("PROGRESS", seekBar.getProgress() - 1);
-                intent2.putExtra("SEEK", true);
-                sendBroadcast(intent2);
-                myApplication.setIsSeekBarTouch(false);
-
-            }
-        });
-    } //先不用
+//    private void initWindows(){
+//        manager = (WindowManager)getSystemService(Context.WINDOW_SERVICE);
+//        WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
+//        Display display = manager.getDefaultDisplay();
+//        DisplayMetrics displayMetrics = new DisplayMetrics();
+//        display.getMetrics(displayMetrics);
+//
+//        layoutParams.gravity = Gravity.LEFT| Gravity.BOTTOM;
+//        layoutParams.x= 0;
+//        layoutParams.y= 0;
+//        layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT;
+//        layoutParams.height = displayMetrics.heightPixels / 9;
+//        layoutParams.type = WindowManager.LayoutParams.TYPE_PHONE;
+//        layoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+//                | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+//                | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED;
+//
+//        bottomPlayer = View.inflate(getApplicationContext(),R.layout.bottomplayer,null);
+//        bottomtitle = (TextView)bottomPlayer.findViewById(R.id.bottom_title);
+//        bottomhead = (ImageView) bottomPlayer.findViewById(R.id.bottom_head);
+//        bottomnext = (ImageButton) bottomPlayer.findViewById(R.id.bottom_next);
+//        bottomsinger = (TextView) bottomPlayer.findViewById(R.id.bottomsinger);
+//        bottomSeekbar = (SeekBar)bottomPlayer.findViewById(R.id.bottom_seekbar);
+//        bottomnext.setImageResource(R.drawable.nextbule);
+//        bottomtitle.setText("标题");
+//        bottomhead.setImageResource(R.drawable.add);
+//
+//        manager.addView(bottomPlayer,layoutParams);
+//
+//        Animation animation = AnimationUtils.loadAnimation(this,R.anim.right_in);
+//        bottomhead.setAnimation(animation);
+//        bottomhead.startAnimation(animation);
+//
+//        bottomnext.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//
+//                lyricThread.interrupt();
+//                bottomSeekbar.setProgress(0);
+//                Intent intentnext = new Intent("CHANGENEXT");
+//                sendBroadcast(intentnext);
+//
+//
+//            }
+//        });
+//
+//        bottomSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+//            @Override
+//            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+//                myApplication.setProgress(progress);
+//            }
+//
+//            @Override
+//            public void onStartTrackingTouch(SeekBar seekBar) {     //按下进度条 先调用onStartTrackingTouch一次，再调用onProgressChanged一次
+//                seekBar.setMax(max);
+//                if (!myApplication.isPlay()) {
+//                   bottomplay_pause.setImageResource(R.drawable.pausewhite);
+//                    myApplication.setIsPlay(true);
+//                }
+//                myApplication.setIsSeekBarTouch(true);
+//            }
+//
+//            @Override
+//            public void onStopTrackingTouch(SeekBar seekBar) {
+//                Intent intent2 = new Intent("com.example.MainActivity.STARTMUSIC");
+//                intent2.putExtra("PROGRESS", seekBar.getProgress() - 1);
+//                intent2.putExtra("SEEK", true);
+//                sendBroadcast(intent2);
+//                myApplication.setIsSeekBarTouch(false);
+//
+//            }
+//        });
+//    } //先不用
 
     private void setThread(){
         lyricThread = new Thread(new Runnable() { //处理歌词的线程

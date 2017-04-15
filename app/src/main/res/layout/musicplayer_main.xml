@@ -64,8 +64,14 @@
         android:background="@color/drak_gray"
       />
 
+    <android.support.v4.view.ViewPager
+        android:id="@+id/viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="64dp">
 
-    <include layout="@layout/bottomplayer" />
+
+    </android.support.v4.view.ViewPager>
+
 
     <TextView
         android:id="@+id/lrc"
