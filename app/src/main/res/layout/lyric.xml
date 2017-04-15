@@ -1,27 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="64dp"
     android:orientation="vertical">
 
     <TextView
         android:id="@+id/lyric2"
         android:layout_width="260dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_below="@+id/lyric1"
         android:maxLines="1"
-        android:text="裤钩音乐，热爱生佛" />
+        android:text="裤钩音乐，热爱生佛"
+        android:textSize="10dp"
+        android:layout_marginBottom="12dp"
+        android:layout_alignBottom="@+id/lyric_image"
+        android:layout_alignLeft="@+id/lyric1"
+        android:layout_alignStart="@+id/lyric1" />
 
     <TextView
         android:id="@+id/lyric1"
-        android:layout_width="320dp"
+        android:layout_width="260dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
         android:maxLines="1"
         android:text="扣扣音乐，享受生佛"
-        android:textAlignment="center"
-        android:textSize="24sp" />
+        android:textAlignment="viewStart"
+        android:textSize="16sp"
+        android:layout_above="@+id/lyric2"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="19dp"
+        android:layout_marginEnd="19dp" />
+
+    <ImageView
+        android:id="@+id/lyric_image"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        app:srcCompat="@drawable/ic_lyric"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginLeft="18dp"
+        android:layout_marginStart="18dp" />
 </RelativeLayout>

@@ -49,7 +49,6 @@ public class FragMain extends Fragment {
     ImageButton main_recent_bt;
     ImageButton main_search_bt;
     TextView main_count_tv;
-    TextView lrc;
     MyApplication myApplication = MyApplication.getApplication();//全局变量
     private MessageReceiver messageReceiver;
 
@@ -66,10 +65,7 @@ public class FragMain extends Fragment {
         main_recent_bt = (ImageButton) view.findViewById(R.id.main_recent_bt);
         main_count_tv = (TextView) view.findViewById(R.id.main_count_tv);
         main_search_bt = (ImageButton)view.findViewById(R.id.main_search_bt);
-        lrc = (TextView) view.findViewById(R.id.lrc);
 
-
-        Log.e("tag",myApplication.getData().size()+"");
         main_count_tv.setText(String.valueOf(myApplication.getData().size()));
 
         if(myApplication.isPlay()){

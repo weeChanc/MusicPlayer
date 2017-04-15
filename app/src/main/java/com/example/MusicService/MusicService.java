@@ -65,7 +65,7 @@ public class MusicService extends Service {
                 data = myApplication.getData(); //更新来自新下载的歌曲
 
                 if (intent.getBooleanExtra("NEXT", false)) {
-                    contentView.setImageViewResource(R.id.play_image, R.drawable.pause);
+                    contentView.setImageViewResource(R.id.play_image, R.drawable.ic_pause);
                     notification = builder.setContent(contentView).build();
                     startForeground(1, notification);
                     if(position < data.size()-1) {
@@ -75,7 +75,7 @@ public class MusicService extends Service {
                 }
 
                 if(intent.getBooleanExtra("PRE",false)){
-                    contentView.setImageViewResource(R.id.play_image, R.drawable.pause);
+                    contentView.setImageViewResource(R.id.play_image, R.drawable.ic_pause);
                     notification = builder.setContent(contentView).build();
                     startForeground(1, notification);
                     if(position!=0) {
@@ -92,12 +92,13 @@ public class MusicService extends Service {
                     }
                 }
 
-                upgradeDataNotification(); //notification 标题
 
-                mainMessageCallBack(); // 发送 歌曲数量 以及 当前歌曲
+
 
                 initMediaPlayer(data.get(position).get("data"));
 
+                mainMessageCallBack(); // 发送 歌曲数量 以及 当前歌曲
+                upgradeDataNotification(); //notification 标题
                 progressCallBack();
 
                 new Thread(new Runnable() {
@@ -126,7 +127,7 @@ public class MusicService extends Service {
                 if (mediaPlayer.isPlaying() && !intent.getBooleanExtra("LIST",false)) {
                     mediaPlayer.pause();
                     myApplication.setIsPlay(false);
-                    contentView.setImageViewResource(R.id.play_image, R.drawable.playdark);
+                    contentView.setImageViewResource(R.id.play_image, R.drawable.ic_play);
                     notification = builder.setContent(contentView).build();
                       //设置前台服务图标
                 } else {                                                            //Notification的点击事件 无法自己修改自己的图标、只能通过发广播
@@ -135,8 +136,6 @@ public class MusicService extends Service {
                     if(!intent.getBooleanExtra("LIST",false)){
                         sendBroadcast(intentstartmusic);          //如果是列表中选择，则列表内启动服务播放。否则 继续播放
                     }
-                    contentView.setImageViewResource(R.id.play_image, R.drawable.pause);
-                    notification = builder.setContent(contentView).build(); //设置Notification的图标
                 }
                 startForeground(1, notification);
                 Intent intentchangeMain = new Intent("CHANGEMAINBUTTON");
@@ -339,10 +338,10 @@ public class MusicService extends Service {
         contentView = new RemoteViews(getPackageName(), R.layout.notification);
         contentView.setTextViewText(R.id.title_tv, data.get(position).get("title"));
         contentView.setTextViewText(R.id.singer_tv, data.get(position).get("singer"));
-        contentView.setImageViewResource(R.id.next_image, R.drawable.nextdark);
-        contentView.setImageViewResource(R.id.lyric_image, R.drawable.lyric);
-        contentView.setImageViewResource(R.id.head_image, R.drawable.music);
-        contentView.setImageViewResource(R.id.play_image, R.drawable.playdark);
+        contentView.setImageViewResource(R.id.next_image, R.drawable.ic_next);
+        contentView.setImageViewResource(R.id.lyric_image, R.drawable.ic_lyricnotifi);
+        contentView.setImageViewResource(R.id.head_image, R.drawable.ic_music);
+        contentView.setImageViewResource(R.id.play_image, R.drawable.ic_play);
 
 
         Intent intent = new Intent("notification_play_pause");
@@ -369,6 +368,12 @@ public class MusicService extends Service {
     void upgradeDataNotification() {
         contentView.setTextViewText(R.id.title_tv, data.get(position).get("title"));
         contentView.setTextViewText(R.id.singer_tv, data.get(position).get("singer"));
+
+        if(mediaPlayer.isPlaying()){
+            contentView.setImageViewResource(R.id.play_image,R.drawable.ic_pause);
+        }else
+            contentView.setImageViewResource(R.id.play_image,R.drawable.ic_play);
+
         notification = builder.setContent(contentView).build();
         startForeground(1, notification);
     }

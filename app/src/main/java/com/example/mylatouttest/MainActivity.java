@@ -8,7 +8,6 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.os.Build;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -18,26 +17,12 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Base64;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
-import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
-
 import com.example.MusicService.MusicService;
 import com.example.MyAdapter.ViewPagerAdapter;
 import com.example.VolumechangeReceiver.VolumnChangeReceiver;
@@ -46,27 +31,10 @@ import com.example.fragment.FragLocal;
 import com.example.fragment.FragMain;
 import com.example.fragment.FragLike;
 import com.example.fragment.FragRecent;
-
-import com.example.song.Hash;
-import com.example.song.SongData;
-import com.example.song.SongDataGetter;
-import com.example.song.SongGetter;
-import com.google.gson.Gson;
-
-
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -96,9 +64,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     FragmentManager fm = getSupportFragmentManager();
 
     ArrayList<Map<String, String>> data = null; //所有歌曲信息
-    LyricInfo lyricInfo; //当前播放的歌曲信息
-    Thread lyricThread = new Thread() ;  //播歌线程
-    String temptitle = "";
+//    LyricInfo lyricInfo; //当前播放的歌曲信息
+//    Thread lyricThread = new Thread() ;  //播歌线程
+//    String temptitle = "";
 
     File file ;
     File[] files;
@@ -129,8 +97,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         setContentView(R.layout.musicplayer_main);
 
-        lyricInfo = new LyricInfo();
-        lyricInfo.lineinfo = new ArrayList<>();
+//        lyricInfo = new LyricInfo();
+//        lyricInfo.lineinfo = new ArrayList<>();
 
         file = myApplication.getFile();
         files = file.listFiles();
@@ -148,33 +116,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ViewPagerAdapter adapter = new ViewPagerAdapter(views);
         viewPager.setAdapter(adapter);
 
-        final EditText editText = (EditText) findViewById(R.id.editText);
-        Button button = (Button) findViewById(R.id.button);
+//        final EditText editText = (EditText) findViewById(R.id.editText);
+//        Button button = (Button) findViewById(R.id.button);
 
         android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
         ft.add(R.id.frag_container,new FragMain());
         ft.commit();
 
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        myApplication.setHashList(  SongGetter.getAllSong(editText.getText().toString()));
-                    }
-                }).start();
-
-            }
-        });
-
-        editText.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-
-                return false;
-            }
-        });
+//        button.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                new Thread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        myApplication.setHashList(  SongGetter.getAllSong(editText.getText().toString()));
+//                    }
+//                }).start();
+//
+//            }
+//        });
+//
+//        editText.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//
+//                return false;
+//            }
+//        });
 
 //        bottomSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 //            @Override
@@ -219,14 +187,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
 
-            case R.id.main_like_bt:
+//            case R.id.main_like_bt:
+//
+//                android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
+//                FragLike fragLike = new FragLike();
+//                ft.add(R.id.frag_container, fragLike);
+//                ft.commit();
 
-                android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
-                FragLike fragLike = new FragLike();
-                ft.add(R.id.frag_container, fragLike);
-                ft.commit();
-
-                break;
+//                break;
 
 
 //            case R.id.bottom_next:
@@ -306,7 +274,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setSupportActionBar(toolbar);
         actionBar = getSupportActionBar();
 
-        lrc = (TextView) findViewById(R.id.lrc);
 //
 //        bottomtitle = (TextView)findViewById(R.id.bottom_title);
 //        bottomhead = (ImageView) findViewById(R.id.bottom_head);
@@ -334,71 +301,71 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         insertDesign();
         registerMyReceiver();
 
-        setThread();
+//        setThread();
 
-        myApplication.setThread(lyricThread);
+//        myApplication.setThread(lyricThread);
 
 
     }
 
 
 
-    void getLRC(File file, LyricInfo lyricinfo) {
-        try {
-            FileInputStream fip = new FileInputStream(file);
-            InputStreamReader ips = new InputStreamReader(fip);
-            BufferedReader bufferedReader = new BufferedReader(ips);
+//    void getLRC(File file, LyricInfo lyricinfo) {
+//        try {
+//            FileInputStream fip = new FileInputStream(file);
+//            InputStreamReader ips = new InputStreamReader(fip);
+//            BufferedReader bufferedReader = new BufferedReader(ips);
+//
+//            lyricinfo.lineinfo = new ArrayList<>();
+//
+//            String Line;
+//
+//            while ((Line = bufferedReader.readLine()) != null) {
+//
+//                int last = Line.indexOf(']');
+//
+//                if (Line.startsWith("[ar:")) {
+//                    lyricinfo.artist = Line.substring(4, last);
+//
+//                }
+//
+//                if (Line.startsWith("[ti:")) {
+//                    lyricinfo.title = Line.substring(4, last);
+//                }
+//
+//                if (Line.startsWith("[0")) {
+//
+//                    LineInfo currentlineinfo = new LineInfo();
+//
+//                    currentlineinfo.line = Line.substring(last + 1).trim();
+//                    currentlineinfo.start = (int) (Integer.parseInt(Line.substring(1, 3).trim()) * 60 * 1000 + Double.parseDouble(Line.substring(4, last).trim()) * 1000);
+//                    lyricinfo.lineinfo.add(currentlineinfo);
+//                }
+//            }
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
 
-            lyricinfo.lineinfo = new ArrayList<>();
-
-            String Line;
-
-            while ((Line = bufferedReader.readLine()) != null) {
-
-                int last = Line.indexOf(']');
-
-                if (Line.startsWith("[ar:")) {
-                    lyricinfo.artist = Line.substring(4, last);
-
-                }
-
-                if (Line.startsWith("[ti:")) {
-                    lyricinfo.title = Line.substring(4, last);
-                }
-
-                if (Line.startsWith("[0")) {
-
-                    LineInfo currentlineinfo = new LineInfo();
-
-                    currentlineinfo.line = Line.substring(last + 1).trim();
-                    currentlineinfo.start = (int) (Integer.parseInt(Line.substring(1, 3).trim()) * 60 * 1000 + Double.parseDouble(Line.substring(4, last).trim()) * 1000);
-                    lyricinfo.lineinfo.add(currentlineinfo);
-                }
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private boolean seekLyric(){
-        files = file.listFiles();
-        int pos = 0;
-        Log.e("tag",temptitle);
-        for (; pos <= files.length; pos++) {
-            String absoulutePath = files[pos].getAbsolutePath();
-            if (files.length > 0 && absoulutePath.contains(temptitle) && !absoulutePath.contains(".mp3")) {
-                Log.e("tag", files[pos].getAbsolutePath());
-                getLRC(files[pos], lyricInfo);   //找到并导入对应歌词到类中
-                lyricThread.start();
-                return true;  //找到返回true
-            }
-            if(pos == files.length-1)
-                return false;
-        }
-
-        return false;
-    }
+//    private boolean seekLyric(){
+//        files = file.listFiles();
+//        int pos = 0;
+//        Log.e("tag",temptitle);
+//        for (; pos <= files.length; pos++) {
+//            String absoulutePath = files[pos].getAbsolutePath();
+//            if (files.length > 0 && absoulutePath.contains(temptitle) && !absoulutePath.contains(".mp3")) {
+//                Log.e("tag", files[pos].getAbsolutePath());
+//                getLRC(files[pos], lyricInfo);   //找到并导入对应歌词到类中
+//                lyricThread.start();
+//                return true;  //找到返回true
+//            }
+//            if(pos == files.length-1)
+//                return false;
+//        }
+//
+//        return false;
+//    }
 
     public class MessageReceiver extends BroadcastReceiver {
         @Override
@@ -574,50 +541,50 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        });
 //    } //先不用
 
-    private void setThread(){
-        lyricThread = new Thread(new Runnable() { //处理歌词的线程
-
-            @Override
-            public void run() {
-                try {
-                    int temp = 0;
-                    while (temp < lyricInfo.lineinfo.size() - 1) {
-                        Log.e("tag", "处理歌词线程");
-                        Message message = new Message();
-                        message.obj = "";
-
-                        Thread.sleep(400);
-
-                        for (int j = 0; j < lyricInfo.lineinfo.size() - 1; j++) {
-
-                            if (myApplication.getProgress() >= lyricInfo.lineinfo.get(j).start && myApplication.getProgress() <= lyricInfo.lineinfo.get(j + 1).start) {
-                                message.obj = lyricInfo.lineinfo.get(j).line;
-                                temp = j;
-                                break;
-                            }
-
-                        }
-                        handler.sendMessage(message);
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                    Log.e("tag","线程被打断了");
-                    return ;
-                }
-            }
-        });
-    }
-
-    private class LyricInfo {
-        List<LineInfo> lineinfo;
-        String artist;
-        String title;
-    }
-
-    private class LineInfo {
-        int start;
-        String line;
-    }
+//    private void setThread(){
+//        lyricThread = new Thread(new Runnable() { //处理歌词的线程
+//
+//            @Override
+//            public void run() {
+//                try {
+//                    int temp = 0;
+//                    while (temp < lyricInfo.lineinfo.size() - 1) {
+//                        Log.e("tag", "处理歌词线程");
+//                        Message message = new Message();
+//                        message.obj = "";
+//
+//                        Thread.sleep(400);
+//
+//                        for (int j = 0; j < lyricInfo.lineinfo.size() - 1; j++) {
+//
+//                            if (myApplication.getProgress() >= lyricInfo.lineinfo.get(j).start && myApplication.getProgress() <= lyricInfo.lineinfo.get(j + 1).start) {
+//                                message.obj = lyricInfo.lineinfo.get(j).line;
+//                                temp = j;
+//                                break;
+//                            }
+//
+//                        }
+//                        handler.sendMessage(message);
+//                    }
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                    Log.e("tag","线程被打断了");
+//                    return ;
+//                }
+//            }
+//        });
+//    }
+//
+//    private class LyricInfo {
+//        List<LineInfo> lineinfo;
+//        String artist;
+//        String title;
+//    }
+//
+//    private class LineInfo {
+//        int start;
+//        String line;
+//    }
 
     public void fragRecent(){
         android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();

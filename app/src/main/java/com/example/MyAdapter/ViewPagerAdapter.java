@@ -11,6 +11,8 @@ import android.support.v4.view.PagerAdapter;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -43,26 +45,28 @@ import java.util.Map;
 public class ViewPagerAdapter extends PagerAdapter {
 
     private List<View> list;
-    ArrayList<Map<String, String>> data = null; //所有歌曲信息
-    ImageButton bottomnext;
-    ImageButton bottomprivious;
-    ImageButton bottomplay_pause;
-    ImageView bottomhead ;
-    TextView bottomtitle ;
-    TextView bottomsinger;
-    SeekBar bottomSeekbar;
-    static TextView lyric1;
-    static TextView lyric2;
+    private  ArrayList<Map<String, String>> data = null; //所有歌曲信息
+    private  ImageButton bottomnext;
+    private  ImageButton bottomprivious;
+    private  ImageButton bottomplay_pause;
+    private TextView bottomtitle ;
+    private  TextView bottomsinger;
+    private SeekBar bottomSeekbar;
+    private ImageView lyricImage ;
 
-    MyApplication myApplication;
-    int max;
-    Context context;
-    Thread lyricThread;
-    MessageReciver messageReceiver;
-    LyricInfo lyricInfo; //当前播放的歌曲信息
-    String temptitle = "";
-    File file ;
-    File[] files;
+
+    private static TextView lyric1;
+    private  static TextView lyric2;
+
+    private MyApplication myApplication;
+    private int max;
+    private Context context;
+    private Thread lyricThread;
+    private  MessageReciver messageReceiver;
+    private LyricInfo lyricInfo; //当前播放的歌曲信息
+    private String temptitle = "";
+    private File file ;
+    private File[] files;
 
 
 
@@ -72,7 +76,7 @@ public class ViewPagerAdapter extends PagerAdapter {
         View view = list.get(0);
         View viewlyric = list.get(1);
         bottomtitle = (TextView)view.findViewById(R.id.bottom_title);
-        bottomhead = (ImageView)view.findViewById(R.id.bottom_head);
+        lyricImage = (ImageView)view.findViewById(R.id.lyric_image);
         bottomnext = (ImageButton)view.findViewById(R.id.bottom_next);
         bottomsinger = (TextView)view.findViewById(R.id.bottomsinger);
         bottomSeekbar = (SeekBar)view.findViewById(R.id.bottom_seekbar);
@@ -80,6 +84,9 @@ public class ViewPagerAdapter extends PagerAdapter {
         bottomprivious = (ImageButton)view.findViewById(R.id.bottom_privious);
         lyric1 = (TextView)viewlyric.findViewById(R.id.lyric1);
         lyric2 = (TextView) viewlyric.findViewById(R.id.lyric2);
+
+
+
 
         myApplication = MyApplication.getApplication();
         lyricThread = myApplication.getThread();
@@ -117,10 +124,14 @@ public class ViewPagerAdapter extends PagerAdapter {
             }
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                Intent intent2 = new Intent("com.example.MainActivity.STARTMUSIC");
-                intent2.putExtra("PROGRESS", seekBar.getProgress() - 1);
-                intent2.putExtra("SEEK", true);
-                context.sendBroadcast(intent2);
+                Intent intent = new Intent("com.example.MainActivity.STARTMUSIC");
+                intent.putExtra("PROGRESS", seekBar.getProgress() - 1);
+                intent.putExtra("SEEK", true);
+
+                Intent intent1 =new Intent("CHANGEMAINBUTTON");
+
+                context.sendBroadcast(intent1);
+                context.sendBroadcast(intent);
                 myApplication.setIsSeekBarTouch(false);
             }
         });
@@ -180,6 +191,7 @@ public class ViewPagerAdapter extends PagerAdapter {
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
         list.remove(list.get(position));
+        context.unregisterReceiver(messageReceiver);
     }
 
     @Override
