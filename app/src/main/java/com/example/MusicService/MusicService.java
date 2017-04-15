@@ -48,7 +48,6 @@ public class MusicService extends Service {
     private PendingIntent pendingIntent;
     private NotificationCompat.Builder builder;
     private SQLiteDatabase db;
-    public int pos = -1;
 
     MusicReceiver musicReceiver = new MusicReceiver();
 
