@@ -11,37 +11,41 @@
         android:id="@+id/bottom_seekbar"
         android:layout_width="260dp"
         android:layout_height="wrap_content"
+        android:background="@color/item_normally"
         android:layout_above="@+id/bottom_title"
-        android:layout_toEndOf="@+id/bottom_head"
-        android:layout_toRightOf="@+id/bottom_head"
-        android:background="@color/item_normally" />
+        android:layout_alignLeft="@+id/bottom_title"
+        android:layout_alignStart="@+id/bottom_title" />
+
 
     <com.example.View.AutoMoveTextView
         android:id="@+id/bottom_title"
         android:layout_width="164dp"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_toRightOf="@+id/bottom_head"
         android:background="@color/item_normally"
         android:ellipsize="marquee"
         android:singleLine="true"
         android:textColor="@color/drak_gray"
         android:textSize="16dp"
-        tools:text="fulldata" />
+        tools:text="fulldata"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/bottom_head"
+        android:layout_toEndOf="@+id/bottom_head"
+        android:layout_marginLeft="11dp"
+        android:layout_marginStart="11dp" />
 
     <com.example.View.AutoMoveTextView
         android:id="@+id/bottomsinger"
         android:layout_width="164dp"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/bottom_title"
-        android:layout_toEndOf="@+id/bottom_head"
-        android:layout_toRightOf="@+id/bottom_head"
         android:background="@color/item_normally"
         android:ellipsize="marquee"
         android:singleLine="true"
         android:textColor="@color/drak_gray"
         android:textSize="12sp"
-        tools:text="fulldata" />
+        tools:text="fulldata"
+        android:layout_below="@+id/bottom_title"
+        android:layout_alignLeft="@+id/bottom_title"
+        android:layout_alignStart="@+id/bottom_title" />
 
     <ImageButton
         android:id="@+id/bottom_next"
@@ -57,12 +61,15 @@
 
     <ImageView
         android:id="@+id/bottom_head"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
+        android:layout_width="50dp"
+        android:layout_height="match_parent"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_centerVertical="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
         android:paddingTop="4dp"
+        android:scaleType="fitCenter"
         app:srcCompat="@drawable/ic_changpian_player" />
 
     <ImageButton

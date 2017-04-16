@@ -112,7 +112,7 @@ public class MySimpleAdapter extends BaseAdapter {
             strdur = strdur+"0";
         viewHolder.duration.setText(strdur);
 
-        viewHolder.love_bt.setImageResource(R.drawable.love_dark);
+        viewHolder.love_bt.setImageResource(R.drawable.ic_blackheart);
 
 
         for(Integer a : pos){
@@ -168,17 +168,25 @@ public class MySimpleAdapter extends BaseAdapter {
                         if (cursor.getString(cursor.getColumnIndex("title")).equals(values.get("title")) &&
                                 cursor.getString(cursor.getColumnIndex("duration")).equals(values.get("duration"))) {
                              common = true;
+                            db.delete("Like","title=?",new String[]{String.valueOf(values.get("title"))});
+                            resource.get(position).remove("like");
+                            resource.get(position).put("like","F");
+                            pos.remove(Integer.valueOf(resource.get(position).get("position")));
+                            MySimpleAdapter.this.notifyDataSetChanged();
+
                         }
                     } while (cursor.moveToNext());
                 }
-                if (!common)
+                if (!common) {
                     db.insert("Like", null, values);
-                cursor.close();
+                    resource.get(position).remove("like");
+                    resource.get(position).put("like","T");
+                    pos.add(Integer.valueOf(resource.get(position).get("position")));
+                    MySimpleAdapter.this.notifyDataSetChanged();
+                }
 
-                resource.get(position).remove("like");
-                resource.get(position).put("like","T");
-                pos.add(Integer.valueOf(resource.get(position).get("position")));
-                MySimpleAdapter.this.notifyDataSetChanged();
+
+                cursor.close();
             }
 
         });

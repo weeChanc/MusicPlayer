@@ -148,7 +148,9 @@ public class Start extends Activity {
 
         Cursor cursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, want, MediaStore.Audio.Media.DURATION + ">60000", null, MediaStore.Audio.Media.TITLE);
         if (cursor.moveToFirst()) {
+            int i = 0;
             do {
+                if(i++ == 10 ) break;
                 Map<String, String> map = new HashMap<>();
                 map.put("title", cursor.getString(0));
                 map.put("data", cursor.getString(1));           //读取音乐文件

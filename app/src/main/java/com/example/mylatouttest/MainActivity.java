@@ -69,13 +69,16 @@ public class MainActivity extends AppCompatActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         myApplication = (MyApplication) getApplication();
-
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.musicplayer_main);
+
+        Intent intent = new Intent("com.example.MainActivity.REQUSETRES");
+        sendBroadcast(intent);
 
         file = myApplication.getFile();
         files = file.listFiles();
+
+        myApplication.setActivity(this);
 
         readytoplay();
 
@@ -101,7 +104,9 @@ public class MainActivity extends AppCompatActivity{
     protected void onDestroy() {
 //        manager.removeView(bottomPlayer);
         Log.e("info", "MainAcitivit Destory");
+
         unregisterReceiver(volumnChangeReceiver);
+
         super.onDestroy();
     }
 
@@ -186,10 +191,6 @@ public class MainActivity extends AppCompatActivity{
         ft.replace(R.id.frag_container,new FragDown());
         ft.addToBackStack(null);
         ft.commit();
-    }
-
-    public void stopMusic(){
-        musicService.pauseMusic();
     }
 
 }

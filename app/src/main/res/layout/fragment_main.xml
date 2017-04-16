@@ -54,8 +54,8 @@
             android:background="@drawable/click"
             android:foreground="?android:attr/selectableItemBackground"
             android:paddingTop="6dp"
-            android:scaleType="fitCenter"
-            app:srcCompat="@drawable/ic_love" />
+            android:scaleType="centerInside"
+            app:srcCompat="@drawable/lovebt" />
 
         <ImageButton
             android:id="@+id/main_recent_bt"

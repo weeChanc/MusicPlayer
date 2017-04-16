@@ -122,7 +122,7 @@ public class DownLoadListAdapter extends BaseAdapter {
 
                         data.add(map);
 
-                        myApplication.setData( data );
+                        myApplication.setFinaldata( data );
                         myApplication.setIsPlay(true);
 
                         myApplication.setPosition(position);

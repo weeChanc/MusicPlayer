@@ -4,12 +4,14 @@ import android.app.Activity;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.media.Image;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ListView;
 
 import com.example.MyAdapter.MySimpleAdapter;
@@ -28,6 +30,7 @@ public class FragRecent extends Fragment {
     MySimpleAdapter mySimpleAdapter;
     MyApplication myApplication = MyApplication.getApplication();
     ArrayList<Map<String, String>> data;
+    ImageButton back;
 
 
     @Nullable
@@ -57,11 +60,17 @@ public class FragRecent extends Fragment {
         }
         cursor.close();
 
-
         mySimpleAdapter = new MySimpleAdapter(getContext(), data, R.layout.listitem);
-
         ListView listView = (ListView) view.findViewById(R.id.like_listview);
         listView.setAdapter(mySimpleAdapter);
+
+        back = (ImageButton) view.findViewById(R.id.recent_back);
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().onBackPressed();
+            }
+        });
 
         return view;
     }

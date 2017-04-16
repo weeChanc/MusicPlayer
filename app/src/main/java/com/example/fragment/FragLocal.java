@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
+import android.widget.ImageButton;
 import android.widget.ListView;
 
 import com.example.MyAdapter.MySimpleAdapter;
@@ -27,6 +28,7 @@ public class FragLocal extends Fragment {
 
     ArrayList<Map<String, String>> finaldata;
     MyApplication myApplication;
+    ImageButton back;
 
     @Nullable
     @Override
@@ -36,18 +38,20 @@ public class FragLocal extends Fragment {
         myApplication = MyApplication.getApplication();
         finaldata = myApplication.getFinaldata();
 
-
-
         MySimpleAdapter simpleAdapter = new MySimpleAdapter(getContext(), finaldata, R.layout.listitem);
-
         ListView listview = (ListView) view.findViewById(R.id.local_music_listview);
         LayoutAnimationController lac = new LayoutAnimationController(AnimationUtils.loadAnimation(getContext(),R.anim.spin));
         lac.setOrder(LayoutAnimationController.ORDER_NORMAL);
-
         listview.setLayoutAnimation(lac);
-        listview.setDivider(null);
         listview.setAdapter(simpleAdapter);
 
+        back = (ImageButton) view.findViewById(R.id.local_back);
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().onBackPressed();
+            }
+        });
 
         return view;
     }

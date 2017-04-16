@@ -200,7 +200,7 @@ public class MusicService extends Service {
                     if (!myApplication.isSeekBarTouch()) {
                         myApplication.setProgress(mediaPlayer.getCurrentPosition());
                         try {
-                            Thread.sleep(400);
+                            Thread.sleep(1000);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -278,11 +278,8 @@ public class MusicService extends Service {
         return position;
     }
 
-    public void pauseMusic() {
-        myApplication.setIsPlay(false);
-        if (mediaPlayer.isPlaying()) {       //停止音乐
-            mediaPlayer.pause();
-        }
+    public void stopMusic() {
+       mediaPlayer.stop();
     }
 
     public void resetMusic() {

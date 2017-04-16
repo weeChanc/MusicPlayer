@@ -17,10 +17,12 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.MyAdapter.DownLoadListAdapter;
+import com.example.mylatouttest.MainActivity;
 import com.example.mylatouttest.MyApplication;
 import com.example.mylatouttest.R;
 import com.example.song.Hash;
@@ -44,13 +46,16 @@ public class FragDown extends Fragment {
     List<String> titles;
     MyApplication myApplication = MyApplication.getApplication();
     DownLoadListAdapter downLoadListAdapter;
+    ImageButton back;
 
     public Handler  handler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
             refreshLayout.setRefreshing(false);
-            downLoadListAdapter = new DownLoadListAdapter(getContext(),hashes,R.layout.downitem,new int[]{R.id.item_title,R.id.down_singer,R.id.down_bt});
-            listView.setAdapter(downLoadListAdapter);
+            if(hashes!=null) {
+                downLoadListAdapter = new DownLoadListAdapter(getContext(), hashes, R.layout.downitem, new int[]{R.id.item_title, R.id.down_singer, R.id.down_bt});
+                listView.setAdapter(downLoadListAdapter);
+            }
         }
     };
 
@@ -86,6 +91,13 @@ public class FragDown extends Fragment {
 
         });
 
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().onBackPressed();
+            }
+        });
+
         InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS); //自动弹出软键盘
 
@@ -117,6 +129,7 @@ public class FragDown extends Fragment {
          button = (Button) view.findViewById(R.id.button2);
          listView = (ListView) view.findViewById(R.id.down_list);
          refreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.Refesh);
+         back = (ImageButton)view.findViewById(R.id.down_back);
 
          hashes = new ArrayList<>();
          titles = new ArrayList<>();

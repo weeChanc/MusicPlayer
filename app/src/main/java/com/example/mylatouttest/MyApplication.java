@@ -1,5 +1,6 @@
 package com.example.mylatouttest;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -43,6 +44,15 @@ public class MyApplication  extends Application{
     private Thread thread;
     private SQLiteDatabase dp;
     private List<Hash> hashList;
+    private Activity activity;
+
+    public Activity getActivity() {
+        return activity;
+    }
+
+    public void setActivity(Activity activity) {
+        this.activity = activity;
+    }
 
     public ArrayList<Integer> getPos() {
         return pos;
