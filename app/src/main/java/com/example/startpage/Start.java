@@ -2,8 +2,6 @@ package com.example.startpage;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.AlarmManager;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -16,21 +14,17 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
 import com.example.dataBase.MyDataBaseHelper;
-import com.example.mylatouttest.MainActivity;
 import com.example.mylatouttest.MyApplication;
 import com.example.mylatouttest.R;
 
 import java.io.File;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -42,7 +36,6 @@ public class Start extends Activity {
     private ArrayList<Map<String, String>> data = new ArrayList<>();
     private ArrayList<Map<String, String>> finaldata = new ArrayList<>();
     ImageView imageView;
-    ArrayList<SingerCount> singerCounts = new ArrayList<>();
 
 
     @Override
@@ -50,8 +43,6 @@ public class Start extends Activity {
         myApplication = (MyApplication) getApplication();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
-        initTask task = new initTask();
-        task.execute();
 
         MyDataBaseHelper dpHelper = new MyDataBaseHelper(this,"list.db",null,1);
         SQLiteDatabase dp = dpHelper.getWritableDatabase();
@@ -59,13 +50,9 @@ public class Start extends Activity {
         imageView = (ImageView) findViewById(R.id.im);
         imageView.setImageResource(R.drawable.ic_start);
 
-        try {
-            SharedPreferences share = getSharedPreferences("data", MODE_PRIVATE);
-            myApplication.setPlay_mode(share.getInt("MODE",MyApplication.ORDER));
 
-        } catch (Exception e) {             //根据上次退出的选择模式
-            e.printStackTrace();
-        }
+        initTask task = new initTask();
+        task.execute();
 
         if (Build.VERSION.SDK_INT >= 21) {
             View decorView = getWindow().getDecorView();
@@ -82,9 +69,8 @@ public class Start extends Activity {
         @Override
         protected Void doInBackground(Void... params) {
 
-
-
             long startTime = System.currentTimeMillis();
+
 
             if (ContextCompat.checkSelfPermission(Start.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
                     PackageManager.PERMISSION_GRANTED) {
@@ -106,8 +92,11 @@ public class Start extends Activity {
 
             readMusicData();
             readLovePos();
+//            readPlayTime();
 
             myApplication.setData(data);
+
+
 
             while((System.currentTimeMillis() - startTime) < 1000);
 
@@ -121,10 +110,24 @@ public class Start extends Activity {
         @Override
         protected void onPostExecute(Void aVoid) {
 
-            finish();
-            Intent intent = new Intent("android.intent.action.MAINMUSIC");
-            intent.addCategory("android.intent.category.DEFAULT");
-            startActivity(intent);
+            SharedPreferences share = getSharedPreferences("data", MODE_PRIVATE);
+            int mode = share.getInt("MODE",-1);
+            if(mode == -1) {
+                myApplication.setPlay_mode(MyApplication.ORDER);
+                Intent intent = new Intent("android.intent.action.WELCOME");
+                intent.addCategory("android.intent.category.DEFAULT");
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);//若没有数据则是第一次打开  开始导航页面
+                startActivity(intent);
+                share.edit().putInt("MODE",MyApplication.ORDER).apply();
+            }else {
+
+                myApplication.setPlay_mode(mode);   //设置上次退出的选择模式
+                Intent intent = new Intent("android.intent.action.MAINMUSIC");
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                intent.addCategory("android.intent.category.DEFAULT");
+                startActivity(intent);
+                finish();
+            }
             super.onPostExecute(aVoid);
         }
 
@@ -147,10 +150,10 @@ public class Start extends Activity {
                 MediaStore.Audio.Media.DISPLAY_NAME, MediaStore.Audio.Media.DURATION};
 
         Cursor cursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, want, MediaStore.Audio.Media.DURATION + ">60000", null, MediaStore.Audio.Media.TITLE);
-        if (cursor.moveToFirst()) {
-            int i = 0;
+        if (cursor.moveToFirst() && cursor!=null) {
+//            int i = 0;
             do {
-                if(i++ == 10 ) break;
+//                if(i++ == 10 ) break;
                 Map<String, String> map = new HashMap<>();
                 map.put("title", cursor.getString(0));
                 map.put("data", cursor.getString(1));           //读取音乐文件
@@ -189,21 +192,51 @@ public class Start extends Activity {
     private void readLovePos(){
 
         ArrayList<Integer> pos = myApplication.getPos();
+//        ArrayList<String> lover = myApplication.getLover();
         SQLiteDatabase db = myApplication.getDp();
+
         Cursor cursor = db.query("Like", null, null, null, null, null, null, null);
         if(cursor.moveToFirst()){
             do{
-                pos.add(Integer.valueOf(cursor.getString(cursor.getColumnIndex("position"))));
+                pos.add(cursor.getInt(cursor.getColumnIndex("position")));
+//                lover.add(cursor.getString(cursor.getColumnIndex("singer")));
             }while(cursor.moveToNext());
         }
+
         cursor.close();
     }
 
-    public static class SingerCount{
-        public static String singer;
-        public static int count;
-
-    }
+//    private void readPlayTime(){
+//        SQLiteDatabase db = myApplication.getDp();
+//        Cursor cursor = db.query("Recent", null, null, null, null, null, null,"id DESC");
+//        if(cursor.moveToFirst()){
+//            int time =  0;
+//            String a = "a";
+//            String b = "b";
+//            int i = 0 ;
+//            do{
+//                 if(i++ > 2000) break;
+//                 a = cursor.getColumnName(cursor.getColumnIndex("title"));
+//                 if(cursor.moveToNext())break;
+//                 b = cursor.getColumnName(cursor.getColumnIndex("title"));
+//
+//                if(a.equals(b)){
+//                    time++;
+//                }else{
+//                    if(time >= 5){
+//                        time = 0;
+//                        lover.add(a);
+//                    }
+//                }
+//
+//            }while(true);
+//            cursor.close();
+//
+//            myApplication.setLover(lover);
+//
+//        }
+//
+//    }
 
 
 }

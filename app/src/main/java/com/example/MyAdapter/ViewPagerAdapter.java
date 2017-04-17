@@ -399,7 +399,7 @@ public class ViewPagerAdapter extends PagerAdapter {
             try {
                 String absoulutePath = files[pos].getAbsolutePath();
                 if (files.length > 0 && absoulutePath.contains(temptitle) && !absoulutePath.contains(".mp3")) {
-                    Log.e("tag", files[pos].getAbsolutePath());
+                    Log.e("eee", files[pos].getAbsolutePath());
                     getLRC(files[pos], lyricInfo);   //找到并导入对应歌词到类中
                     lyricThread.start();
                     return true;  //找到返回true
@@ -424,9 +424,7 @@ public class ViewPagerAdapter extends PagerAdapter {
             lyricinfo.lineinfo = new ArrayList<>();
 
             String Line;
-
             while ((Line = bufferedReader.readLine()) != null) {
-
                 int last = Line.indexOf(']');
 
                 if (Line.startsWith("[ar:")) {

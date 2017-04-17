@@ -114,7 +114,7 @@ public class MySimpleAdapter extends BaseAdapter {
 
         viewHolder.love_bt.setImageResource(R.drawable.ic_blackheart);
 
-
+        if(pos.size()!=0 && pos!=null)
         for(Integer a : pos){
             if(resource.get(position).get("position").equals(a.toString()))
             {

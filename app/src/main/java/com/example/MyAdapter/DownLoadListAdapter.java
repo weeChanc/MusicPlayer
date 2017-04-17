@@ -107,18 +107,19 @@ public class DownLoadListAdapter extends BaseAdapter {
                     public void run() {
 
                         String path;
+                        MyApplication myApplication = MyApplication.getApplication();
+                        ArrayList<Map<String,String >> data = myApplication.getData();
 
                         path = SongGetter.download(resource.get(position).getFileHash(),"准备播放: " +resource.get(position).getFileName().replaceAll("<em>","").replaceAll("</em>",""));
 
-                        MyApplication myApplication = MyApplication.getApplication();
+
                         Map<String,String> map = new HashMap<>();
                         map.put("title",resource.get(position).getSongName().replaceAll("<em>","").replaceAll("</em>",""));
                         map.put("data",path);
                         map.put("singer",resource.get(position).getSingerName().replaceAll("<em>","").replaceAll("</em>",""));
                         map.put("fulltitle",resource.get(position).getFileName().replaceAll("<em>","").replaceAll("</em>",""));
                         map.put("duration",SongGetter.getSongData(resource.get(position).getFileHash()).getData().getTimelength());
-
-                        ArrayList<Map<String,String >> data = myApplication.getData();
+                        map.put("position",data.size()+"");
 
                         data.add(map);
 

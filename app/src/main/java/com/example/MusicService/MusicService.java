@@ -93,7 +93,7 @@ public class MusicService extends Service {
                 mainMessageCallBack(); // 发送 歌曲数量 以及 当前歌曲
                 upgradeDataNotification(); //notification 标题
                 progressCallBack();
-                putInDatabase();
+                putInData();
             }
 
 
@@ -240,7 +240,7 @@ public class MusicService extends Service {
 
 
 
-    public void putInDatabase(){
+    public void putInData(){
 
         new Thread(new Runnable() {
             @Override
@@ -255,6 +255,9 @@ public class MusicService extends Service {
                 db.insert("Recent", null, values);  //同歌曲不加入啊
             }
         }).start();  //播放历史 加入数据库存下
+
+
+
     }
 
 

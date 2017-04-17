@@ -29,17 +29,27 @@
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTask">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAINMUSIC" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
 
-        <activity
-            android:name="com.example.startpage.Start">
+        <activity android:name="com.example.startpage.Start">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER"/>
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name="com.example.startpage.Welcome">
+
+            <intent-filter>
+                <action android:name="android.intent.action.WELCOME"/>
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
 
         </activity>

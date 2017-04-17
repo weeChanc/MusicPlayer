@@ -32,6 +32,7 @@ public class MyApplication  extends Application{
     private  ArrayList<Map<String, String>> data;
     private ArrayList<Map<String, String>> finaldata = new ArrayList<>();
     private ArrayList<Integer> pos =  new ArrayList<>();
+    private ArrayList<String> lover = new ArrayList<>();
     private boolean isPlay = false ;
     private File[] files;
     private int seekBarMax;
@@ -45,6 +46,14 @@ public class MyApplication  extends Application{
     private SQLiteDatabase dp;
     private List<Hash> hashList;
     private Activity activity;
+
+    public ArrayList<String> getLover() {
+        return lover;
+    }
+
+    public void setLover(ArrayList<String> lover) {
+        this.lover = lover;
+    }
 
     public Activity getActivity() {
         return activity;
