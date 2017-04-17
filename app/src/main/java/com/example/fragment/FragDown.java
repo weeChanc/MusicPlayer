@@ -2,6 +2,7 @@ package com.example.fragment;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -118,6 +119,8 @@ public class FragDown extends Fragment {
                 }).start();
             }
         });
+
+        refreshLayout.setColorSchemeColors(0xff34a853,0xffea4335,0xfffbbc05,0xff4285f4);
     }
 
     @Nullable

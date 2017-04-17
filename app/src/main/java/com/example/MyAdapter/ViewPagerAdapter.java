@@ -66,7 +66,6 @@ public class ViewPagerAdapter extends PagerAdapter {
     private TextView bottomtitle;
     private TextView bottomsinger;
     private SeekBar bottomSeekbar;
-    private ImageView lyricImage;
     private SongData songData;
 
     Bitmap bitmap;
@@ -96,7 +95,6 @@ public class ViewPagerAdapter extends PagerAdapter {
 
         picHandler = new PicHandler();
         bottomtitle = (TextView) view.findViewById(R.id.bottom_title);
-        lyricImage = (ImageView) view.findViewById(R.id.lyric_image);
         bottomnext = (ImageButton) view.findViewById(R.id.bottom_next);
         bottomsinger = (TextView) view.findViewById(R.id.bottomsinger);
         bottomSeekbar = (SeekBar) view.findViewById(R.id.bottom_seekbar);

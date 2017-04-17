@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="52dp"
         android:background="@color/colortoolbarBlue"
-        android:elevation="10dp"
+        android:elevation="4dp"
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme"
         android:weightSum="1">
@@ -47,6 +47,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/colorbuttomBlue"
+        android:elevation="2dp"
         android:orientation="horizontal">
 
 
@@ -55,15 +57,19 @@
             android:layout_width="306dp"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="搜索歌名或歌手"
+            android:hint="输入歌名或歌手..."
             android:imeOptions="actionSearch"
-            android:inputType="textPersonName" />
+            android:inputType="textPersonName"
+            android:textColor="@android:color/background_light"
+            android:textColorHint="@color/colorWhite" />
 
         <Button
             android:id="@+id/button2"
             android:layout_width="match_parent"
-            android:layout_height="36dp"
-            android:text="搜索" />
+            android:layout_height="match_parent"
+            android:background="@drawable/click"
+            android:text="搜索"
+            android:textColor="@android:color/background_light" />
 
     </LinearLayout>
 

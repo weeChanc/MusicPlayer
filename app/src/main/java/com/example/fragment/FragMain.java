@@ -127,6 +127,7 @@ public class FragMain extends Fragment {
             }
         });
 
+
         main_play_pause_bt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

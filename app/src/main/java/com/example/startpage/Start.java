@@ -40,6 +40,18 @@ public class Start extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        if (ContextCompat.checkSelfPermission(Start.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
+                PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(Start.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+        }//运行权限
+
+        if( ContextCompat.checkSelfPermission(Start.this,Manifest.permission.SYSTEM_ALERT_WINDOW) != PackageManager.PERMISSION_GRANTED ){
+            ActivityCompat.requestPermissions(Start.this,new String[]{Manifest.permission.SYSTEM_ALERT_WINDOW},1);
+        }
+
+        while (ContextCompat.checkSelfPermission(Start.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
+                PackageManager.PERMISSION_GRANTED);
         myApplication = (MyApplication) getApplication();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
@@ -72,14 +84,7 @@ public class Start extends Activity {
             long startTime = System.currentTimeMillis();
 
 
-            if (ContextCompat.checkSelfPermission(Start.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
-                    PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(Start.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-            }//运行权限
 
-            if( ContextCompat.checkSelfPermission(Start.this,Manifest.permission.SYSTEM_ALERT_WINDOW) != PackageManager.PERMISSION_GRANTED ){
-                ActivityCompat.requestPermissions(Start.this,new String[]{Manifest.permission.SYSTEM_ALERT_WINDOW},1);
-            }
 
             String directory = Environment.getExternalStorageDirectory().getAbsoluteFile().getPath() + "/MyLyric/";
 

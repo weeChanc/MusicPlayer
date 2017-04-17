@@ -52,11 +52,11 @@
 
 
 
-    <com.example.View.toolsView
+    <com.example.View.ToolsView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
-        </com.example.View.toolsView>
+        </com.example.View.ToolsView>
 
 
     <ListView

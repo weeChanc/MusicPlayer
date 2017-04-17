@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import com.example.mylatouttest.MyApplication;
 import com.example.mylatouttest.R;
@@ -22,7 +23,7 @@ import static android.content.Context.MODE_PRIVATE;
  * Created by 铖哥 on 2017/4/9.
  */
 
-public class toolsView extends LinearLayout {
+public class ToolsView extends LinearLayout {
 
 
     public static final int ORDER = 1;
@@ -35,7 +36,7 @@ public class toolsView extends LinearLayout {
     int mode = myApplication.getPlay_mode();
     Context context;
 
-    public toolsView(final Context context, @Nullable AttributeSet attrs) {
+    public ToolsView(final Context context, @Nullable AttributeSet attrs) {
 
         super(context, attrs);
         this.context = context;
@@ -51,12 +52,14 @@ public class toolsView extends LinearLayout {
         });
 
         if (mode == ORDER) {
-            mode_bt.setImageResource(R.drawable.orderplay);
+            mode_bt.setImageResource(R.drawable.ic_order);
         } else if (mode == RANDOM) {
-            mode_bt.setImageResource((R.drawable.randomblue));
+            mode_bt.setImageResource((R.drawable.ic_random));
         } else if (mode == LOOP) {
-            mode_bt.setImageResource((R.drawable.loopplaybule));      //初始化图标
+            mode_bt.setImageResource((R.drawable.ic_loop));      //初始化图标
         }
+
+
 
 
     }
@@ -68,11 +71,11 @@ public class toolsView extends LinearLayout {
         ++mode;
         Log.e("tag",mode+"");
         if (mode == ORDER) {
-            mode_bt.setImageResource(R.drawable.orderplay);
+            mode_bt.setImageResource(R.drawable.ic_order);
         } else if (mode == RANDOM) {
-            mode_bt.setImageResource((R.drawable.randomblue));
+            mode_bt.setImageResource((R.drawable.ic_random));
         } else if (mode == LOOP) {
-            mode_bt.setImageResource((R.drawable.loopplaybule));      //设置模式
+            mode_bt.setImageResource((R.drawable.ic_loop));      //设置模式
         }
         myApplication.setPlay_mode(mode);
         editor.putInt("MODE", mode);  //按下即保存

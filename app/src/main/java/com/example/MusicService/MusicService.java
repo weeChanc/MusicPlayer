@@ -330,7 +330,7 @@ public class MusicService extends Service {
                 .setContentIntent(pendingIntent)
                 .setContent(contentView)
                 .setContentIntent(pendingIntent)
-                .setSmallIcon(R.drawable.delete)
+                .setSmallIcon(R.drawable.ic_yinfu)
                 .build();
         startForeground(1, notification);
 
