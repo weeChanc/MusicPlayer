@@ -41,9 +41,6 @@ public class MainActivity extends AppCompatActivity{
 
     private MyApplication myApplication; //全局变量
 
-    View bottomPlayer;
-
-
     FragmentManager fm = getSupportFragmentManager();
 
     File file ;
@@ -51,7 +48,6 @@ public class MainActivity extends AppCompatActivity{
 
     private VolumnChangeReceiver volumnChangeReceiver;
     private MusicService musicService;
-    private WindowManager manager;
 
 
     private ServiceConnection connection = new ServiceConnection() {
@@ -68,6 +64,7 @@ public class MainActivity extends AppCompatActivity{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         myApplication = (MyApplication) getApplication();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.musicplayer_main);
@@ -80,22 +77,22 @@ public class MainActivity extends AppCompatActivity{
 
         myApplication.setActivity(this);
 
-        readytoplay();
+        readytoplay(); //绑服务 注册广播( //音量变化广播//耳机插拔广播)
 
-        LayoutInflater layoutInflater = LayoutInflater.from(this);
-        View bottomPlayer = layoutInflater.inflate(R.layout.bottomplayer,null);
-        View lyric = layoutInflater.inflate(R.layout.lyric,null);
+        LayoutInflater layoutInflater = LayoutInflater.from(this);              //底部播放栏 用ViewPager实现 可以左右滑动 右边显示歌词 左边为底部播放器
+        View bottomPlayer = layoutInflater.inflate(R.layout.bottomplayer,null); //填充底部播放栏View
+        View lyric = layoutInflater.inflate(R.layout.lyric,null);               //填充歌词显示的View
         ArrayList<View> views = new ArrayList<>();
         views.add(bottomPlayer);
         views.add(lyric);
 
         ViewPager viewPager = (ViewPager) findViewById(R.id.viewPager);
-        ViewPagerAdapter adapter = new ViewPagerAdapter(views,this);
-        viewPager.setAdapter(adapter);
+        ViewPagerAdapter adapter = new ViewPagerAdapter(views,this);            //构建适配器
+        viewPager.setAdapter(adapter);                                          //给ViewPager设置适配器
 
         android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
         ft.add(R.id.frag_container,new FragMain());
-        ft.commit();
+        ft.commit();                                                            //启动主界面的Fragment
 
     }
 
@@ -135,18 +132,9 @@ public class MainActivity extends AppCompatActivity{
         if(System.currentTimeMillis() - start > 2000 && fm.getBackStackEntryCount() == 0){
             start = System.currentTimeMillis();
             Toast.makeText(this,"再按一次退出", Toast.LENGTH_SHORT).show();
-        }else {
+        }else {                                                                 //设置按两次退出程序
             super.onBackPressed();
         }
-    }
-
-    private void getView() {
-
-//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-//        ActionBar actionBar;
-//        setSupportActionBar(toolbar);
-//        actionBar = getSupportActionBar();
-
     }
 
     private void readytoplay() {
@@ -154,40 +142,38 @@ public class MainActivity extends AppCompatActivity{
         Intent intent = new Intent(MainActivity.this, MusicService.class);
         bindService(intent, connection, BIND_AUTO_CREATE);
         startService(intent);
-
-        getView();
-        insertDesign();
+        insertDesign();                 //隐藏状态栏
         registerMyReceiver();
 
     }
 
-    public void fragRecent(){
+    public void fragRecent(){                                                               //启动最近播放列表
         android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
-        ft.setCustomAnimations(R.anim.up_in,R.anim.down_out,R.anim.up_in,R.anim.up_out);
+        ft.setCustomAnimations(R.anim.up_in,R.anim.down_out,R.anim.up_in,R.anim.up_out);    //动画设置
         ft.replace(R.id.frag_container,new FragRecent());
         ft.addToBackStack(null);
         ft.commit();
     }
 
-    public void fragLike(){
+    public void fragLike(){                                                                 //启动我喜欢的列表
         android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
-        ft.setCustomAnimations(R.anim.up_in,R.anim.down_out,R.anim.up_in,R.anim.up_out);
+        ft.setCustomAnimations(R.anim.up_in,R.anim.down_out,R.anim.up_in,R.anim.up_out);    //动画设置
         ft.replace(R.id.frag_container,new FragLike());
         ft.addToBackStack(null);
         ft.commit();
     }
 
-    public void fragLocal(){
+    public void fragLocal(){                                                                     //启动本地音乐列表
         android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
-        ft.setCustomAnimations(R.anim.right_in,R.anim.left_out,R.anim.left_in,R.anim.right_out);
+        ft.setCustomAnimations(R.anim.right_in,R.anim.left_out,R.anim.left_in,R.anim.right_out);//动画设置
         ft.replace(R.id.frag_container,new FragLocal());
         ft.addToBackStack(null);
         ft.commit();
     }
 
-    public void fragDown(){
+    public void fragDown(){                                                                      //启动下载列表
         android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
-        ft.setCustomAnimations(R.anim.right_in,R.anim.left_out,R.anim.left_in,R.anim.right_out);
+        ft.setCustomAnimations(R.anim.right_in,R.anim.left_out,R.anim.left_in,R.anim.right_out); //动画设置
         ft.replace(R.id.frag_container,new FragDown());
         ft.addToBackStack(null);
         ft.commit();

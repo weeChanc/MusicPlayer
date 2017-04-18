@@ -38,11 +38,11 @@ public class MusicService extends Service {
     public static final int LOOP = 3;
 
     private MyApplication myApplication;
-    private MediaPlayer mediaPlayer = new MediaPlayer();
+    private MediaPlayer mediaPlayer = new MediaPlayer();    //创建媒体播放器
     private ArrayList<Map<String, String>> data = new ArrayList<>();
-    private int play_mode = ORDER;  // o 顺序播放 r 随机播放 l 单曲循环
+    private int play_mode = ORDER;      // o 顺序播放 r 随机播放 l 单曲循环
     private MBind mbind = new MBind();
-    public int position = 0; //当前播放曲目的位置
+    public int position = 0;            //当前播放曲目的位置
     private RemoteViews contentView;
     private Notification notification;
     private PendingIntent pendingIntent;
@@ -62,24 +62,22 @@ public class MusicService extends Service {
             data = myApplication.getData(); //更新来自新下载的歌曲
             Log.e("tag", data.size()+"");
             if(data.size()!=0)
-            if (intent.getAction().equals("com.example.MainActivity.STARTMUSIC")) {
+            if (intent.getAction().equals("com.example.MainActivity.STARTMUSIC")) {   //任何播放音乐的操作都要发送该广播
 
-
-
-                if (intent.getBooleanExtra("NEXT", false)) {
-                    contentView.setImageViewResource(R.id.play_image, R.drawable.ic_pause);
+                if (intent.getBooleanExtra("NEXT", false)) {                                //判断按下的是否为下一首
+                    contentView.setImageViewResource(R.id.play_image, R.drawable.ic_pause); //更改前台播放栏图标为暂停
                     notification = builder.setContent(contentView).build();
                     startForeground(1, notification);
                     if(position < data.size()-1) {
                         position = position + 1;  // 避免最后一首 选择下一首崩溃的情况
                     }
-                    mediaPlayer.reset();
+                    mediaPlayer.reset();        //下一首之前要重置播放器
                 }
 
                 if(intent.getBooleanExtra("PRE",false)){
                     contentView.setImageViewResource(R.id.play_image, R.drawable.ic_pause);
                     notification = builder.setContent(contentView).build();
-                    startForeground(1, notification);
+                    startForeground(1, notification);                                       //判断是否为上一首 与下一首同理
                     if(position!=0) {
                         position = position - 1;
                         mediaPlayer.reset();
@@ -89,10 +87,10 @@ public class MusicService extends Service {
 
                 if (intent.getBooleanExtra("POSITION", false)) {
                     setPosition(intent.getIntExtra("LOCATION", 0));
-                        mediaPlayer.reset(); //同样的 不reset就变成继续了
+                        mediaPlayer.reset();                        //如果有位置信息 则根据发送过来的位置选择播放的曲目
                 }
 
-                initMediaPlayer(data.get(position).get("data"));
+                initMediaPlayer(data.get(position).get("data"));        //根据当当前位置选择播放的曲目 初始化播放器并开始播放音乐
                 mainMessageCallBack(); // 发送 歌曲数量 以及 当前歌曲
                 upgradeDataNotification(); //notification 标题
                 progressCallBack();

@@ -42,7 +42,6 @@ public class WelcomePagerAdapter extends PagerAdapter {
                 Intent intent = new Intent("android.intent.action.MAINMUSIC");
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 context.startActivity(intent);
-                context.sendBroadcast(intent);//广播活动
             }
         });
 

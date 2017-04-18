@@ -178,8 +178,10 @@ public class Start extends Activity {
             finaldata.get(i).put("position", i + "");
         }
         /**
-         *    歌曲存在此位置绝对不变
-         *    在3个列表公用一个适配器时 点击列表播放音乐
+         *    该data为音乐播放的时候选择路径的唯一一个数据源
+         *    每个表的数据库都包含对应歌曲在此data中的position
+         *    在不同列表中点击item项播放歌曲的时候
+         *    就可以根据该position选择对应的歌曲播放
          */
 
         myApplication.setData(data);
@@ -194,7 +196,7 @@ public class Start extends Activity {
         Cursor cursor = db.query("Like", null, null, null, null, null, null, null);
         if (cursor.moveToFirst()) {
             do {
-                pos.add(cursor.getInt(cursor.getColumnIndex("position")));          //为每首歌的相对位置
+                pos.add(cursor.getInt(cursor.getColumnIndex("position")));          //添加我喜欢的歌曲到Arraylist中
             } while (cursor.moveToNext());
         }
 
