@@ -65,7 +65,7 @@ public class Start extends Activity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_start);
-        MyDataBaseHelper dpHelper = new MyDataBaseHelper(this, "list.db", null, 1);
+        MyDataBaseHelper dpHelper = new MyDataBaseHelper(this, "list.db", null, 3);
         SQLiteDatabase dp = dpHelper.getWritableDatabase();
         myApplication.setDp(dp);
         imageView = (ImageView) findViewById(R.id.im);
@@ -153,18 +153,16 @@ public class Start extends Activity {
 
     private void readMusicData() {
 
-        String[] want = new String[]{MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.DATA, MediaStore.Audio.Media.ARTIST,
-                MediaStore.Audio.Media.DISPLAY_NAME, MediaStore.Audio.Media.DURATION};
-
-        Cursor cursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, want, MediaStore.Audio.Media.DURATION + ">60000", null, MediaStore.Audio.Media.TITLE);
+       SQLiteDatabase db =  myApplication.getDp();
+        Cursor cursor = db.query("MyMusic",null,null,null,null,null,null);
         if (cursor.moveToFirst() && cursor != null) {            //读取时间大于一分钟的歌曲  并且按照歌名排序
             do {
                 Map<String, String> map = new HashMap<>();
-                map.put("title", cursor.getString(0));       //歌曲标题
-                map.put("data", cursor.getString(1));        //歌曲路径              //读取音乐文件
-                map.put("singer", cursor.getString(2));      //歌手名
-                map.put("fulltitle", cursor.getString(3));   //歌手名+歌曲名
-                map.put("duration", cursor.getInt(4) + "");  //歌曲长度
+                map.put("title", cursor.getString(cursor.getColumnIndex("title")));       //歌曲标题
+                map.put("data", cursor.getString(cursor.getColumnIndex("data")));        //歌曲路径              //读取音乐文件
+                map.put("singer", cursor.getString(cursor.getColumnIndex("singer")));      //歌手名
+                map.put("fulltitle", cursor.getString(cursor.getColumnIndex("fulltitle")));   //歌手名+歌曲名
+                map.put("duration", cursor.getInt(cursor.getColumnIndex("duration"))+"");  //歌曲长度
                 data.add(map);
                 finaldata.add(map);
 

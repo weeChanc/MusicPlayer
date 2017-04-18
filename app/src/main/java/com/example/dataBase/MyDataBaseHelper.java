@@ -11,18 +11,24 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class MyDataBaseHelper extends SQLiteOpenHelper {
 
     public static final String LIKE = "create table Like ("
-            +"id integer primary key autoincrement, "
+            +"position integer primary key autoincrement, "
             +"duration integer, "
             +"singer text, "
-            +"title text, "
-            +"position integer)";
+            +"title text)";
 
     public static final String RECENT = "create table Recent ("
-            +"id integer primary key autoincrement, "
+            +"position integer primary key autoincrement, "
             +"duration integer, "
             +"singer text, "
-            +"title text, "
-            +"position integer)";
+            +"title text)";
+
+    public static final String MYMUSIC = "create table MyMusic ("
+            +"position integer primary key autoincrement, "
+            +"duration integer, "
+            +"singer text, "
+            +"data text, "
+            +"fulltitle text, "
+            +"title text)";
 
     public MyDataBaseHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
@@ -32,10 +38,14 @@ public class MyDataBaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(LIKE);
         db.execSQL(RECENT);
+        db.execSQL(MYMUSIC);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL("drop table if exists Book");
+        db.execSQL("drop table if exists Category");
+        onCreate(db);
 
     }
 }

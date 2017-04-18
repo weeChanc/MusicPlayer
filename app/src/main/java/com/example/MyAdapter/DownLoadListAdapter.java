@@ -1,7 +1,10 @@
 package com.example.MyAdapter;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -37,8 +40,6 @@ public class DownLoadListAdapter extends BaseAdapter {
     private String singer;
     Toaster toaster = new Toaster();
     private MyApplication myApplication = MyApplication.getApplication();
-
-
 
     public DownLoadListAdapter(Context context, ArrayList<Hash> resource, int layoutID, int[] to) {
         super();
@@ -130,6 +131,15 @@ public class DownLoadListAdapter extends BaseAdapter {
 
                             map.put("duration", SongGetter.getSongData(resource.get(position).getFileHash()).getData().getTimelength());
                             map.put("position", data.size() + "");
+
+                            SQLiteDatabase db = myApplication.getDp();
+                            ContentValues values = new ContentValues();
+                            values.put("title", map.get("title"));
+                            values.put("data",map.get("data"));
+                            values.put("singer", map.get("singer"));
+                            values.put("fulltitle",map.get("fulltitle"));
+                            values.put("duration", map.get("duration"));
+                            db.insert("MyMusic", null, values);  //导入到自己的数据库
                             
                             toaster.sendEmptyMessage(1);
 

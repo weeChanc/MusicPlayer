@@ -211,23 +211,29 @@ public class MySimpleAdapter extends BaseAdapter {
                 ensure.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-
+                        SQLiteDatabase db = myApplication.getDp();
                         if( checkBox.isChecked()){
 
                             String path = data.get(Integer.parseInt(resource.get(position).get("position"))).get("data");
                             File file = new File(path);
                             if(file.delete()){
                                 Toast.makeText(context, "删除成功", Toast.LENGTH_SHORT).show();
-                                myApplication.getFinaldata().remove((resource.get(position).get("position")));
+                               for(Map map : myApplication.getFinaldata()){
+                                   if(map.get("title").equals(resource.get(position).get("title"))) {
+                                       myApplication.getFinaldata().remove(map);
+                                       break;
+                                   }
+                               }
+                                db.delete("MyMusic","title=?",new String[]{resource.get(position).get("title")});
+                                myApplication.getDp().delete("MyMusic","title=?",new String[]{resource.get(position).get("title")});
                             }else{
                                 Toast.makeText(context, "删除失败", Toast.LENGTH_SHORT).show();;
                             }
                         }
 
-                        SQLiteDatabase db = myApplication.getDp();
+
                         db.delete("Like", "title=?", new String[]{resource.get(position).get("title")});
                         db.delete("Recent", "title=?", new String[]{resource.get(position).get("title")});
-
                         for(Integer p : pos){
                             Log.e("find1",p.toString());
                             Log.e("find2",Integer.valueOf(resource.get(position).get("position")).toString());

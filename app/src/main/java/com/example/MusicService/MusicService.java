@@ -30,6 +30,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * 服务主要用于控制音乐播放(包括列表播放 按键播放 播放模式)
+ * 控制前台服务
+ */
 
 public class MusicService extends Service {
 
@@ -118,21 +122,21 @@ public class MusicService extends Service {
                     }
                 }
                 startForeground(1, notification);
-                Intent intentchangeMain = new Intent("CHANGEMAINBUTTON");
+                Intent intentchangeMain = new Intent("CHANGEMAINBUTTON"); //广播修改图标
                 sendBroadcast(intentchangeMain);
             }
 
             if (intent.getAction().equals("CHANGENEXT")) {
                 myApplication.setIsPlay(true);
-                Intent intentplay = new Intent("com.example.MainActivity.STARTMUSIC");
+                Intent intentplay = new Intent("com.example.MainActivity.STARTMUSIC"); //切歌对应广播
                 intentplay.putExtra("NEXT", true);
 
-                Intent intentchangeMain = new Intent("CHANGEMAINBUTTON");
+                Intent intentchangeMain = new Intent("CHANGEMAINBUTTON");//广播修改图标
                 sendBroadcast(intentchangeMain);
                 sendBroadcast(intentplay);
             }
 
-            if (intent.getAction().equals("com.example.MainActivity.REQUSETRES")) {
+            if (intent.getAction().equals("com.example.MainActivity.REQUSETRES")) {   //请求更新主界面数据
                 mainMessageCallBack();
             }
 
@@ -170,9 +174,7 @@ public class MusicService extends Service {
                     sendBroadcast(intent2);
                 }
             });
-
-
-            initNotification();
+            initNotification();  //创建前台服务
         }catch (Exception e){
             e.printStackTrace();
             onDestroy();
@@ -197,7 +199,7 @@ public class MusicService extends Service {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                Intent intent = new Intent("com.example.MusicService.PROGRESS");
+                Intent intent = new Intent("com.example.MusicService.PROGRESS");   //定时 1S 发送广播改变进度条以及歌词信息
                 while (mediaPlayer.isPlaying()) {
                     if (!myApplication.isSeekBarTouch()) {
                         myApplication.setProgress(mediaPlayer.getCurrentPosition());
@@ -254,7 +256,7 @@ public class MusicService extends Service {
                 values.put("position", position);
 
                 db.delete("Recent","title=?",new String[]{data.get(position).get("title")});
-                db.insert("Recent", null, values);  //同歌曲不加入啊
+                db.insert("Recent", null, values);  //先删再加保证只存在一个
             }
         }).start();  //播放历史 加入数据库存下
 
@@ -269,7 +271,7 @@ public class MusicService extends Service {
             if(position < data.size()-1) {
                 position++;                                          // 避免最后一首 选择下一首崩溃的情况
             }
-            mediaPlayer.reset();          //根据模式选择下一首播放歌曲的位置
+            mediaPlayer.reset();                                    //根据模式选择下一首播放歌曲的位置
         } else if (play_mode == RANDOM) {
             position = (int) (Math.rint(Math.random() * data.size()));
         }
@@ -279,16 +281,8 @@ public class MusicService extends Service {
     }
 
     public int setPosition(int position) {
-        this.position = position;
+        this.position = position;                   //手动设置位置
         return position;
-    }
-
-    public void stopMusic() {
-       mediaPlayer.stop();
-    }
-
-    public void resetMusic() {
-        mediaPlayer.reset();
     }
 
 
@@ -303,7 +297,7 @@ public class MusicService extends Service {
         intentFilter.addAction("com.example.MainActivity.STARTMUSIC");
         intentFilter.addAction("notification_play_pause");
         intentFilter.addAction("CHANGENEXT");
-        intentFilter.addAction("com.example.MainActivity.REQUSETRES");
+        intentFilter.addAction("com.example.MainActivity.REQUSETRES");      //注册广播接收器
         registerReceiver(musicReceiver, intentFilter);
     }
 
@@ -315,18 +309,19 @@ public class MusicService extends Service {
         contentView.setImageViewResource(R.id.next_image, R.drawable.ic_next);
         contentView.setImageViewResource(R.id.lyric_image, R.drawable.ic_lyricnotifi);
         contentView.setImageViewResource(R.id.head_image, R.drawable.ic_music);
-        contentView.setImageViewResource(R.id.play_image, R.drawable.ic_play);
+        contentView.setImageViewResource(R.id.play_image, R.drawable.ic_play);  //前台服务设置按钮图标
 
 
         Intent intent = new Intent("notification_play_pause");
         contentView.setOnClickPendingIntent(R.id.play_image, PendingIntent.getBroadcast(MusicService.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT));
-                                                                                //点击事件
+                                                                                //Button点击事件
         Intent intent2 = new Intent("CHANGENEXT");
         contentView.setOnClickPendingIntent(R.id.next_image, PendingIntent.getBroadcast(this, 0, intent2, PendingIntent.FLAG_UPDATE_CURRENT));
 
 
         Intent intentstartactivity = new Intent(MusicService.this, MainActivity.class);
-        pendingIntent = PendingIntent.getActivity(MusicService.this, 0, intentstartactivity, 0);
+        pendingIntent = PendingIntent.getActivity(MusicService.this, 0, intentstartactivity, 0); //点击通知执行 打开活动
+
         builder = new NotificationCompat.Builder(MusicService.this);
         notification = builder
                 .setContentIntent(pendingIntent)
@@ -334,12 +329,12 @@ public class MusicService extends Service {
                 .setContentIntent(pendingIntent)
                 .setSmallIcon(R.drawable.ic_yinfu)
                 .build();
-        startForeground(1, notification);
+        startForeground(1, notification);  //启动前台服务
 
 
     }
 
-    void upgradeDataNotification() {
+    void upgradeDataNotification() { //修改前台服务 暂停与播放按钮
         contentView.setTextViewText(R.id.title_tv, data.get(position).get("title"));
         contentView.setTextViewText(R.id.singer_tv, data.get(position).get("singer"));
 

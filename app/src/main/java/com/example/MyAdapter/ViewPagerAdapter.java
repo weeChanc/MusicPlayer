@@ -56,6 +56,13 @@ import okhttp3.Response;
  * Created by 铖哥 on 2017/4/4.
  */
 
+/**
+ * 该适配器为底部播放窗口 以及 歌词 两个界面的适配器
+ * 用于获取歌词 显示歌词 修改/实时更新seekbar进度条 标题栏 以及控制歌曲的暂停 播放 下一首 上一首
+ */
+
+
+
 public class ViewPagerAdapter extends PagerAdapter {
 
     private List<View> list;
@@ -122,7 +129,7 @@ public class ViewPagerAdapter extends PagerAdapter {
         context.registerReceiver(messageReceiver, intentFilter);
         setThread();
 
-        bottomSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        bottomSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() { //seekbar的监听器
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 myApplication.setProgress(progress);
@@ -140,7 +147,7 @@ public class ViewPagerAdapter extends PagerAdapter {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 Intent intent = new Intent("com.example.MainActivity.STARTMUSIC");
-                intent.putExtra("PROGRESS", seekBar.getProgress() - 1);
+                intent.putExtra("PROGRESS", seekBar.getProgress());
                 intent.putExtra("SEEK", true);
 
                 Intent intent1 = new Intent("CHANGEMAINBUTTON");

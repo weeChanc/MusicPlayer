@@ -23,6 +23,11 @@ import static android.content.Context.MODE_PRIVATE;
  * Created by 铖哥 on 2017/4/9.
  */
 
+
+/**
+ * 自定义控件用于每个Fragment中共用的布局 即控制播放模式的布局
+ * 每按一次改变播放的模式
+ */
 public class ToolsView extends LinearLayout {
 
 

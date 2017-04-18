@@ -1,10 +1,14 @@
 package com.example.startpage;
 
 import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.provider.MediaStore;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,9 +19,12 @@ import android.widget.Button;
 import android.widget.ImageView;
 
 import com.example.MyAdapter.WelcomePagerAdapter;
+import com.example.mylatouttest.MyApplication;
 import com.example.mylatouttest.R;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *  导航界面 第一次启动程序的时候执行
@@ -26,6 +33,10 @@ import java.util.ArrayList;
 
 public class Welcome extends AppCompatActivity {
     ImageView image;
+    private ArrayList<Map<String, String>> data = new ArrayList<>();
+    private ArrayList<Map<String, String>> finaldata = new ArrayList<>();
+    MyApplication myApplication = MyApplication.getApplication();
+    SQLiteDatabase db = myApplication.getDp();
 
     @Override
     protected void onDestroy() {
@@ -37,6 +48,8 @@ public class Welcome extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.welcome);
+
+        readMusicData();
 
         image = (ImageView) findViewById(R.id.point);
 
@@ -82,6 +95,51 @@ public class Welcome extends AppCompatActivity {
         WelcomePagerAdapter welcomeAdapter = new WelcomePagerAdapter(arrayList,this);
         viewPager.setAdapter(welcomeAdapter);
 
+    }
+
+    private void readMusicData() {
+
+        String[] want = new String[]{MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.DATA, MediaStore.Audio.Media.ARTIST,
+                MediaStore.Audio.Media.DISPLAY_NAME, MediaStore.Audio.Media.DURATION};
+
+        Cursor cursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, want, MediaStore.Audio.Media.DURATION + ">60000", null, MediaStore.Audio.Media.TITLE);
+        if (cursor.moveToFirst() && cursor != null) {            //读取时间大于一分钟的歌曲  并且按照歌名排序
+            do {
+                Map<String, String> map = new HashMap<>();
+                map.put("title", cursor.getString(0));       //歌曲标题
+                map.put("data", cursor.getString(1));        //歌曲路径              //读取音乐文件
+                map.put("singer", cursor.getString(2));      //歌手名
+                map.put("fulltitle", cursor.getString(3));   //歌手名+歌曲名
+                map.put("duration", cursor.getInt(4) + "");  //歌曲长度
+                data.add(map);
+                finaldata.add(map);
+
+                ContentValues values = new ContentValues();
+                values.put("title", cursor.getString(0));
+                values.put("data",cursor.getString(1));
+                values.put("singer", cursor.getString(2));
+                values.put("fulltitle",cursor.getString(3));
+                values.put("duration", cursor.getInt(4));
+                db.insert("MyMusic", null, values);  //导入到自己的数据库
+
+            } while (cursor.moveToNext());
+            cursor.close();
+
+        }
+
+        for (int i = 0; i < data.size(); i++) {
+            data.get(i).put("position", i + "");            //为每首歌曲标记绝对位置
+            finaldata.get(i).put("position", i + "");
+        }
+        /**
+         *    该data为音乐播放的时候选择路径的唯一一个数据源
+         *    每个表的数据库都包含对应歌曲在此data中的position
+         *    在不同列表中点击item项播放歌曲的时候
+         *    就可以根据该position选择对应的歌曲播放
+         */
+
+        myApplication.setData(data);
+        myApplication.setFinaldata(finaldata);
     }
 
 }
