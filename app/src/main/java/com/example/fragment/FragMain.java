@@ -40,6 +40,10 @@ import java.util.Map;
  * Created by 铖哥 on 2017/4/10.
  */
 
+/**
+ * 主frament的界面 包括 我喜欢列表按钮 最近列表按钮 下载列表按钮 本地列表按钮 本地歌曲数目 以及一个播放暂停按钮
+ *
+ */
 public class FragMain extends Fragment {
 
 
@@ -68,28 +72,27 @@ public class FragMain extends Fragment {
 
         main_count_tv.setText(String.valueOf(myApplication.getData().size()));
 
-        if(myApplication.isPlay()){
-            main_play_pause_bt.setImageResource(R.drawable.pausewhite);
-        }
-
-
-
-        return view;
-
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-
         IntentFilter intentFilter = new IntentFilter();
         messageReceiver = new MessageReceiver();
 
         intentFilter.addAction("CHANGEMAINBUTTON");
         intentFilter.addAction("com.example.MusicService.DETIAL");
-        activity.registerReceiver(messageReceiver, intentFilter);
+        getActivity().registerReceiver(messageReceiver, intentFilter);
+        //注册广播 用于修改下载歌曲后 修改 歌曲数目 以及 播放歌曲后 修改按键图标
+
+        if(myApplication.isPlay()){
+            main_play_pause_bt.setImageResource(R.drawable.pausewhite);
+        }
+
+        return view;
 
     }
+
+
+
+
+
+
 
 
 
@@ -97,7 +100,7 @@ public class FragMain extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
+                                                                    //给不同按键设置监听器 打开不同的fragment
         main_recent_bt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

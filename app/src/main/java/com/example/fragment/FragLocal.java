@@ -23,6 +23,11 @@ import java.util.Map;
  * Created by 铖哥 on 2017/4/11.
  */
 
+
+/**
+ * 该fragment用于显示本地音乐的列表
+ */
+
 public class FragLocal extends Fragment {
 
 
@@ -39,9 +44,11 @@ public class FragLocal extends Fragment {
         finaldata = myApplication.getFinaldata();
 
         MySimpleAdapter simpleAdapter = new MySimpleAdapter(getContext(), finaldata, R.layout.listitem);
+
         ListView listview = (ListView) view.findViewById(R.id.local_music_listview);
         LayoutAnimationController lac = new LayoutAnimationController(AnimationUtils.loadAnimation(getContext(),R.anim.spin));
-        lac.setOrder(LayoutAnimationController.ORDER_NORMAL);
+        lac.setOrder(LayoutAnimationController.ORDER_NORMAL);   //为listview每个item出现设置动画
+
         listview.setLayoutAnimation(lac);
         listview.setAdapter(simpleAdapter);
 

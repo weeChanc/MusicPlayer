@@ -91,7 +91,6 @@ public class ViewPagerAdapter extends PagerAdapter {
     private File file;
     private File[] files;
     private ImageView bottomHead;
-    private PicHandler picHandler;
 
 
     public ViewPagerAdapter(List<View> list, final Context context) {
@@ -100,7 +99,6 @@ public class ViewPagerAdapter extends PagerAdapter {
         View view = list.get(0);
         View viewlyric = list.get(1);
 
-        picHandler = new PicHandler();
         bottomtitle = (TextView) view.findViewById(R.id.bottom_title);
         bottomnext = (ImageButton) view.findViewById(R.id.bottom_next);
         bottomsinger = (TextView) view.findViewById(R.id.bottomsinger);
@@ -139,7 +137,7 @@ public class ViewPagerAdapter extends PagerAdapter {
             public void onStartTrackingTouch(SeekBar seekBar) {     //按下进度条 先调用onStartTrackingTouch一次，再调用onProgressChanged一次
                 seekBar.setMax(max);
                 if (!myApplication.isPlay()) {
-                    myApplication.setIsPlay(true);
+                    myApplication.setIsPlay(true);           //按下进度条 标记状态为被按下 以及 音乐播放器为播放状态 避免播放的歌曲修改进度条进度
                 }
                 myApplication.setIsSeekBarTouch(true);
             }
@@ -153,7 +151,7 @@ public class ViewPagerAdapter extends PagerAdapter {
                 Intent intent1 = new Intent("CHANGEMAINBUTTON");
 
                 context.sendBroadcast(intent1);
-                context.sendBroadcast(intent);
+                context.sendBroadcast(intent);          //当松开进度条的时候 根据位置播放音乐
                 myApplication.setIsSeekBarTouch(false);
             }
         });
@@ -166,7 +164,7 @@ public class ViewPagerAdapter extends PagerAdapter {
                 Intent intentnext = new Intent("com.example.MainActivity.STARTMUSIC");
                 intentnext.putExtra("NEXT", true);
                 context.sendBroadcast(intentnext);
-                Intent intentchange = new Intent("CHANGEMAINBUTTON");
+                Intent intentchange = new Intent("CHANGEMAINBUTTON");   //下一首
                 context.sendBroadcast(intentchange);
             }
         });
@@ -179,7 +177,7 @@ public class ViewPagerAdapter extends PagerAdapter {
                 Intent intentpre = new Intent("com.example.MainActivity.STARTMUSIC");
                 intentpre.putExtra("PRE", true);
                 context.sendBroadcast(intentpre);
-                Intent intentchange = new Intent("CHANGEMAINBUTTON");
+                Intent intentchange = new Intent("CHANGEMAINBUTTON");  //上一首
                 context.sendBroadcast(intentchange);
 
             }
@@ -189,7 +187,7 @@ public class ViewPagerAdapter extends PagerAdapter {
             @Override
             public void onClick(View v) {
                 Intent intentnotify1 = new Intent("notification_play_pause");
-                context.sendBroadcast(intentnotify1);
+                context.sendBroadcast(intentnotify1);                   //暂停
             }
         });
 
@@ -199,35 +197,30 @@ public class ViewPagerAdapter extends PagerAdapter {
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
         container.addView(list.get(position));
-        return list.get(position);
+        return list.get(position);                      //实例化界面
     }
 
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
         list.remove(list.get(position));
-        context.unregisterReceiver(messageReceiver);
+        context.unregisterReceiver(messageReceiver);    //销毁页面
     }
 
     @Override
     public int getCount() {
         return list.size();
-    }
+    }   //返回所有页面的数量
 
     @Override
     public boolean isViewFromObject(View view, Object object) {
         return view == object;
-    }
+    }  //判断是否由产生
 
 
     class MessageReciver extends BroadcastReceiver {
 
         @Override
         public void onReceive(final Context context, Intent intent) {
-
-            if (intent.getAction().equals("PIC")) {
-                getBitmap(intent.getStringExtra("URL"));
-            }
-
 
             if (intent.getAction().equals("CHANGEMAINBUTTON")) {
                 if (myApplication.isPlay())
@@ -238,17 +231,17 @@ public class ViewPagerAdapter extends PagerAdapter {
 
             if (intent.getAction().equals("com.example.MusicService.DETIAL")) {
                 bottomsinger.setText(myApplication.getBottomSinger());
-                bottomtitle.setText(myApplication.getBottomTitle());
+                bottomtitle.setText(myApplication.getBottomTitle());        //根据服务传来的数据 设置标题 seekbar最大值
                 max = myApplication.getSeekBarMax();
                 bottomSeekbar.setMax(max);
             }
 
 
             if (intent.getAction().equals("com.example.MusicService.PROGRESS") || intent.getAction().equals("com.example.MainActivity.STARTMUSIC")) {
-                bottomSeekbar.setProgress(myApplication.getProgress());
+                bottomSeekbar.setProgress(myApplication.getProgress());     //根据服务广播的进度调节seekbar的进度
                 try {
                     if (!temptitle.equals(bottomtitle.getText().toString())) {
-                        temptitle = bottomtitle.getText().toString();
+                        temptitle = bottomtitle.getText().toString();               //使用当前标题与之前标题比较  如果不同才执行下面部分 否则不执行 (即 换歌曲才换歌词)
 
                         data = myApplication.getData();
                         lyric1.setText(temptitle);
@@ -260,27 +253,28 @@ public class ViewPagerAdapter extends PagerAdapter {
 
                                 String title = bottomtitle.getText().toString();
                                 final String singer = bottomsinger.getText().toString();
+
                                 String lyric;
                                 SongDataGetter songDataGetter;
-                                ArrayList<Hash> hashes = (ArrayList<Hash>) SongGetter.getAllSong(title);
-                                lyricThread.interrupt();
+                                ArrayList<Hash> hashes = (ArrayList<Hash>) SongGetter.getAllSong(title);    //利用API
+                                lyricThread.interrupt();        //换歌词前先中断当前歌词的线程
 
                                 if (hashes != null)
-                                    for (int j = 0 ; j < hashes.size() ;j++) {
-                                        if (hashes.get(j).getSingerName().contains(singer)) {
+                                    for (int j = 0 ; j < hashes.size() ;j++) {                  //遍历解析后得到的所有歌曲信息
+                                        if (hashes.get(j).getSingerName().contains(singer)) {      //直至找到歌手对应的歌曲
                                             songDataGetter = SongGetter.getSongData(hashes.get(j).getFileHash());
-                                            songData = songDataGetter.getData();
-                                            lyric = songData.getLyrics();
-                                            if (!seekLyric()) {
+                                            songData = songDataGetter.getData();                    //找到后利用其获得的HASH值 去获取具体的歌曲信息
+                                            lyric = songData.getLyrics();                           //导入歌曲的歌词
+                                            if (!seekLyric()) {                                     //寻找本地歌词 找不到则下载
                                                 try {
                                                     File file = new File(Environment.getExternalStorageDirectory().getPath() + "//MyLyric//" + title + ".lrc");
                                                     if (!file.exists()) {
-                                                        file.createNewFile();
+                                                        file.createNewFile();                   //创建歌词的文件
                                                         FileOutputStream fos = new FileOutputStream(file);
-                                                        fos.write(lyric.getBytes());
+                                                        fos.write(lyric.getBytes());            //写入歌词
                                                         fos.close();
-                                                        seekLyric(); // 找到歌词播放
-                                                        break;
+                                                        seekLyric();                        // 再找一遍本地歌词 找到歌词播放
+                                                        break;                              //退出循环
                                                     }
                                                 } catch (Exception e) {
                                                     e.printStackTrace();
@@ -289,9 +283,9 @@ public class ViewPagerAdapter extends PagerAdapter {
                                             break;
                                         }
 
-                                        if(j == hashes.size()-1){
+                                        if(j == hashes.size()-1){           //遍历至最后一任无法匹配 则认为找不到歌词
                                             Message msg =   new Message() ;
-                                            msg.obj = "找不到歌词";
+                                            msg.obj = "找不到歌词";          //处理相关TEXTVIEW的显示信息
                                             handler2.sendMessage(msg);
                                         }
                                     }
@@ -300,13 +294,13 @@ public class ViewPagerAdapter extends PagerAdapter {
                                     @Override
                                     public void run() {
                                         if(songData != null&&songData.getAudio_name().contains(singer)) {
-                                            Glide.with(context)
+                                            Glide.with(context)                             //利用Glide在线获取歌手图片
                                                     .load(songData.getImg())
                                                     .error(R.drawable.ic_changpian_player)
                                                     .into(bottomHead);
                                         }else{
                                             Glide.with(context)
-                                                    .load(R.drawable.changpian)
+                                                    .load(R.drawable.changpian)             //找不到图片则使用默认图片
                                                     .into(bottomHead);
                                         }
                                     }
@@ -328,18 +322,18 @@ public class ViewPagerAdapter extends PagerAdapter {
     private static Handler handler1 = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            lyric1.setText(msg.obj.toString());
+            lyric1.setText(msg.obj.toString());                     //设置  歌词(前)的handler
         }
     };
 
     private static Handler handler2 = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            lyric2.setText(msg.obj.toString());
+            lyric2.setText(msg.obj.toString());                     //设置 歌词(后)/handler
         }
     };
 
-    private void setThread() {
+    private void setThread() {                                      //歌词的线程
         lyricThread = new Thread(new Runnable() { //处理歌词的线程
             @Override
             public void run() {
@@ -350,25 +344,24 @@ public class ViewPagerAdapter extends PagerAdapter {
                         Message message2 = new Message();
                         message1.obj = "";
                         message2.obj = "";
-                        Thread.sleep(300);
+                        Thread.sleep(300);                          //定时修改歌词 若遇到lyricThread.interrupt() 则会进入catch块(直接关闭线程)
 
-                        for (int j = 0; j < lyricInfo.lineinfo.size() - 1; j++) {
+                        for (int j = 0; j < lyricInfo.lineinfo.size() - 1; j++) { //循环直最后一句歌词结束
 
                             if (myApplication.getProgress() >= lyricInfo.lineinfo.get(j).start && myApplication.getProgress() <= lyricInfo.lineinfo.get(j + 1).start) {
-                                message1.obj = lyricInfo.lineinfo.get(j).line;
+                                message1.obj = lyricInfo.lineinfo.get(j).line;          //通过当前进度时间来匹配歌词(必须必前一句歌词的时间长，比后一局歌词短)
                                 message2.obj = lyricInfo.lineinfo.get(j + 1).line;
                                 temp = j + 1;
                                 break;
                             }
                         }
 
-                        handler1.sendMessage(message1);
+                        handler1.sendMessage(message1);             //根据歌词修改TEXTVIEW
                         handler2.sendMessage(message2);
 
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
-                    Log.e("tag", "线程被打断了");
                     return;
                 }
             }
@@ -376,7 +369,7 @@ public class ViewPagerAdapter extends PagerAdapter {
     }
 
 
-    private boolean seekLyric() {
+    private boolean seekLyric() {           //寻找本地歌词 找到则创建线程并启动
         files = file.listFiles();
         int pos = 0;
 
@@ -395,14 +388,14 @@ public class ViewPagerAdapter extends PagerAdapter {
                 return false;
             }
 
-            if (pos == files.length - 1)
+            if (pos == files.length - 1)            //找到最后一个文件仍找不到认为歌词不存在
                 return false;
         }
 
         return false;
     }
 
-    private void getLRC(File file, LyricInfo lyricinfo) {
+    private void getLRC(File file, LyricInfo lyricinfo) { //解析歌词文件
         try {
             FileInputStream fip = new FileInputStream(file);
             InputStreamReader ips = new InputStreamReader(fip);
@@ -414,21 +407,22 @@ public class ViewPagerAdapter extends PagerAdapter {
             while ((Line = bufferedReader.readLine()) != null) {
                 int last = Line.indexOf(']');
 
-                if (Line.startsWith("[ar:")) {
+                if (Line.startsWith("[ar:")) {                  //ar开头的为作者
                     lyricinfo.artist = Line.substring(4, last);
 
                 }
 
-                if (Line.startsWith("[ti:")) {
+                if (Line.startsWith("[ti:")) {                 //ti开头的为标题
                     lyricinfo.title = Line.substring(4, last);
                 }
 
-                if (Line.startsWith("[0")) {
+                if (Line.startsWith("[0") || Line.startsWith("[1") || Line.startsWith("[2") ||Line.startsWith("[3") ) {    //[0 [1 [2 等开头的为时间 应该没有歌曲会那么长
 
                     LineInfo currentlineinfo = new LineInfo();
 
                     currentlineinfo.line = Line.substring(last + 1).trim();
                     currentlineinfo.start = (int) (Integer.parseInt(Line.substring(1, 3).trim()) * 60 * 1000 + Double.parseDouble(Line.substring(4, last).trim()) * 1000);
+                                                                    //将 00:00格式的时间转化为毫秒数
                     lyricinfo.lineinfo.add(currentlineinfo);
                 }
             }
@@ -438,45 +432,15 @@ public class ViewPagerAdapter extends PagerAdapter {
         }
     }
 
-    private void getBitmap(final String url) {
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    OkHttpClient client = new OkHttpClient();
-                    Request request = new Request.Builder().url(url).build();
-                    Response response = client.newCall(request).execute();
-                    byte[] pic = response.body().bytes();
-                    bitmap = BitmapFactory.decodeByteArray(pic, 0, pic.length);
-                    Message msg = new Message();
-                    msg.obj = bitmap;
-                    picHandler.sendMessage(msg);
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-
-
-    }
-
-    private class PicHandler extends Handler {
-        @Override
-        public void handleMessage(Message msg) {
-            bottomHead.setImageBitmap((Bitmap) msg.obj);
-        }
-    }
 
     private class LyricInfo {
         List<LineInfo> lineinfo;
-        String artist;
+        String artist;                  //解析歌词后存放的类
         String title;
     }
 
     private class LineInfo {
-        int start;
+        int start;                      //每行歌词存放的地方 (开始时间 以及内容)
         String line;
     }
 }

@@ -40,6 +40,10 @@ import java.util.List;
  * Created by 铖哥 on 2017/4/10.
  */
 
+
+/**
+ * 下载页面的FRAGMENT 支持下拉推荐歌曲 下载歌曲
+ */
 public class FragDown extends Fragment {
 
     SwipeRefreshLayout refreshLayout;
@@ -47,8 +51,6 @@ public class FragDown extends Fragment {
     Button button;
     ListView listView;
     ArrayList<Hash> hashes;
-    List<String> titles;
-    MyApplication myApplication = MyApplication.getApplication();
     DownLoadListAdapter downLoadListAdapter;
     ImageButton back;
 
@@ -80,7 +82,7 @@ public class FragDown extends Fragment {
 
                     new Thread(new Runnable() {
                         @Override
-                        public void run() {          //设置 软键盘回车 搜索
+                        public void run() {          //设置 软键盘回车按键 为 搜索 歌曲
                             try {
                                 hashes = (ArrayList<Hash>) SongGetter.getAllSong(v.getText().toString());
                                 handler.sendEmptyMessage(0);
@@ -98,12 +100,7 @@ public class FragDown extends Fragment {
 
         });
 
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getActivity().onBackPressed();
-            }
-        });
+
 
         InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS); //自动弹出软键盘
@@ -119,7 +116,7 @@ public class FragDown extends Fragment {
                             handler.sendEmptyMessage(0);
                         }catch (Exception e)
                         {
-                            e.printStackTrace();
+                            e.printStackTrace();            //下拉刷新列表
                         }
                     }
                 }).start();
@@ -128,6 +125,12 @@ public class FragDown extends Fragment {
         });
 
         refreshLayout.setColorSchemeColors(0xff34a853,0xffea4335,0xfffbbc05,0xff4285f4); //进度条颜色变化
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().onBackPressed();
+            }
+        });
     }
 
     @Nullable
@@ -142,7 +145,6 @@ public class FragDown extends Fragment {
          back = (ImageButton)view.findViewById(R.id.down_back);
 
          hashes = new ArrayList<>();
-         titles = new ArrayList<>();
 
         return view;
     }

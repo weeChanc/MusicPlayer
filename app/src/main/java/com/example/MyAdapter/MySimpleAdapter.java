@@ -44,7 +44,6 @@ public class MySimpleAdapter extends BaseAdapter {
     private int layoutID;
     private LayoutInflater inflater;
     private MyApplication myApplication = MyApplication.getApplication();
-    private Animation spin;
     private ArrayList<Integer> pos = myApplication.getPos();
     private Animation love ;
 
@@ -55,10 +54,7 @@ public class MySimpleAdapter extends BaseAdapter {
         this.layoutID = layoutID;
         inflater = LayoutInflater.from(context);
 
-        spin = AnimationUtils.loadAnimation(context,R.anim.spin);
-
         data = myApplication.getData();
-//        myApplication.setAdapter(MySimpleAdapter.this);
         love = AnimationUtils.loadAnimation(context,R.anim.downloadanim);
     }
 
@@ -83,7 +79,7 @@ public class MySimpleAdapter extends BaseAdapter {
         final View view;
         final ViewHolder viewHolder;
 
-        if (convertView == null) {
+        if (convertView == null) {      //利用ViewHolder 以及 convertView 优化listview
 
             view = inflater.inflate(layoutID, parent, false);
             viewHolder = new ViewHolder();
@@ -110,15 +106,15 @@ public class MySimpleAdapter extends BaseAdapter {
             strdur = "0"+strdur;
         if(strdur.length()<5)
             strdur = strdur+"0";
-        viewHolder.duration.setText(strdur);
+        viewHolder.duration.setText(strdur);            //将毫秒格式的时间 修改成 00:00格式的时间并显示在listview 的item中
 
-        viewHolder.love_bt.setImageResource(R.drawable.ic_blackheart);
+        viewHolder.love_bt.setImageResource(R.drawable.ic_blackheart); //默认设置为非红心
 
         if(pos.size()!=0 && pos!=null)
         for(Integer a : pos){
             if(resource.get(position).get("position").equals(a.toString()))
             {
-                viewHolder.love_bt.setImageResource(R.drawable.love);
+                viewHolder.love_bt.setImageResource(R.drawable.love);   //根据一开始读入的 喜欢歌曲的位置信息 来设置 是否为红心
                 break;
             }
         }
@@ -128,20 +124,21 @@ public class MySimpleAdapter extends BaseAdapter {
             @Override
             public void onClick(View v) {
 
-                // MySimpleAdapter.this.notifyDataSetChanged();
                 myApplication.setPosition(position);
                 myApplication.setIsPlay(true);
                 Intent intent = new Intent("com.example.MainActivity.STARTMUSIC");
                 intent.putExtra("POSITION", true);
-                if (resource.get(position).get("title").equals(data.get(position).get("title")))
-                    intent.putExtra("LOCATION", position);//本地列表                                      //为本地列表与其他列表做区分
-                else
-                    intent.putExtra("LOCATION", Integer.parseInt(resource.get(position).get("position")));
 
-                context.sendBroadcast(intent);                              //下面的方法找不到对应的position只能放上来
-                                                                                //点击后通知主界面更新图标
+                if (resource.get(position).get("title").equals(data.get(position).get("title")))
+                    intent.putExtra("LOCATION", position);//本地列表                                      //为本地列表与其他列表做区分 本地列表直接根据position播放
+                                                                                                        //其他列表根据一开始写入的位置信息 获取歌曲的 在data中的位置 来播放
+                else
+                    intent.putExtra("LOCATION", Integer.parseInt(resource.get(position).get("position")));  //设置播放的歌曲的位置
+
+                context.sendBroadcast(intent);
+                                                                                //点击后通知主界面更新图标并播放歌曲
                 Intent intent2 = new Intent("notification_play_pause");
-                intent2.putExtra("LIST", true);
+                intent2.putExtra("LIST", true);                                 //LIST表明点击事件是从LISTVIEW中发生的 播放音乐的位置要手动设置
                 context.sendBroadcast(intent2);
 
 
@@ -159,36 +156,33 @@ public class MySimpleAdapter extends BaseAdapter {
                 values.put("title", resource.get(position).get("title"));
                 values.put("singer", resource.get(position).get("singer"));
                 values.put("duration", resource.get(position).get("duration"));
-                values.put("position", resource.get(position).get("position"));
+                values.put("position", resource.get(position).get("position"));  //准备要写入数据库的信息
 
                 boolean common = false;
                 if (cursor.moveToFirst()) {
                     do {
                         if (cursor.getString(cursor.getColumnIndex("title")).equals(values.get("title")) &&
                                 cursor.getString(cursor.getColumnIndex("duration")).equals(values.get("duration"))) {
-                             common = true;
+
+                            common = true;
                             db.delete("Like","title=?",new String[]{String.valueOf(values.get("title"))});
-                            resource.get(position).remove("like");
-                            resource.get(position).put("like","F");
                             pos.remove(Integer.valueOf(resource.get(position).get("position")));
                             MySimpleAdapter.this.notifyDataSetChanged();
                             Toast.makeText(context,"已取消收藏",Toast.LENGTH_SHORT).show();
+                            //找到相同的 取消收藏 并删除数据库对应行 pos对应数据
 
                         }
                     } while (cursor.moveToNext());
                 }
                 if (!common) {
                     db.insert("Like", null, values);
-                    resource.get(position).remove("like");
-                    resource.get(position).put("like","T");
                     pos.add(Integer.valueOf(resource.get(position).get("position")));
                     Toast.makeText(context,"你收藏了该歌曲",Toast.LENGTH_SHORT).show();
                     MySimpleAdapter.this.notifyDataSetChanged();
+                    //若找不到相同的 则收藏歌曲
                 }
 
                 v.startAnimation(love);
-
-
                 cursor.close();
             }
 
@@ -201,7 +195,7 @@ public class MySimpleAdapter extends BaseAdapter {
                 View contentView = LayoutInflater.from(context).inflate(R.layout.popup, null);
                 final PopupWindow popupWindow = new PopupWindow(contentView, 620, WindowManager.LayoutParams.WRAP_CONTENT, true);
                 popupWindow.setAnimationStyle(R.style.popup);
-                popupWindow.showAsDropDown(viewHolder.love_bt, -360, -20);
+                popupWindow.showAsDropDown(viewHolder.love_bt, -360, -20);      // 长按弹出窗口
 
                  final CheckBox checkBox = (CheckBox) contentView.findViewById(R.id.checkBox);
 
@@ -213,19 +207,21 @@ public class MySimpleAdapter extends BaseAdapter {
                     public void onClick(View v) {
                         SQLiteDatabase db = myApplication.getDp();
                         if( checkBox.isChecked()){
-
+                            //判断是否删除本地文件 如果为真 则获取文件的地址 并删除 文件 数据库的数据 我喜欢List中的数据
                             String path = data.get(Integer.parseInt(resource.get(position).get("position"))).get("data");
                             File file = new File(path);
+
+                            db.delete("MyMusic","duration=?",new String[]{resource.get(position).get("duration")});
+                            myApplication.getDp().delete("MyMusic","title=?",new String[]{resource.get(position).get("title")});
+
                             if(file.delete()){
-                                Toast.makeText(context, "删除成功", Toast.LENGTH_SHORT).show();
                                for(Map map : myApplication.getFinaldata()){
                                    if(map.get("title").equals(resource.get(position).get("title"))) {
                                        myApplication.getFinaldata().remove(map);
                                        break;
                                    }
+                                   Toast.makeText(context, "删除成功", Toast.LENGTH_SHORT).show();
                                }
-                                db.delete("MyMusic","title=?",new String[]{resource.get(position).get("title")});
-                                myApplication.getDp().delete("MyMusic","title=?",new String[]{resource.get(position).get("title")});
                             }else{
                                 Toast.makeText(context, "删除失败", Toast.LENGTH_SHORT).show();;
                             }
@@ -234,20 +230,22 @@ public class MySimpleAdapter extends BaseAdapter {
 
                         db.delete("Like", "title=?", new String[]{resource.get(position).get("title")});
                         db.delete("Recent", "title=?", new String[]{resource.get(position).get("title")});
+
+                        //遍历查找pos数组(我喜欢的数组) 若存在相同的则去除
                         for(Integer p : pos){
-                            Log.e("find1",p.toString());
-                            Log.e("find2",Integer.valueOf(resource.get(position).get("position")).toString());
-                            if(p == Integer.valueOf(resource.get(position).get("position"))) {
+                            if(p.equals(Integer.valueOf(resource.get(position).get("position")))) {
                                 pos.remove(p);
-                                Log.e("find3","find");
                                 break;
                             }
                         }
-                        Log.e("find4",position+"");
+
+
                         resource.remove(position);
                         MySimpleAdapter.this.notifyDataSetChanged();
+                        //移除相关的数据 并 更新listview
 
                         popupWindow.dismiss();
+                        //关闭popuwindows
 
 
                     }

@@ -26,6 +26,10 @@ import java.util.Map;
  * Created by 铖哥 on 2017/4/11.
  */
 
+/**
+ * 最近播放列表
+ */
+
 public class FragRecent extends Fragment {
     MySimpleAdapter mySimpleAdapter;
     MyApplication myApplication = MyApplication.getApplication();

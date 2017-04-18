@@ -23,6 +23,10 @@ import java.util.Map;
  * Created by 铖哥 on 2017/4/10.
  */
 
+/**
+ *该fragmnet用于显示我喜欢的列表
+ */
+
 public class FragLike extends Fragment  {
 
     MyApplication myApplication = MyApplication.getApplication();
@@ -51,6 +55,7 @@ public class FragLike extends Fragment  {
             }while(cursor.moveToPrevious());
         }
         cursor.close();
+        //从数据库从读取数据转化为数据源
 
         MySimpleAdapter mySimpleAdapter =
                 new MySimpleAdapter(getContext(),data,R.layout.listitem);
