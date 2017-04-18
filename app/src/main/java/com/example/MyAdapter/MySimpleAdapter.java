@@ -210,26 +210,13 @@ public class MySimpleAdapter extends BaseAdapter {
                             //判断是否删除本地文件 如果为真 则获取文件的地址 并删除 文件 数据库的数据 我喜欢List中的数据
                             String path = data.get(Integer.parseInt(resource.get(position).get("position"))).get("data");
                             File file = new File(path);
-
-                            db.delete("MyMusic","duration=?",new String[]{resource.get(position).get("duration")});
-                            myApplication.getDp().delete("MyMusic","title=?",new String[]{resource.get(position).get("title")});
-
-                            if(file.delete()){
-                               for(Map map : myApplication.getFinaldata()){
-                                   if(map.get("title").equals(resource.get(position).get("title"))) {
-                                       myApplication.getFinaldata().remove(map);
-                                       break;
-                                   }
-                                   Toast.makeText(context, "删除成功", Toast.LENGTH_SHORT).show();
-                               }
-                            }else{
-                                Toast.makeText(context, "删除失败", Toast.LENGTH_SHORT).show();;
-                            }
+                            file.delete();
                         }
 
 
                         db.delete("Like", "title=?", new String[]{resource.get(position).get("title")});
                         db.delete("Recent", "title=?", new String[]{resource.get(position).get("title")});
+                        db.delete("MyMusic","title=?",new String[]{resource.get(position).get("title")});
 
                         //遍历查找pos数组(我喜欢的数组) 若存在相同的则去除
                         for(Integer p : pos){
@@ -238,8 +225,6 @@ public class MySimpleAdapter extends BaseAdapter {
                                 break;
                             }
                         }
-
-
                         resource.remove(position);
                         MySimpleAdapter.this.notifyDataSetChanged();
                         //移除相关的数据 并 更新listview

@@ -49,7 +49,13 @@ public class Welcome extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.welcome);
 
-        readMusicData();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                readMusicData();
+            }
+        }).start();
+
 
         image = (ImageView) findViewById(R.id.point);
 

@@ -255,8 +255,10 @@ public class MusicService extends Service {
                 values.put("title", data.get(position).get("title"));
                 values.put("position", position);
 
+                Log.e("data",data.get(position).get("title"));
                 db.delete("Recent","title=?",new String[]{data.get(position).get("title")});
                 db.insert("Recent", null, values);  //先删再加保证只存在一个
+
             }
         }).start();  //播放历史 加入数据库存下
 

@@ -11,13 +11,13 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class MyDataBaseHelper extends SQLiteOpenHelper {
 
     public static final String LIKE = "create table Like ("
-            +"position integer primary key autoincrement, "
+            +"position integer, "
             +"duration integer, "
             +"singer text, "
             +"title text)";
 
     public static final String RECENT = "create table Recent ("
-            +"position integer primary key autoincrement, "
+            +"position integer, "
             +"duration integer, "
             +"singer text, "
             +"title text)";

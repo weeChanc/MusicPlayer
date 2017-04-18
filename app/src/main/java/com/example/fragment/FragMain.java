@@ -84,18 +84,10 @@ public class FragMain extends Fragment {
             main_play_pause_bt.setImageResource(R.drawable.pausewhite);
         }
 
+
         return view;
 
     }
-
-
-
-
-
-
-
-
-
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
