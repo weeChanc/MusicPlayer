@@ -106,7 +106,6 @@ public class ViewPagerAdapter extends PagerAdapter {
         this.context = context;
 
         myApplication = MyApplication.getApplication();
-        lyricThread = myApplication.getThread();
 
         lyricInfo = new LyricInfo();
         lyricInfo.lineinfo = new ArrayList<>();
@@ -122,7 +121,6 @@ public class ViewPagerAdapter extends PagerAdapter {
         intentFilter.addAction("TOAST");
         context.registerReceiver(messageReceiver, intentFilter);
         setThread();
-        myApplication.setThread(lyricThread);
 
         bottomSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -156,7 +154,6 @@ public class ViewPagerAdapter extends PagerAdapter {
         bottomnext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                lyricThread.interrupt();
                 myApplication.setIsPlay(true);
                 bottomSeekbar.setProgress(0);
                 Intent intentnext = new Intent("com.example.MainActivity.STARTMUSIC");
@@ -170,7 +167,6 @@ public class ViewPagerAdapter extends PagerAdapter {
         bottomprivious.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                lyricThread.interrupt();
                 myApplication.setIsPlay(true);
                 bottomSeekbar.setProgress(0);
                 Intent intentpre = new Intent("com.example.MainActivity.STARTMUSIC");
@@ -241,7 +237,7 @@ public class ViewPagerAdapter extends PagerAdapter {
             }
 
 
-            if (intent.getAction().equals("com.example.MusicService.PROGRESS")) {
+            if (intent.getAction().equals("com.example.MusicService.PROGRESS") || intent.getAction().equals("com.example.MainActivity.STARTMUSIC")) {
                 bottomSeekbar.setProgress(myApplication.getProgress());
                 try {
                     if (!temptitle.equals(bottomtitle.getText().toString())) {
@@ -260,24 +256,24 @@ public class ViewPagerAdapter extends PagerAdapter {
                                 String lyric;
                                 SongDataGetter songDataGetter;
                                 ArrayList<Hash> hashes = (ArrayList<Hash>) SongGetter.getAllSong(title);
+                                lyricThread.interrupt();
 
                                 if (hashes != null)
-                                    for (Hash hash : hashes) {
-                                        if (hash.getSingerName().contains(singer)) {
-                                            songDataGetter = SongGetter.getSongData(hash.getFileHash());
+                                    for (int j = 0 ; j < hashes.size() ;j++) {
+                                        if (hashes.get(j).getSingerName().contains(singer)) {
+                                            songDataGetter = SongGetter.getSongData(hashes.get(j).getFileHash());
                                             songData = songDataGetter.getData();
                                             lyric = songData.getLyrics();
                                             if (!seekLyric()) {
                                                 try {
                                                     File file = new File(Environment.getExternalStorageDirectory().getPath() + "//MyLyric//" + title + ".lrc");
                                                     if (!file.exists()) {
-                                                        Log.e("tag", "网络上找到了歌词，写入中");
                                                         file.createNewFile();
                                                         FileOutputStream fos = new FileOutputStream(file);
                                                         fos.write(lyric.getBytes());
-                                                        Log.e("tag", "写入成功");
                                                         fos.close();
                                                         seekLyric(); // 找到歌词播放
+                                                        break;
                                                     }
                                                 } catch (Exception e) {
                                                     e.printStackTrace();
@@ -286,6 +282,11 @@ public class ViewPagerAdapter extends PagerAdapter {
                                             break;
                                         }
 
+                                        if(j == hashes.size()-1){
+                                            Message msg =   new Message() ;
+                                            msg.obj = "找不到歌词";
+                                            handler2.sendMessage(msg);
+                                        }
                                     }
 
                                 myApplication.getActivity().runOnUiThread(new Runnable() {
@@ -337,10 +338,7 @@ public class ViewPagerAdapter extends PagerAdapter {
             public void run() {
                 try {
                     int temp = 0;
-
-                    String tempString = "";
                     while (temp < lyricInfo.lineinfo.size() - 1) {
-                        Log.e("tag", "处理歌词线程");
                         Message message1 = new Message();
                         Message message2 = new Message();
                         message1.obj = "";
@@ -375,12 +373,14 @@ public class ViewPagerAdapter extends PagerAdapter {
         files = file.listFiles();
         int pos = 0;
 
+        lyricThread.interrupt();
         for (; pos <= files.length; pos++) {
             try {
                 String absoulutePath = files[pos].getAbsolutePath();
                 if (files.length > 0 && absoulutePath.contains(temptitle) && !absoulutePath.contains(".mp3")) {
                     Log.e("eee", files[pos].getAbsolutePath());
                     getLRC(files[pos], lyricInfo);   //找到并导入对应歌词到类中
+                    setThread();
                     lyricThread.start();
                     return true;  //找到返回true
                 }

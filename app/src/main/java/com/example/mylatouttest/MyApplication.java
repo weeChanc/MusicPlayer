@@ -29,8 +29,8 @@ public class MyApplication  extends Application{
 
     private  static MyApplication myApplication;
     private static Context context;
-    private  ArrayList<Map<String, String>> data;
-    private ArrayList<Map<String, String>> finaldata = new ArrayList<>();
+    private  ArrayList<Map<String, String>> data ;
+    private ArrayList<Map<String, String>> finaldata ;
     private ArrayList<Integer> pos =  new ArrayList<>();
     private ArrayList<String> lover = new ArrayList<>();
     private boolean isPlay = false ;
@@ -42,7 +42,6 @@ public class MyApplication  extends Application{
     private int progress;
     private String bottomSinger;
     private File file;
-    private Thread thread;
     private SQLiteDatabase dp;
     private List<Hash> hashList;
     private Activity activity;
@@ -109,13 +108,6 @@ public class MyApplication  extends Application{
         return dp;
     }
 
-    public Thread getThread() {
-        return thread;
-    }
-
-    public void setThread(Thread thread) {
-        this.thread = thread;
-    }
 
     public File getFile() {
         return file;

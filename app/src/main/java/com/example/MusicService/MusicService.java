@@ -34,8 +34,8 @@ import java.util.Map;
 public class MusicService extends Service {
 
     public static final int ORDER = 1;
-    public static final int LOOP = 3;
     public static final int RANDOM = 2;
+    public static final int LOOP = 3;
 
     private MyApplication myApplication;
     private MediaPlayer mediaPlayer = new MediaPlayer();
@@ -59,9 +59,12 @@ public class MusicService extends Service {
 
             play_mode= myApplication.getPlay_mode();
 
+            data = myApplication.getData(); //更新来自新下载的歌曲
+            Log.e("tag", data.size()+"");
+            if(data.size()!=0)
             if (intent.getAction().equals("com.example.MainActivity.STARTMUSIC")) {
 
-                data = myApplication.getData(); //更新来自新下载的歌曲
+
 
                 if (intent.getBooleanExtra("NEXT", false)) {
                     contentView.setImageViewResource(R.id.play_image, R.drawable.ic_pause);
@@ -141,6 +144,7 @@ public class MusicService extends Service {
 
     @Override
     public void onCreate() {
+        Log.e("tag","serVice Create");
 
         super.onCreate();
         try{

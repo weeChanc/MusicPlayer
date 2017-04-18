@@ -44,7 +44,6 @@ public class MySimpleAdapter extends BaseAdapter {
     private int layoutID;
     private LayoutInflater inflater;
     private MyApplication myApplication = MyApplication.getApplication();
-    private Thread lyricThread;
     private Animation spin;
     private ArrayList<Integer> pos = myApplication.getPos();
     private Animation love ;
@@ -55,7 +54,6 @@ public class MySimpleAdapter extends BaseAdapter {
         this.resource = resource;
         this.layoutID = layoutID;
         inflater = LayoutInflater.from(context);
-        lyricThread = myApplication.getThread();
 
         spin = AnimationUtils.loadAnimation(context,R.anim.spin);
 
@@ -133,7 +131,6 @@ public class MySimpleAdapter extends BaseAdapter {
                 // MySimpleAdapter.this.notifyDataSetChanged();
                 myApplication.setPosition(position);
                 myApplication.setIsPlay(true);
-                lyricThread.interrupt();
                 Intent intent = new Intent("com.example.MainActivity.STARTMUSIC");
                 intent.putExtra("POSITION", true);
                 if (resource.get(position).get("title").equals(data.get(position).get("title")))
@@ -219,9 +216,9 @@ public class MySimpleAdapter extends BaseAdapter {
 
                             String path = data.get(Integer.parseInt(resource.get(position).get("position"))).get("data");
                             File file = new File(path);
-
                             if(file.delete()){
                                 Toast.makeText(context, "删除成功", Toast.LENGTH_SHORT).show();
+                                myApplication.getFinaldata().remove((resource.get(position).get("position")));
                             }else{
                                 Toast.makeText(context, "删除失败", Toast.LENGTH_SHORT).show();;
                             }

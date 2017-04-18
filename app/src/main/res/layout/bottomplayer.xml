@@ -4,60 +4,62 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="64dp"
-    android:background="@android:color/white"
+    android:background="@drawable/bottomplayer"
     android:elevation="10dp">
 
     <SeekBar
         android:id="@+id/bottom_seekbar"
         android:layout_width="260dp"
         android:layout_height="wrap_content"
-        android:background="@color/item_normally"
         android:layout_above="@+id/bottom_title"
         android:layout_alignLeft="@+id/bottom_title"
-        android:layout_alignStart="@+id/bottom_title" />
+        android:layout_alignStart="@+id/bottom_title"
+        android:background="@color/item_normally" />
 
 
     <com.example.View.AutoMoveTextView
         android:id="@+id/bottom_title"
         android:layout_width="164dp"
         android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="11dp"
+        android:layout_marginStart="11dp"
+        android:layout_toEndOf="@+id/bottom_head"
+        android:layout_toRightOf="@+id/bottom_head"
         android:background="@color/item_normally"
         android:ellipsize="marquee"
         android:singleLine="true"
         android:textColor="@color/drak_gray"
         android:textSize="16dp"
-        tools:text="fulldata"
-        android:layout_centerVertical="true"
-        android:layout_toRightOf="@+id/bottom_head"
-        android:layout_toEndOf="@+id/bottom_head"
-        android:layout_marginLeft="11dp"
-        android:layout_marginStart="11dp" />
+        tools:text="fulldata" />
 
     <com.example.View.AutoMoveTextView
         android:id="@+id/bottomsinger"
         android:layout_width="164dp"
         android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/bottom_title"
+        android:layout_alignStart="@+id/bottom_title"
+        android:layout_below="@+id/bottom_title"
         android:background="@color/item_normally"
         android:ellipsize="marquee"
         android:singleLine="true"
         android:textColor="@color/drak_gray"
         android:textSize="12sp"
-        tools:text="fulldata"
-        android:layout_below="@+id/bottom_title"
-        android:layout_alignLeft="@+id/bottom_title"
-        android:layout_alignStart="@+id/bottom_title" />
+        tools:text="fulldata" />
 
     <ImageButton
         android:id="@+id/bottom_next"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
         android:layout_weight="1"
         android:background="@drawable/click"
         android:scaleType="centerInside"
-        app:srcCompat="@drawable/nextbule2" />
+        app:srcCompat="@drawable/nextbule2"
+        android:layout_alignTop="@+id/bottom_play_pause"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="11dp"
+        android:layout_marginEnd="11dp" />
 
     <ImageView
         android:id="@+id/bottom_head"
@@ -74,24 +76,28 @@
 
     <ImageButton
         android:id="@+id/bottom_privious"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_alignParentBottom="true"
-        android:layout_toLeftOf="@+id/bottom_play_pause"
-        android:layout_toStartOf="@+id/bottom_play_pause"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
         android:background="@drawable/click"
         android:scaleType="centerInside"
-        app:srcCompat="@drawable/previous" />
+        app:srcCompat="@drawable/previous"
+        android:layout_alignBottom="@+id/bottomsinger"
+        android:layout_toLeftOf="@+id/bottom_play_pause"
+        android:layout_toStartOf="@+id/bottom_play_pause"
+        android:layout_marginRight="13dp"
+        android:layout_marginEnd="13dp" />
 
     <ImageButton
         android:id="@+id/bottom_play_pause"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_alignParentBottom="true"
-        android:layout_toLeftOf="@+id/bottom_next"
-        android:layout_toStartOf="@+id/bottom_next"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
         android:background="@drawable/click"
         android:scaleType="centerInside"
-        app:srcCompat="@drawable/playblue" />
+        app:srcCompat="@drawable/playblue"
+        android:layout_alignTop="@+id/bottom_privious"
+        android:layout_toLeftOf="@+id/bottom_next"
+        android:layout_toStartOf="@+id/bottom_next"
+        android:layout_marginRight="11dp"
+        android:layout_marginEnd="11dp" />
 
 </RelativeLayout>

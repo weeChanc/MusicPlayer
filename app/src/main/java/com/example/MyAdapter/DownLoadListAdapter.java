@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -115,8 +116,8 @@ public class DownLoadListAdapter extends BaseAdapter {
                         String path;
                         Map<String, String> map = new HashMap<>();
                         ArrayList<Map<String,String >> data = myApplication.getData();
-                       
-                        
+
+
 
                         try {
                             path = SongGetter.download(resource.get(position).getFileHash());
@@ -134,9 +135,9 @@ public class DownLoadListAdapter extends BaseAdapter {
 
                             data.add(map);
                             myApplication.setFinaldata(data);
+
                             myApplication.setPosition(position);
                             myApplication.setIsPlay(true);
-                            myApplication.getThread().interrupt();
                             Intent intent = new Intent("com.example.MainActivity.STARTMUSIC");
                             intent.putExtra("POSITION", true);
                             intent.putExtra("LOCATION", data.size() - 1);

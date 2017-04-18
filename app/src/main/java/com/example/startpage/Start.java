@@ -29,6 +29,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * 起始加载页面 用于加载音乐歌曲数据 创建歌曲/
+ * 创建数据库 存放我喜欢列表 以及最近播放列表数据/
+ * 读取喜欢的歌曲的列表/
+ * 歌词文件夹/检查权限并申请权限/
+ * 恢复退出时歌曲播放模式
+ */
+
 public class Start extends Activity {
 
     MyApplication myApplication;
@@ -44,19 +52,20 @@ public class Start extends Activity {
         if (ContextCompat.checkSelfPermission(Start.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
                 PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(Start.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-        }//运行权限
-
+        }                     //申请运行时权限
         if( ContextCompat.checkSelfPermission(Start.this,Manifest.permission.SYSTEM_ALERT_WINDOW) != PackageManager.PERMISSION_GRANTED ){
             ActivityCompat.requestPermissions(Start.this,new String[]{Manifest.permission.SYSTEM_ALERT_WINDOW},1);
         }
 
         while (ContextCompat.checkSelfPermission(Start.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
-                PackageManager.PERMISSION_GRANTED);
-        myApplication = (MyApplication) getApplication();
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_start);
+                PackageManager.PERMISSION_GRANTED) ;
 
-        MyDataBaseHelper dpHelper = new MyDataBaseHelper(this,"list.db",null,1);
+        myApplication = (MyApplication) getApplication();
+
+        super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.activity_start);
+        MyDataBaseHelper dpHelper = new MyDataBaseHelper(this, "list.db", null, 1);
         SQLiteDatabase dp = dpHelper.getWritableDatabase();
         myApplication.setDp(dp);
         imageView = (ImageView) findViewById(R.id.im);
@@ -64,7 +73,7 @@ public class Start extends Activity {
 
 
         initTask task = new initTask();
-        task.execute();
+        task.execute();                                              //执行线程
 
         if (Build.VERSION.SDK_INT >= 21) {
             View decorView = getWindow().getDecorView();
@@ -76,63 +85,57 @@ public class Start extends Activity {
 
     }
 
-    private class initTask extends AsyncTask<Void,Void,Void>{
+    private class initTask extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected Void doInBackground(Void... params) {
 
-            long startTime = System.currentTimeMillis();
-
-
-
+            long startTime = System.currentTimeMillis();   //时间用于规定该页面最小停留时间避免过快退出造成卡顿/不适感
 
             String directory = Environment.getExternalStorageDirectory().getAbsoluteFile().getPath() + "/MyLyric/";
 
             file = new File(directory);
-
-            if (!file.exists())
+            if (!file.exists())         //创建本地音乐/歌词播放文件夹
                 file.mkdir();
 
             myApplication.setFile(file);
 
             readMusicData();
-            readLovePos();
+            readLovePos();          //读取数据
 //            readPlayTime();
 
             myApplication.setData(data);
 
+            while ((System.currentTimeMillis() - startTime) < 1000) ;     //一秒后换图标
 
+            publishProgress();                                      // 让progressbar 消失变成 新图标
 
-            while((System.currentTimeMillis() - startTime) < 1000);
-
-            publishProgress();
-
-            while((System.currentTimeMillis() - startTime) < 500);
+            while ((System.currentTimeMillis() - startTime) < 500) ;     //并 让更改的图标 停留0.5秒
 
             return null;
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
-
-            SharedPreferences share = getSharedPreferences("data", MODE_PRIVATE);
-            int mode = share.getInt("MODE",-1);
-            if(mode == -1) {
+            //播放模式(0,1,2)   public static final int ORDER = =1
+            SharedPreferences share = getSharedPreferences("data", MODE_PRIVATE);       // public static final int RANDOM = 2;public static final int LOOP = 3;
+            int mode = share.getInt("MODE", -1);                                       // 0实际上为 3 LOOP 因为自增原因将其变成0
+            if (mode == -1) {
                 myApplication.setPlay_mode(MyApplication.ORDER);
                 Intent intent = new Intent("android.intent.action.WELCOME");
-                intent.addCategory("android.intent.category.DEFAULT");
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);//若没有数据则是第一次打开  开始导航页面
+                intent.addCategory("android.intent.category.DEFAULT");              //根据播放模式是否存在 (0,1,2)判断是否为第一次打开播放器 若是第一次则  开始导航页面
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);                   //打开活动后将本活动出栈，避免返回的时候，回到该活动
                 startActivity(intent);
-                share.edit().putInt("MODE",MyApplication.ORDER).apply();
-            }else {
+                share.edit().putInt("MODE", MyApplication.ORDER).apply();
+            } else {
 
-                myApplication.setPlay_mode(mode);   //设置上次退出的选择模式
+                myApplication.setPlay_mode(mode);                                    //存在 则设置模式 并启动打开 活动
                 Intent intent = new Intent("android.intent.action.MAINMUSIC");
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);                     //打开活动后将本活动出栈，避免返回的时候，回到该活动
                 intent.addCategory("android.intent.category.DEFAULT");
                 startActivity(intent);
-                finish();
             }
+            finish();
             super.onPostExecute(aVoid);
         }
 
@@ -140,14 +143,13 @@ public class Start extends Activity {
         protected void onProgressUpdate(Void... values) {
             super.onProgressUpdate(values);
 
-            ProgressBar progressBar = (ProgressBar)findViewById(R.id.progressBar);
-            RelativeLayout yes = (RelativeLayout)findViewById(R.id.yes);
+            ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
+            RelativeLayout yes = (RelativeLayout) findViewById(R.id.yes);
             progressBar.setVisibility(View.GONE);
-            yes.setBackgroundResource(R.drawable.yes);
+            yes.setBackgroundResource(R.drawable.yes);                      //更换图标 提示加载完毕
 
         }
     }
-
 
     private void readMusicData() {
 
@@ -155,93 +157,49 @@ public class Start extends Activity {
                 MediaStore.Audio.Media.DISPLAY_NAME, MediaStore.Audio.Media.DURATION};
 
         Cursor cursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, want, MediaStore.Audio.Media.DURATION + ">60000", null, MediaStore.Audio.Media.TITLE);
-        if (cursor.moveToFirst() && cursor!=null) {
-//            int i = 0;
+        if (cursor.moveToFirst() && cursor != null) {            //读取时间大于一分钟的歌曲  并且按照歌名排序
             do {
-//                if(i++ == 10 ) break;
                 Map<String, String> map = new HashMap<>();
-                map.put("title", cursor.getString(0));
-                map.put("data", cursor.getString(1));           //读取音乐文件
-                map.put("singer", cursor.getString(2));
-                map.put("fulltitle", cursor.getString(3));
-                map.put("duration", cursor.getInt(4) + "");
-                map.put("isplay", "F");
+                map.put("title", cursor.getString(0));       //歌曲标题
+                map.put("data", cursor.getString(1));        //歌曲路径              //读取音乐文件
+                map.put("singer", cursor.getString(2));      //歌手名
+                map.put("fulltitle", cursor.getString(3));   //歌手名+歌曲名
+                map.put("duration", cursor.getInt(4) + "");  //歌曲长度
                 data.add(map);
                 finaldata.add(map);
 
             } while (cursor.moveToNext());
             cursor.close();
 
-            if(data.size()==0){
-                Map<String, String> map = new HashMap<>();
-                map.put("title","找不到本地歌曲");
-                map.put("data", "");           //读取音乐文件
-                map.put("singer", "");
-                map.put("fulltitle", "");
-                map.put("duration", "0");
-                data.add(map);
-                finaldata.add(map);
-            }
-
         }
 
-        for(int i = 0 ; i < data.size()  ; i++){
-            data.get(i).put("position",i+"");
-            finaldata.get(i).put("position",i+"");
+        for (int i = 0; i < data.size(); i++) {
+            data.get(i).put("position", i + "");            //为每首歌曲标记绝对位置
+            finaldata.get(i).put("position", i + "");
         }
+        /**
+         *    歌曲存在此位置绝对不变
+         *    在3个列表公用一个适配器时 点击列表播放音乐
+         */
 
         myApplication.setData(data);
         myApplication.setFinaldata(finaldata);
     }
 
-    private void readLovePos(){
+    private void readLovePos() {
 
         ArrayList<Integer> pos = myApplication.getPos();
-//        ArrayList<String> lover = myApplication.getLover();
         SQLiteDatabase db = myApplication.getDp();
 
         Cursor cursor = db.query("Like", null, null, null, null, null, null, null);
-        if(cursor.moveToFirst()){
-            do{
-                pos.add(cursor.getInt(cursor.getColumnIndex("position")));
-//                lover.add(cursor.getString(cursor.getColumnIndex("singer")));
-            }while(cursor.moveToNext());
+        if (cursor.moveToFirst()) {
+            do {
+                pos.add(cursor.getInt(cursor.getColumnIndex("position")));          //为每首歌的相对位置
+            } while (cursor.moveToNext());
         }
 
         cursor.close();
     }
-
-//    private void readPlayTime(){
-//        SQLiteDatabase db = myApplication.getDp();
-//        Cursor cursor = db.query("Recent", null, null, null, null, null, null,"id DESC");
-//        if(cursor.moveToFirst()){
-//            int time =  0;
-//            String a = "a";
-//            String b = "b";
-//            int i = 0 ;
-//            do{
-//                 if(i++ > 2000) break;
-//                 a = cursor.getColumnName(cursor.getColumnIndex("title"));
-//                 if(cursor.moveToNext())break;
-//                 b = cursor.getColumnName(cursor.getColumnIndex("title"));
-//
-//                if(a.equals(b)){
-//                    time++;
-//                }else{
-//                    if(time >= 5){
-//                        time = 0;
-//                        lover.add(a);
-//                    }
-//                }
-//
-//            }while(true);
-//            cursor.close();
-//
-//            myApplication.setLover(lover);
-//
-//        }
-//
-//    }
 
 
 }
