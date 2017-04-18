@@ -14,6 +14,8 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -21,6 +23,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.MyAdapter.DownLoadListAdapter;
 import com.example.mylatouttest.MainActivity;
@@ -55,8 +58,13 @@ public class FragDown extends Fragment {
             refreshLayout.setRefreshing(false);
             if(hashes!=null) {
                 downLoadListAdapter = new DownLoadListAdapter(getContext(), hashes, R.layout.downitem, new int[]{R.id.item_title, R.id.down_singer, R.id.down_bt});
+                LayoutAnimationController controller = new LayoutAnimationController(AnimationUtils.loadAnimation(getContext(),R.anim.downloadanim));
+                controller.setOrder(LayoutAnimationController.ORDER_NORMAL);
+                listView.setLayoutAnimation(controller);
                 listView.setAdapter(downLoadListAdapter);
-            }
+                Toast.makeText(getContext(), "为您推荐了30首歌曲", Toast.LENGTH_SHORT).show();
+            }else
+            Toast.makeText(getContext(), "加载失败", Toast.LENGTH_SHORT).show();
         }
     };
 
@@ -77,9 +85,7 @@ public class FragDown extends Fragment {
                                 hashes = (ArrayList<Hash>) SongGetter.getAllSong(v.getText().toString());
                                 handler.sendEmptyMessage(0);
                             }catch(Exception e) {
-                                Intent intent = new Intent("TOAST");
-                                intent.putExtra("FAILESEARCH",true);
-                                getContext().sendBroadcast(intent);
+
                                 e.printStackTrace();
                             }
                         }
@@ -117,10 +123,11 @@ public class FragDown extends Fragment {
                         }
                     }
                 }).start();
+
             }
         });
 
-        refreshLayout.setColorSchemeColors(0xff34a853,0xffea4335,0xfffbbc05,0xff4285f4);
+        refreshLayout.setColorSchemeColors(0xff34a853,0xffea4335,0xfffbbc05,0xff4285f4); //进度条颜色变化
     }
 
     @Nullable

@@ -46,7 +46,7 @@ public class FragRecent extends Fragment {
         if (cursor.moveToLast()) {
             int i = 1;
             do {
-                Map<String, String> map = new HashMap();
+                Map<String, String> map = new HashMap<>();
                 map.put("singer", cursor.getString(cursor.getColumnIndex("singer")));
                 map.put("title", cursor.getString(cursor.getColumnIndex("title")));
                 map.put("position", cursor.getString(cursor.getColumnIndex("position")));

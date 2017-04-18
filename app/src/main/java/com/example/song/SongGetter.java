@@ -52,15 +52,10 @@ public class SongGetter {
         return data.getData().getHashList();
     }
 
-    public static String download(String hash,String name){
+    public static String download(String hash){
         try {
         String MessageURL = "http://www.kugou.com/yy/index.php?r=play/getdata&hash="+hash+"&album_id=&_=1491830054690";
         Request request = new Request.Builder().url(MessageURL).build();
-
-                Intent intent = new Intent("TOAST");
-                intent.putExtra("READY",true);
-                intent.putExtra("NAME", name);
-                MyApplication.getContext().sendBroadcast(intent);
 
             response = client.newCall(request).execute();
             SongDataGetter songdata = gson.fromJson(response.body().string(), SongDataGetter.class);
@@ -81,16 +76,9 @@ public class SongGetter {
             fos.close();
             }
 
-                Intent intent2 = new Intent("TOAST");
-                intent2.putExtra("SUCCEED",true);
-                MyApplication.getContext().sendBroadcast(intent2);
-
             return path; //返回对应文件路径
 
         } catch (Exception e) {
-            Intent intent3 = new Intent("TOAST");
-            intent3.putExtra("FAILE",true);
-            MyApplication.getContext().sendBroadcast(intent3);
             e.printStackTrace();
         }
 
@@ -107,9 +95,6 @@ public class SongGetter {
              songdata   = gson.fromJson(response.body().string(), SongDataGetter.class);
 
         } catch (Exception e) {
-            Intent intent3 = new Intent("TOAST");
-            intent3.putExtra("FAILE",true);
-            MyApplication.getContext().sendBroadcast(intent3);
             e.printStackTrace();
         }
 

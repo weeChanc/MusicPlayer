@@ -2,6 +2,8 @@ package com.example.MyAdapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +11,7 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.mylatouttest.MyApplication;
 import com.example.mylatouttest.R;
@@ -31,6 +34,9 @@ public class DownLoadListAdapter extends BaseAdapter {
     private int layoutID;
     private String title;
     private String singer;
+    Toaster toaster = new Toaster();
+    private MyApplication myApplication = MyApplication.getApplication();
+
 
 
     public DownLoadListAdapter(Context context, ArrayList<Hash> resource, int layoutID, int[] to) {
@@ -93,7 +99,7 @@ public class DownLoadListAdapter extends BaseAdapter {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        SongGetter.download(resource.get(position).getFileHash(),resource.get(position).getFileName().replaceAll("<em>","").replaceAll("</em>",""));
+                        SongGetter.download(resource.get(position).getFileHash());
                     }
                 }).start();
             }
@@ -107,42 +113,48 @@ public class DownLoadListAdapter extends BaseAdapter {
                     public void run() {
 
                         String path;
-                        MyApplication myApplication = MyApplication.getApplication();
+                        Map<String, String> map = new HashMap<>();
                         ArrayList<Map<String,String >> data = myApplication.getData();
+                       
+                        
 
-                        path = SongGetter.download(resource.get(position).getFileHash(),"准备播放: " +resource.get(position).getFileName().replaceAll("<em>","").replaceAll("</em>",""));
+                        try {
+                            path = SongGetter.download(resource.get(position).getFileHash());
+                            Message message = new Message();
+                            
+                            map.put("title", resource.get(position).getSongName().replaceAll("<em>", "").replaceAll("</em>", ""));
+                            map.put("data", path);
+                            map.put("singer", resource.get(position).getSingerName().replaceAll("<em>", "").replaceAll("</em>", ""));
+                            map.put("fulltitle", resource.get(position).getFileName().replaceAll("<em>", "").replaceAll("</em>", ""));
 
+                            map.put("duration", SongGetter.getSongData(resource.get(position).getFileHash()).getData().getTimelength());
+                            map.put("position", data.size() + "");
+                            
+                            toaster.sendEmptyMessage(1);
 
-                        Map<String,String> map = new HashMap<>();
-                        map.put("title",resource.get(position).getSongName().replaceAll("<em>","").replaceAll("</em>",""));
-                        map.put("data",path);
-                        map.put("singer",resource.get(position).getSingerName().replaceAll("<em>","").replaceAll("</em>",""));
-                        map.put("fulltitle",resource.get(position).getFileName().replaceAll("<em>","").replaceAll("</em>",""));
-                        map.put("duration",SongGetter.getSongData(resource.get(position).getFileHash()).getData().getTimelength());
-                        map.put("position",data.size()+"");
+                            data.add(map);
+                            myApplication.setFinaldata(data);
+                            myApplication.setPosition(position);
+                            myApplication.setIsPlay(true);
+                            myApplication.getThread().interrupt();
+                            Intent intent = new Intent("com.example.MainActivity.STARTMUSIC");
+                            intent.putExtra("POSITION", true);
+                            intent.putExtra("LOCATION", data.size() - 1);
+                            context.sendBroadcast(intent);
+                            Intent intent2 = new Intent("notification_play_pause");
+                            intent2.putExtra("LIST", true);
+                            context.sendBroadcast(intent2);
 
-                        data.add(map);
+                        }catch (Exception e){
+                            e.printStackTrace();
+                            toaster.sendEmptyMessage(0);
+                        }
 
-                        myApplication.setFinaldata( data );
-                        myApplication.setIsPlay(true);
-
-                        myApplication.setPosition(position);
-                        myApplication.setIsPlay(true);
-                        myApplication.getThread().interrupt();
-                        Intent intent = new Intent("com.example.MainActivity.STARTMUSIC");
-                        intent.putExtra("POSITION",true);
-                        intent.putExtra("LOCATION",data.size()-1);
-                        context.sendBroadcast(intent);
-                        Intent intent2 = new Intent("notification_play_pause");
-                        intent2.putExtra("LIST", true);
-                        context.sendBroadcast(intent2);
-
-
+                        
                     }
                 }).start();
             }
         });
-
 
         return view;
     }
@@ -152,5 +164,18 @@ public class DownLoadListAdapter extends BaseAdapter {
         TextView down_title;
         TextView down_singer;
         Button down_play;
+    }
+    
+    
+    class Toaster extends  Handler{
+        @Override
+        public void handleMessage(Message msg) {
+            if(msg.what == 0){
+                Toast.makeText(context, "下载失败", Toast.LENGTH_SHORT).show();
+            }else if(msg.what == 1) {
+                Toast.makeText(context, "下载成功", Toast.LENGTH_SHORT).show();
+            }
+            
+        }
     }
 }

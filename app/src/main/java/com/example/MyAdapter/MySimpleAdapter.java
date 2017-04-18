@@ -47,6 +47,7 @@ public class MySimpleAdapter extends BaseAdapter {
     private Thread lyricThread;
     private Animation spin;
     private ArrayList<Integer> pos = myApplication.getPos();
+    private Animation love ;
 
 
     public MySimpleAdapter(Context context, List<Map<String, String>> resource, int layoutID) {
@@ -60,6 +61,7 @@ public class MySimpleAdapter extends BaseAdapter {
 
         data = myApplication.getData();
 //        myApplication.setAdapter(MySimpleAdapter.this);
+        love = AnimationUtils.loadAnimation(context,R.anim.downloadanim);
     }
 
     @Override
@@ -173,6 +175,7 @@ public class MySimpleAdapter extends BaseAdapter {
                             resource.get(position).put("like","F");
                             pos.remove(Integer.valueOf(resource.get(position).get("position")));
                             MySimpleAdapter.this.notifyDataSetChanged();
+                            Toast.makeText(context,"已取消收藏",Toast.LENGTH_SHORT).show();
 
                         }
                     } while (cursor.moveToNext());
@@ -182,8 +185,11 @@ public class MySimpleAdapter extends BaseAdapter {
                     resource.get(position).remove("like");
                     resource.get(position).put("like","T");
                     pos.add(Integer.valueOf(resource.get(position).get("position")));
+                    Toast.makeText(context,"你收藏了该歌曲",Toast.LENGTH_SHORT).show();
                     MySimpleAdapter.this.notifyDataSetChanged();
                 }
+
+                v.startAnimation(love);
 
 
                 cursor.close();

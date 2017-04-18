@@ -10,6 +10,14 @@
         <item name="android:textColorPrimary">@android:color/white</item>
     </style>
     
+    
+    <style name="AppThemeNight" parent="Theme.AppCompat.DayNight.NoActionBar">
+
+        <item name="colorPrimary">@color/colorPrimaryDark</item>
+
+    </style>
+    
+    
     <style name="popup">
         <item name="android:windowEnterAnimation">@anim/popup</item>
         <item name="android:windowExitAnimation">@anim/popupquit</item>

@@ -225,24 +225,6 @@ public class ViewPagerAdapter extends PagerAdapter {
                 getBitmap(intent.getStringExtra("URL"));
             }
 
-            if (intent.getAction().equals("TOAST")) {
-
-                if (intent.getBooleanExtra("READY", false))
-                    Toast.makeText(context, "准备下载歌曲" + intent.getStringExtra("NAME"), Toast.LENGTH_SHORT).show();
-
-                if (intent.getBooleanExtra("SUCCEED", false)) {
-                    Toast.makeText(context, "下载成功", Toast.LENGTH_SHORT).show();
-                }
-
-                if (intent.getBooleanExtra("FAILE", false)) {
-                    Toast.makeText(context, "下载失败", Toast.LENGTH_SHORT).show();
-                }
-
-                if (intent.getBooleanExtra("FAILESEARCH", false)) {
-                    Toast.makeText(context, "搜索失败", Toast.LENGTH_SHORT).show();
-                }
-
-            }
 
             if (intent.getAction().equals("CHANGEMAINBUTTON")) {
                 if (myApplication.isPlay())
