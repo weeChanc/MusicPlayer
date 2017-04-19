@@ -85,6 +85,8 @@ public class FragMain extends Fragment {
         }
 
 
+        main_count_tv.setText(myApplication.getFinaldata().size()+"");
+
         return view;
 
     }
@@ -146,7 +148,7 @@ public class FragMain extends Fragment {
             }
 
             if(intent.getAction().equals("com.example.MusicService.DETIAL")){
-                main_count_tv.setText(myApplication.getData().size()+"");
+                main_count_tv.setText(myApplication.getFinaldata().size()+"");
             }
 
         }

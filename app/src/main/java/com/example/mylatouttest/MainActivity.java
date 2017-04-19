@@ -69,8 +69,6 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.musicplayer_main);
 
-        Intent intent = new Intent("com.example.MainActivity.REQUSETRES");
-        sendBroadcast(intent);
 
         file = myApplication.getFile();
         files = file.listFiles();

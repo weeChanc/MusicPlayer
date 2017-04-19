@@ -146,7 +146,7 @@ public class Start extends Activity {
             ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
             RelativeLayout yes = (RelativeLayout) findViewById(R.id.yes);
             progressBar.setVisibility(View.GONE);
-            yes.setBackgroundResource(R.drawable.yes);                      //更换图标 提示加载完毕
+            yes.setBackgroundResource(R.drawable.ic_yes);                      //更换图标 提示加载完毕
 
         }
     }

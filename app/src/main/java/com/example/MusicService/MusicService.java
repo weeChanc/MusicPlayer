@@ -46,7 +46,7 @@ public class MusicService extends Service {
     private ArrayList<Map<String, String>> data = new ArrayList<>();
     private int play_mode = ORDER;      // o 顺序播放 r 随机播放 l 单曲循环
     private MBind mbind = new MBind();
-    public int position = 0;            //当前播放曲目的位置
+    private int position;            //当前播放曲目的位置
     private RemoteViews contentView;
     private Notification notification;
     private PendingIntent pendingIntent;
@@ -146,7 +146,6 @@ public class MusicService extends Service {
 
     @Override
     public void onCreate() {
-        Log.e("tag","serVice Create");
 
         super.onCreate();
         try{
@@ -154,9 +153,9 @@ public class MusicService extends Service {
         data = myApplication.getData();
         play_mode = myApplication.getPlay_mode();
         db = myApplication.getDp();
+            position = myApplication.getPosition();
 
             registerMyReceiver();//注册广播
-            mainMessageCallBack();// 初始化界面信息
 
             mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
@@ -189,6 +188,7 @@ public class MusicService extends Service {
 
     @Override
     public void onDestroy() {
+
         unregisterReceiver(musicReceiver);
 
         super.onDestroy();
@@ -218,12 +218,13 @@ public class MusicService extends Service {
 
     private void mainMessageCallBack() {  //返回 歌曲数量 以及 当前歌曲
         Intent detialIntent = new Intent("com.example.MusicService.DETIAL");
+        sendBroadcast(detialIntent);
         Intent intent = new Intent("CHANGEMAINBUTTON");
         myApplication.setSeekBarMax(Integer.parseInt(data.get(position).get("duration")));
         myApplication.setBottomTitle(data.get(position).get("title"));
         myApplication.setBottomSinger(data.get(position).get("singer"));
         sendBroadcast(intent);
-        sendBroadcast(detialIntent);
+
     }
 
     private void initMediaPlayer(String location) {
@@ -254,10 +255,18 @@ public class MusicService extends Service {
                 values.put("duration", data.get(position).get("duration"));
                 values.put("title", data.get(position).get("title"));
                 values.put("position", position);
+                values.put("data",data.get(position).get("data"));
 
                 Log.e("data",data.get(position).get("title"));
                 db.delete("Recent","title=?",new String[]{data.get(position).get("title")});
                 db.insert("Recent", null, values);  //先删再加保证只存在一个
+
+                SharedPreferences.Editor editor = getSharedPreferences("last", MODE_PRIVATE).edit();
+                editor.putInt("position", position);
+                editor.putString("singer", data.get(position).get("singer"));
+                editor.putString("title", data.get(position).get("title"));
+                editor.putString("duration",data.get(position).get("duration"));
+                editor.apply();
 
             }
         }).start();  //播放历史 加入数据库存下

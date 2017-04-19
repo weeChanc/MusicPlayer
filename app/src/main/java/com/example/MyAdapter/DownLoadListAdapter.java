@@ -47,7 +47,7 @@ public class DownLoadListAdapter extends BaseAdapter {
     String hash = null;
     String path = null;
     Map<String, String> map = new HashMap<>();
-    ArrayList<Map<String, String>> data = myApplication.getData();
+    ArrayList<Map<String, String>> data ;
 
     public DownLoadListAdapter(Context context, ArrayList<Hash> resource, int layoutID, int[] to) {
         super();
@@ -55,6 +55,8 @@ public class DownLoadListAdapter extends BaseAdapter {
         this.resource = resource;
         this.layoutID = layoutID;
         this.to = to;
+
+        data = myApplication.getFinaldata();
     }
 
     @Override
@@ -121,7 +123,7 @@ public class DownLoadListAdapter extends BaseAdapter {
                         boolean commom = false;
                         hash = resource.get(position).getFileHash();
                         for(String str : DownQuene){
-                            if(str==hash)
+                            if(str==hash || str.equals(""))
                             commom = true;
                         }
                         if(!commom)
@@ -178,6 +180,9 @@ public class DownLoadListAdapter extends BaseAdapter {
                         data.add(map);
                         myApplication.setFinaldata(data);
                         DownQuene.remove(0);
+
+                        Intent intent = new Intent("com.example.MusicService.DETIAL");
+                        context.sendBroadcast(intent);//改变FRAGMAIN歌曲数目
 //
 //                        myApplication.setPosition(position);
 //                        myApplication.setIsPlay(true);

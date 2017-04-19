@@ -49,6 +49,7 @@ public class FragLike extends Fragment  {
                 map.put("title",cursor.getString(cursor.getColumnIndex("title")));
                 map.put("position",cursor.getString(cursor.getColumnIndex("position")));
                 map.put("duration",cursor.getString(cursor.getColumnIndex("duration")));
+                map.put("data",cursor.getString(cursor.getColumnIndex("data")));
                 map.put("like","T");
 
                 data.add(map);

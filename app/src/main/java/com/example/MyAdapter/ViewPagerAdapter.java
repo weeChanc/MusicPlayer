@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.Image;
@@ -52,6 +53,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import static android.content.Context.MODE_PRIVATE;
+
 /**
  * Created by 铖哥 on 2017/4/4.
  */
@@ -94,8 +97,8 @@ public class ViewPagerAdapter extends PagerAdapter {
 
 
     public ViewPagerAdapter(List<View> list, final Context context) {
-        this.list = list;
 
+        this.list = list;
         View view = list.get(0);
         View viewlyric = list.get(1);
 
@@ -117,6 +120,13 @@ public class ViewPagerAdapter extends PagerAdapter {
 
         file = myApplication.getFile();
         files = file.listFiles();
+
+        SharedPreferences share = context.getSharedPreferences("last",MODE_PRIVATE);
+           bottomsinger.setText(share.getString("singer", "简易音乐播放器"));
+           bottomtitle.setText(share.getString("title", "version 1.0"));
+           myApplication.setPosition(share.getInt("position", 0));
+            max = Integer.parseInt(share.getString("duration","0"));
+            bottomSeekbar.setMax( max );
 
         IntentFilter intentFilter = new IntentFilter();
         messageReceiver = new MessageReciver();
@@ -145,8 +155,12 @@ public class ViewPagerAdapter extends PagerAdapter {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 Intent intent = new Intent("com.example.MainActivity.STARTMUSIC");
-                intent.putExtra("PROGRESS", seekBar.getProgress());
-                intent.putExtra("SEEK", true);
+                if(seekBar.getProgress() == max){
+                    intent.putExtra("NEXT",true);
+                }else {
+                    intent.putExtra("PROGRESS", seekBar.getProgress());
+                    intent.putExtra("SEEK", true);
+                }
 
                 Intent intent1 = new Intent("CHANGEMAINBUTTON");
 

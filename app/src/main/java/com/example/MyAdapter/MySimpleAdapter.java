@@ -124,16 +124,27 @@ public class MySimpleAdapter extends BaseAdapter {
             @Override
             public void onClick(View v) {
 
+                if(resource == myApplication.getRecentdata()){
+                    myApplication.setData(myApplication.getRecentdata());
+                }
+                if(resource == myApplication.getFinaldata()){
+                    myApplication.setData(myApplication.getFinaldata());
+                }
+                if(resource == myApplication.getLikedata()){
+                    myApplication.setData(myApplication.getLikedata());
+                }
+
                 myApplication.setPosition(position);
                 myApplication.setIsPlay(true);
                 Intent intent = new Intent("com.example.MainActivity.STARTMUSIC");
                 intent.putExtra("POSITION", true);
 
-                if (resource.get(position).get("title").equals(data.get(position).get("title")))
-                    intent.putExtra("LOCATION", position);//本地列表                                      //为本地列表与其他列表做区分 本地列表直接根据position播放
-                                                                                                        //其他列表根据一开始写入的位置信息 获取歌曲的 在data中的位置 来播放
-                else
-                    intent.putExtra("LOCATION", Integer.parseInt(resource.get(position).get("position")));  //设置播放的歌曲的位置
+
+//                if (resource.get(position).get("title").equals(data.get(position).get("title")))
+//                    intent.putExtra("LOCATION", position);//本地列表                                      //为本地列表与其他列表做区分 本地列表直接根据position播放//其他列表根据一开始写入的位置信息 获取歌曲的 在data中的位置 来播放
+//                else
+//                    intent.putExtra("LOCATION", Integer.parseInt(resource.get(position).get("position")));  //设置播放的歌曲的位置
+                intent.putExtra("LOCATION",position);
 
                 context.sendBroadcast(intent);
                                                                                 //点击后通知主界面更新图标并播放歌曲
@@ -156,6 +167,7 @@ public class MySimpleAdapter extends BaseAdapter {
                 values.put("title", resource.get(position).get("title"));
                 values.put("singer", resource.get(position).get("singer"));
                 values.put("duration", resource.get(position).get("duration"));
+                values.put("data",resource.get(position).get("data"));
                 values.put("position", resource.get(position).get("position"));  //准备要写入数据库的信息
 
                 boolean common = false;
@@ -214,7 +226,6 @@ public class MySimpleAdapter extends BaseAdapter {
                             file.delete();
 
                             db.delete("MyMusic","title=?",new String[]{resource.get(position).get("title")});
-
                         }
 
                         if(myApplication.getFinaldata()==resource)

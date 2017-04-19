@@ -14,12 +14,14 @@ public class MyDataBaseHelper extends SQLiteOpenHelper {
             +"position integer, "
             +"duration integer, "
             +"singer text, "
+            +"data text, "
             +"title text)";
 
     public static final String RECENT = "create table Recent ("  //最近播放列表
             +"position integer, "
             +"duration integer, "
             +"singer text, "
+            +"data text, "
             +"title text)";
 
     public static final String MYMUSIC = "create table MyMusic (" //本地音乐列表 系统读取存入自身数据库
