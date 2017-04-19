@@ -1,5 +1,7 @@
 package com.example.fragment;
 
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -17,6 +19,7 @@ import com.example.mylatouttest.MyApplication;
 import com.example.mylatouttest.R;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -31,7 +34,7 @@ import java.util.Map;
 public class FragLocal extends Fragment {
 
 
-    ArrayList<Map<String, String>> finaldata;
+    ArrayList<Map<String, String>> data;
     MyApplication myApplication;
     ImageButton back;
 
@@ -41,9 +44,28 @@ public class FragLocal extends Fragment {
 
         View view = inflater.inflate(R.layout.fraglocal,container,false);
         myApplication = MyApplication.getApplication();
-        finaldata = myApplication.getFinaldata();
 
-        MySimpleAdapter simpleAdapter = new MySimpleAdapter(getContext(), finaldata, R.layout.listitem);
+        SQLiteDatabase db = myApplication.getDp();
+        data = new ArrayList<>();
+        myApplication.setFinaldata(data);
+        Cursor cursor = db.query("MyMusic",null,null,null,null,null,null,null);
+
+        if(cursor.moveToFirst()){
+            do{
+                Map<String,String> map = new HashMap<>();
+                map.put("singer",cursor.getString(cursor.getColumnIndex("singer")));
+                map.put("title",cursor.getString(cursor.getColumnIndex("title")));
+                map.put("position",cursor.getString(cursor.getColumnIndex("position")));
+                map.put("duration",cursor.getString(cursor.getColumnIndex("duration")));
+                map.put("like","T");
+
+                data.add(map);
+            }while(cursor.moveToNext());
+        }
+        cursor.close();
+        //从数据库从读取数据转化为数据源
+
+        MySimpleAdapter simpleAdapter = new MySimpleAdapter(getContext(),data, R.layout.listitem);
 
         ListView listview = (ListView) view.findViewById(R.id.local_music_listview);
         LayoutAnimationController lac = new LayoutAnimationController(AnimationUtils.loadAnimation(getContext(),R.anim.spin));

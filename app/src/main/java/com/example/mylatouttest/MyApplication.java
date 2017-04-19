@@ -31,8 +31,9 @@ public class MyApplication  extends Application{
     private static Context context;
     private  ArrayList<Map<String, String>> data ;
     private ArrayList<Map<String, String>> finaldata ;
-    private ArrayList<Integer> pos =  new ArrayList<>(); //
-
+    private ArrayList<Map<String, String>> likedata ;
+    private ArrayList<Map<String, String>> recentdata ;
+    private ArrayList<Integer> pos =  new ArrayList<>();
     private boolean isPlay = false ;
     private File[] files;
     private int seekBarMax;
@@ -45,6 +46,22 @@ public class MyApplication  extends Application{
     private SQLiteDatabase dp;
     private Activity activity;
     private int play_mode;
+
+    public void setLikedata(ArrayList<Map<String, String>> likedata) {
+        this.likedata = likedata;
+    }
+
+    public ArrayList<Map<String, String>> getLikedata() {
+        return likedata;
+    }
+
+    public ArrayList<Map<String, String>> getRecentdata() {
+        return recentdata;
+    }
+
+    public void setRecentdata(ArrayList<Map<String, String>> recentdata) {
+        this.recentdata = recentdata;
+    }
 
     public Activity getActivity() {
         return activity;

@@ -57,6 +57,7 @@ public class FragLike extends Fragment  {
         cursor.close();
         //从数据库从读取数据转化为数据源
 
+        myApplication.setLikedata(data);
         MySimpleAdapter mySimpleAdapter =
                 new MySimpleAdapter(getContext(),data,R.layout.listitem);
 

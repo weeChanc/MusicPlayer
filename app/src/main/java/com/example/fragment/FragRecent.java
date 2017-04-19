@@ -64,6 +64,8 @@ public class FragRecent extends Fragment {
         }
         cursor.close();
 
+        myApplication.setRecentdata(data);
+
         mySimpleAdapter = new MySimpleAdapter(getContext(), data, R.layout.listitem);
         ListView listView = (ListView) view.findViewById(R.id.like_listview);
         listView.setAdapter(mySimpleAdapter);

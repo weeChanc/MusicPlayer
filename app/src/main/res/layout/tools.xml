@@ -16,29 +16,25 @@
         android:id="@+id/imageButton"
         android:layout_width="54dp"
         android:layout_height="match_parent"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginEnd="47dp"
-        android:layout_marginRight="47dp"
         android:background="@color/clr_normal"
         android:padding="16dp"
         android:scaleType="centerInside"
-        app:srcCompat="@drawable/a_z" />
+        app:srcCompat="@drawable/a_z"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
     <ImageButton
         android:id="@+id/mode_bt"
         android:layout_width="54dp"
         android:layout_height="match_parent"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="43dp"
-        android:layout_marginStart="43dp"
         android:background="@color/clr_normal"
         android:padding="12dp"
         android:scaleType="fitCenter"
-        app:srcCompat="@drawable/ic_order" />
+        app:srcCompat="@drawable/ic_order"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@+id/imageButton"
+        android:layout_toStartOf="@+id/imageButton" />
 
     <View
         android:id="@+id/view4"
@@ -46,5 +42,29 @@
         android:layout_height="1dp"
         android:layout_alignBottom="@id/mode_bt"
         android:background="@color/drak_gray" />
+
+    <ImageButton
+        android:id="@+id/play2"
+        android:layout_width="34dp"
+        android:layout_height="34dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="25dp"
+        android:layout_marginStart="25dp"
+        android:background="@color/clr_normal"
+        android:scaleType="centerCrop"
+        app:srcCompat="@drawable/ic_listplay" />
+
+    <TextView
+        android:id="@+id/textView7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="13dp"
+        android:layout_marginStart="13dp"
+        android:layout_toEndOf="@+id/play2"
+        android:layout_toRightOf="@+id/play2"
+        android:text="播放该列表" />
 
 </RelativeLayout>

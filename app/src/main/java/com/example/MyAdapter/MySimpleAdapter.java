@@ -213,10 +213,7 @@ public class MySimpleAdapter extends BaseAdapter {
                             File file = new File(path);
                             file.delete();
 
-//                            for(Map map : resource) {
-//                                if (map.get("title").equals(resource.get(position).get("title")))
-//                                    myApplication.getFinaldata().remove(position);
-//                            }
+                            db.delete("MyMusic","title=?",new String[]{resource.get(position).get("title")});
 
                         }
 
@@ -224,6 +221,7 @@ public class MySimpleAdapter extends BaseAdapter {
                             db.delete("MyMusic","title=?",new String[]{resource.get(position).get("title")});
 
                         db.delete("Like", "title=?", new String[]{resource.get(position).get("title")});
+
                         db.delete("Recent", "title=?", new String[]{resource.get(position).get("title")});
 
 

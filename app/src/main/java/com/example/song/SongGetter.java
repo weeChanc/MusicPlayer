@@ -71,6 +71,7 @@ public class SongGetter {
                 FileOutputStream fos = new FileOutputStream(file);
             fos.write(song);
             fos.close();
+
             }else{
                 return "exist";
             }
