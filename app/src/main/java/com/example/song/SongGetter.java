@@ -59,21 +59,20 @@ public class SongGetter {
 
             response = client.newCall(request).execute();
             SongDataGetter songdata = gson.fromJson(response.body().string(), SongDataGetter.class);
-            String download = songdata.getData().getPlay_url();
 
-            request = new Request.Builder().url(download).build();
-
-            response = client.newCall(request).execute();
-
-            byte[] song = response.body().bytes();
-
-            String path = MyApplication.getApplication().getFile().getPath() + "//" + songdata.getData().getAudio_name() + ".mp3";
+            String path = MyApplication.getApplication().getFile().getPath() + "/" + songdata.getData().getAudio_name() + ".mp3";
             File file = new File(path);
             if (!file.exists()){
+            String download = songdata.getData().getPlay_url();
+            request = new Request.Builder().url(download).build();
+            response = client.newCall(request).execute();
+            byte[] song = response.body().bytes();
                 file.createNewFile();
                 FileOutputStream fos = new FileOutputStream(file);
             fos.write(song);
             fos.close();
+            }else{
+                return "exist";
             }
 
             return path; //返回对应文件路径

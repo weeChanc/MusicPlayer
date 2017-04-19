@@ -21,18 +21,18 @@ import java.util.Map;
  * Created by 铖哥 on 2017/4/7.
  */
 
+/**
+ * 全局变量
+ */
+
 public class MyApplication  extends Application{
-
-
     public static final int ORDER = 1;
-
-
     private  static MyApplication myApplication;
     private static Context context;
     private  ArrayList<Map<String, String>> data ;
     private ArrayList<Map<String, String>> finaldata ;
-    private ArrayList<Integer> pos =  new ArrayList<>();
-    private ArrayList<String> lover = new ArrayList<>();
+    private ArrayList<Integer> pos =  new ArrayList<>(); //
+
     private boolean isPlay = false ;
     private File[] files;
     private int seekBarMax;
@@ -43,16 +43,8 @@ public class MyApplication  extends Application{
     private String bottomSinger;
     private File file;
     private SQLiteDatabase dp;
-    private List<Hash> hashList;
     private Activity activity;
-
-    public ArrayList<String> getLover() {
-        return lover;
-    }
-
-    public void setLover(ArrayList<String> lover) {
-        this.lover = lover;
-    }
+    private int play_mode;
 
     public Activity getActivity() {
         return activity;
@@ -66,10 +58,6 @@ public class MyApplication  extends Application{
         return pos;
     }
 
-    public void setPos(ArrayList<Integer> pos) {
-        this.pos = pos;
-    }
-
     public ArrayList<Map<String, String>> getFinaldata() {
         return finaldata;
     }
@@ -77,8 +65,6 @@ public class MyApplication  extends Application{
     public void setFinaldata(ArrayList<Map<String, String>> finaldata) {
         this.finaldata = finaldata;
     }
-
-    private int play_mode;
 
     public int getPlay_mode() {
         return play_mode;
@@ -92,14 +78,6 @@ public class MyApplication  extends Application{
         return context;
     }
 
-    public List<Hash> getHashList() {
-        return hashList;
-    }
-
-    public void setHashList(List<Hash> hashList) {
-        this.hashList = hashList;
-    }
-
     public void setDp(SQLiteDatabase dp) {
         this.dp = dp;
     }
@@ -107,7 +85,6 @@ public class MyApplication  extends Application{
     public SQLiteDatabase getDp() {
         return dp;
     }
-
 
     public File getFile() {
         return file;
@@ -154,10 +131,6 @@ public class MyApplication  extends Application{
         this.isPlay = isPlay;
     }
 
-    public void setFiles(File[] files){
-        this.files = files;
-    }
-
 
     public void setIsSeekBarTouch(boolean isSeekBarTouch){
         this.isSeekBarTouch = isSeekBarTouch;
@@ -178,10 +151,6 @@ public class MyApplication  extends Application{
 
     public boolean isPlay(){
         return isPlay;
-    }
-
-    public File[] getFiles(){
-        return files;
     }
 
     public boolean isSeekBarTouch(){

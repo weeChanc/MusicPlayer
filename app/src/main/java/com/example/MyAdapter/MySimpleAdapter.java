@@ -206,17 +206,26 @@ public class MySimpleAdapter extends BaseAdapter {
                     @Override
                     public void onClick(View v) {
                         SQLiteDatabase db = myApplication.getDp();
+
                         if( checkBox.isChecked()){
                             //判断是否删除本地文件 如果为真 则获取文件的地址 并删除 文件 数据库的数据 我喜欢List中的数据
                             String path = data.get(Integer.parseInt(resource.get(position).get("position"))).get("data");
                             File file = new File(path);
                             file.delete();
+
+//                            for(Map map : resource) {
+//                                if (map.get("title").equals(resource.get(position).get("title")))
+//                                    myApplication.getFinaldata().remove(position);
+//                            }
+
                         }
 
+                        if(myApplication.getFinaldata()==resource)
+                            db.delete("MyMusic","title=?",new String[]{resource.get(position).get("title")});
 
                         db.delete("Like", "title=?", new String[]{resource.get(position).get("title")});
                         db.delete("Recent", "title=?", new String[]{resource.get(position).get("title")});
-                        db.delete("MyMusic","title=?",new String[]{resource.get(position).get("title")});
+
 
                         //遍历查找pos数组(我喜欢的数组) 若存在相同的则去除
                         for(Integer p : pos){
@@ -225,6 +234,7 @@ public class MySimpleAdapter extends BaseAdapter {
                                 break;
                             }
                         }
+
                         resource.remove(position);
                         MySimpleAdapter.this.notifyDataSetChanged();
                         //移除相关的数据 并 更新listview

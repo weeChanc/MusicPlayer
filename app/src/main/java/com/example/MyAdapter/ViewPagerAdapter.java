@@ -314,8 +314,6 @@ public class ViewPagerAdapter extends PagerAdapter {
                     e.printStackTrace();
                 }
             }
-
-
         }
     }
 

@@ -60,7 +60,6 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/local_mode_bt"
-        android:layout_weight="0.93"
         android:background="@color/colorAccent"
         android:divider="@null" />
 

@@ -37,6 +37,7 @@ public class Welcome extends AppCompatActivity {
     private ArrayList<Map<String, String>> finaldata = new ArrayList<>();
     MyApplication myApplication = MyApplication.getApplication();
     SQLiteDatabase db = myApplication.getDp();
+    int temp = 0;
 
     @Override
     protected void onDestroy() {
@@ -49,9 +50,12 @@ public class Welcome extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.welcome);
 
+        temp++;
+
         new Thread(new Runnable() {
             @Override
             public void run() {
+                if(temp == 1 )
                 readMusicData();
             }
         }).start();
@@ -108,29 +112,31 @@ public class Welcome extends AppCompatActivity {
         String[] want = new String[]{MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.DATA, MediaStore.Audio.Media.ARTIST,
                 MediaStore.Audio.Media.DISPLAY_NAME, MediaStore.Audio.Media.DURATION};
 
-        Cursor cursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, want, MediaStore.Audio.Media.DURATION + ">60000", null, MediaStore.Audio.Media.TITLE);
-        if (cursor.moveToFirst() && cursor != null) {            //读取时间大于一分钟的歌曲  并且按照歌名排序
-            do {
-                Map<String, String> map = new HashMap<>();
-                map.put("title", cursor.getString(0));       //歌曲标题
-                map.put("data", cursor.getString(1));        //歌曲路径              //读取音乐文件
-                map.put("singer", cursor.getString(2));      //歌手名
-                map.put("fulltitle", cursor.getString(3));   //歌手名+歌曲名
-                map.put("duration", cursor.getInt(4) + "");  //歌曲长度
-                data.add(map);
-                finaldata.add(map);
+        if(myApplication.getData()!=null) {
+            Cursor cursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, want, MediaStore.Audio.Media.DURATION + ">60000", null, MediaStore.Audio.Media.TITLE);
+            if (cursor.moveToFirst() && cursor != null) {            //读取时间大于一分钟的歌曲  并且按照歌名排序
+                do {
+                    Map<String, String> map = new HashMap<>();
+                    map.put("title", cursor.getString(0));       //歌曲标题
+                    map.put("data", cursor.getString(1));        //歌曲路径              //读取音乐文件
+                    map.put("singer", cursor.getString(2));      //歌手名
+                    map.put("fulltitle", cursor.getString(3));   //歌手名+歌曲名
+                    map.put("duration", cursor.getInt(4) + "");  //歌曲长度
+                    data.add(map);
+                    finaldata.add(map);
 
-                ContentValues values = new ContentValues();
-                values.put("title", cursor.getString(0));
-                values.put("data",cursor.getString(1));
-                values.put("singer", cursor.getString(2));
-                values.put("fulltitle",cursor.getString(3));
-                values.put("duration", cursor.getInt(4));
-                db.insert("MyMusic", null, values);  //导入到自己的数据库
+                    ContentValues values = new ContentValues();
+                    values.put("title", cursor.getString(0));
+                    values.put("data", cursor.getString(1));
+                    values.put("singer", cursor.getString(2));
+                    values.put("fulltitle", cursor.getString(3));
+                    values.put("duration", cursor.getInt(4));
+                    db.insert("MyMusic", null, values);  //导入到自己的数据库
 
-            } while (cursor.moveToNext());
-            cursor.close();
+                } while (cursor.moveToNext());
+                cursor.close();
 
+            }
         }
 
         for (int i = 0; i < data.size(); i++) {

@@ -22,6 +22,7 @@ import com.example.mylatouttest.R;
 import com.example.song.Hash;
 import com.example.song.SongGetter;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -114,47 +115,51 @@ public class DownLoadListAdapter extends BaseAdapter {
                     @Override
                     public void run() {
 
-                        String path;
+                        String path = null;
                         Map<String, String> map = new HashMap<>();
                         ArrayList<Map<String,String >> data = myApplication.getData();
 
-
+                        File file  = new File(myApplication.getFile().getPath()+"/"+resource.get(position).getSongName().replaceAll("<em>", "").replaceAll("</em>", ""));
 
                         try {
-                            path = SongGetter.download(resource.get(position).getFileHash());
-                            Message message = new Message();
-                            
-                            map.put("title", resource.get(position).getSongName().replaceAll("<em>", "").replaceAll("</em>", ""));
-                            map.put("data", path);
-                            map.put("singer", resource.get(position).getSingerName().replaceAll("<em>", "").replaceAll("</em>", ""));
-                            map.put("fulltitle", resource.get(position).getFileName().replaceAll("<em>", "").replaceAll("</em>", ""));
+                                path = SongGetter.download(resource.get(position).getFileHash());
+                            if(!path.equals("exist")) {
+                                Log.e("tag", file.getPath());
+                                Message message = new Message();
+                                map.put("title", resource.get(position).getSongName().replaceAll("<em>", "").replaceAll("</em>", ""));
+                                map.put("data", path);
+                                map.put("singer", resource.get(position).getSingerName().replaceAll("<em>", "").replaceAll("</em>", ""));
+                                map.put("fulltitle", resource.get(position).getFileName().replaceAll("<em>", "").replaceAll("</em>", ""));
+                                map.put("duration", SongGetter.getSongData(resource.get(position).getFileHash()).getData().getTimelength());
+                                map.put("position", data.size() + "");
 
-                            map.put("duration", SongGetter.getSongData(resource.get(position).getFileHash()).getData().getTimelength());
-                            map.put("position", data.size() + "");
 
-                            SQLiteDatabase db = myApplication.getDp();
-                            ContentValues values = new ContentValues();
-                            values.put("title", map.get("title"));
-                            values.put("data",map.get("data"));
-                            values.put("singer", map.get("singer"));
-                            values.put("fulltitle",map.get("fulltitle"));
-                            values.put("duration", map.get("duration"));
-                            db.insert("MyMusic", null, values);  //导入到自己的数据库
-                            
-                            toaster.sendEmptyMessage(1);
+                                    SQLiteDatabase db = myApplication.getDp();
+                                    ContentValues values = new ContentValues();
+                                    values.put("title", map.get("title"));
+                                    values.put("data", map.get("data"));
+                                    values.put("singer", map.get("singer"));
+                                    values.put("fulltitle", map.get("fulltitle"));
+                                    values.put("duration", map.get("duration"));
+                                    db.insert("MyMusic", null, values);  //导入到自己的数据库
 
-                            data.add(map);
-                            myApplication.setFinaldata(data);
+                                    toaster.sendEmptyMessage(1);
 
-                            myApplication.setPosition(position);
-                            myApplication.setIsPlay(true);
-                            Intent intent = new Intent("com.example.MainActivity.STARTMUSIC");
-                            intent.putExtra("POSITION", true);
-                            intent.putExtra("LOCATION", data.size() - 1);
-                            context.sendBroadcast(intent);
-                            Intent intent2 = new Intent("notification_play_pause");
-                            intent2.putExtra("LIST", true);
-                            context.sendBroadcast(intent2);
+                                    data.add(map);
+                                    myApplication.setFinaldata(data);
+
+                                    myApplication.setPosition(position);
+                                    myApplication.setIsPlay(true);
+                                    Intent intent = new Intent("com.example.MainActivity.STARTMUSIC");
+                                    intent.putExtra("POSITION", true);
+                                    intent.putExtra("LOCATION", data.size() - 1);
+                                    context.sendBroadcast(intent);
+                                    Intent intent2 = new Intent("notification_play_pause");
+                                    intent2.putExtra("LIST", true);
+                                    context.sendBroadcast(intent2);
+
+                            }else
+                                toaster.sendEmptyMessage(3);
 
                         }catch (Exception e){
                             e.printStackTrace();
@@ -185,6 +190,8 @@ public class DownLoadListAdapter extends BaseAdapter {
                 Toast.makeText(context, "下载失败", Toast.LENGTH_SHORT).show();
             }else if(msg.what == 1) {
                 Toast.makeText(context, "下载成功", Toast.LENGTH_SHORT).show();
+            }else if(msg.what == 3){
+                Toast.makeText(context, "您已经下载过这首歌了", Toast.LENGTH_SHORT).show();
             }
             
         }

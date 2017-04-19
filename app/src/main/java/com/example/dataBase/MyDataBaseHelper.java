@@ -10,19 +10,19 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class MyDataBaseHelper extends SQLiteOpenHelper {
 
-    public static final String LIKE = "create table Like ("
+    public static final String LIKE = "create table Like (" //喜欢列表
             +"position integer, "
             +"duration integer, "
             +"singer text, "
             +"title text)";
 
-    public static final String RECENT = "create table Recent ("
+    public static final String RECENT = "create table Recent ("  //最近播放列表
             +"position integer, "
             +"duration integer, "
             +"singer text, "
             +"title text)";
 
-    public static final String MYMUSIC = "create table MyMusic ("
+    public static final String MYMUSIC = "create table MyMusic (" //本地音乐列表 系统读取存入自身数据库
             +"position integer primary key autoincrement, "
             +"duration integer, "
             +"singer text, "
