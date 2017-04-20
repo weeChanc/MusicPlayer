@@ -58,7 +58,7 @@ public class FragLocal extends Fragment {
                 map.put("position",cursor.getString(cursor.getColumnIndex("position")));
                 map.put("duration",cursor.getString(cursor.getColumnIndex("duration")));
                 map.put("data",cursor.getString(cursor.getColumnIndex("data")));
-                map.put("like","T");
+                map.put("isChecked","false");
 
                 data.add(map);
             }while(cursor.moveToNext());

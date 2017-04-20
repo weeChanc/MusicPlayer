@@ -35,26 +35,37 @@
 
     <ImageButton
         android:id="@+id/delete"
-        android:layout_width="34dp"
-        android:layout_height="34dp"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
         android:layout_marginLeft="25dp"
         android:layout_marginStart="25dp"
         android:background="@color/clr_normal"
-        android:scaleType="centerCrop"
-        app:srcCompat="@drawable/ic_listplay" />
+        android:scaleType="fitCenter"
+        app:srcCompat="@drawable/ic_del" />
 
-    <TextView
-        android:id="@+id/textView7"
+    <ImageButton
+        android:id="@+id/delete_ensure"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignBottom="@+id/delall"
+        android:layout_centerHorizontal="true"
+        android:background="@color/colorWhite"
+        android:scaleType="centerInside"
+        android:visibility="gone"
+        app:srcCompat="@drawable/ic_gou" />
+
+    <CheckBox
+        android:id="@+id/delall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_marginLeft="13dp"
-        android:layout_marginStart="13dp"
+        android:layout_alignTop="@+id/delete"
         android:layout_toEndOf="@+id/delete"
         android:layout_toRightOf="@+id/delete"
-        android:text="列表删除" />
+        android:text="是否删除文件"
+        android:textColor="@color/color_gap"
+        android:visibility="gone" />
 
 </RelativeLayout>

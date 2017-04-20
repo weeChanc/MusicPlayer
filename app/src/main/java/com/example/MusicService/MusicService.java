@@ -258,6 +258,7 @@ public class MusicService extends Service {
                 values.put("position", position);
                 values.put("data",data.get(position).get("data"));
 
+
                 Log.e("data",data.get(position).get("title"));
                 db.delete("Recent","title=?",new String[]{data.get(position).get("title")});
                 db.insert("Recent", null, values);  //先删再加保证只存在一个

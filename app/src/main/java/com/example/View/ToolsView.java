@@ -1,7 +1,9 @@
 package com.example.View;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.support.annotation.Nullable;
 import android.text.Layout;
@@ -9,6 +11,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -41,6 +44,8 @@ public class ToolsView extends LinearLayout {
     MyApplication myApplication = MyApplication.getApplication();
     ImageButton mode_bt;
     ImageButton delete;
+    ImageButton deleteEnsure;
+    CheckBox checkBox;
     int mode = myApplication.getPlay_mode();
     Context context;
 
@@ -51,7 +56,15 @@ public class ToolsView extends LinearLayout {
 
         View view = LayoutInflater.from(context).inflate(R.layout.tools, this);
 
+        Receiver receiver = new Receiver();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("ChangeToolsButton");
+        context.registerReceiver(receiver,intentFilter);
+
         mode_bt = (ImageButton) view.findViewById(R.id.mode_bt);
+        deleteEnsure = (ImageButton) view.findViewById(R.id.delete_ensure);
+        checkBox = (CheckBox) view.findViewById(R.id.delall);
+
         mode_bt.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -63,12 +76,30 @@ public class ToolsView extends LinearLayout {
         delete.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(myApplication.isDeleteAll()) {
+
+                if (myApplication.isDeleteAll()) {
                     myApplication.setDeleteAll(false);
-                }else{
+                    deleteEnsure.setVisibility(GONE);
+                    checkBox.setVisibility(GONE);
+                } else {
                     myApplication.setDeleteAll(true);
+                    deleteEnsure.setVisibility(VISIBLE);
+                    checkBox.setVisibility(VISIBLE);
+                    checkBox.setChecked(false);
                 }
                 Intent intent = new Intent("ShowOrHideCheckBox");
+                context.sendBroadcast(intent);
+
+            }
+        });
+
+        deleteEnsure.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent("DeleteEnsure");
+                if (checkBox.isChecked()) {
+                    intent.putExtra("deleteFile", true);
+                }
                 context.sendBroadcast(intent);
             }
         });
@@ -83,18 +114,14 @@ public class ToolsView extends LinearLayout {
         }
 
 
-
-
-
-
     }
 
     void setMode() {
         SharedPreferences.Editor editor = context.getSharedPreferences("data", MODE_PRIVATE).edit();
 
-        if(mode == LOOP) mode = 0 ;    //处理 LOOP的情况
+        if (mode == LOOP) mode = 0;    //处理 LOOP的情况
         ++mode;
-        Log.e("tag",mode+"");
+        Log.e("tag", mode + "");
         if (mode == ORDER) {
             mode_bt.setImageResource(R.drawable.ic_order);
         } else if (mode == RANDOM) {
@@ -106,4 +133,20 @@ public class ToolsView extends LinearLayout {
         editor.putInt("MODE", mode);  //按下即保存
         editor.apply();
     }
+
+    class Receiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            if (intent.getAction().equals("ChangeToolsButton")) {
+
+                    deleteEnsure.setVisibility(GONE);
+                    checkBox.setVisibility(GONE);
+                    checkBox.setChecked(false);
+                }
+
+            }
+
+        }
+
 }

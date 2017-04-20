@@ -145,7 +145,14 @@ public class MainActivity extends AppCompatActivity{
     long start = 0 ;
     @Override
     public void onBackPressed() {
-        if(System.currentTimeMillis() - start > 2000 && fm.getBackStackEntryCount() == 0){
+
+        if(myApplication.isDeleteAll()){
+            myApplication.setDeleteAll(false);
+            Intent intent = new Intent("ShowOrHideCheckBox");
+            Intent intent2= new Intent("ChangeToolsButton");
+            sendBroadcast(intent);
+            sendBroadcast(intent2);
+        }else if(System.currentTimeMillis() - start > 2000 && fm.getBackStackEntryCount() == 0){
             start = System.currentTimeMillis();
             Toast.makeText(this,"再按一次退出", Toast.LENGTH_SHORT).show();
         }else {                                                                 //设置按两次退出程序

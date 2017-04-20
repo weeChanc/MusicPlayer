@@ -34,6 +34,7 @@ import com.example.mylatouttest.R;
 import java.io.File;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,8 +52,8 @@ public class MySimpleAdapter extends BaseAdapter {
     private LayoutInflater inflater;
     private MyApplication myApplication = MyApplication.getApplication();
     private ArrayList<Integer> pos = myApplication.getPos();
-    private Animation love ;
-
+    private Animation love;
+    private List<Integer> deletePos = new ArrayList<>();
 
 
     public MySimpleAdapter(Context context, List<Map<String, String>> resource, int layoutID) {
@@ -62,12 +63,13 @@ public class MySimpleAdapter extends BaseAdapter {
         inflater = LayoutInflater.from(context);
 
         data = myApplication.getData();
-        love = AnimationUtils.loadAnimation(context,R.anim.downloadanim);
+        love = AnimationUtils.loadAnimation(context, R.anim.downloadanim);
 
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction("ShowOrHideCheckBox");
+        intentFilter.addAction("DeleteEnsure");
         Receiver receiver = new Receiver();
-        context.registerReceiver(receiver,intentFilter);
+        context.registerReceiver(receiver, intentFilter);
 
     }
 
@@ -102,7 +104,8 @@ public class MySimpleAdapter extends BaseAdapter {
             viewHolder.love_bt = (ImageButton) view.findViewById(R.id.item_love);
             viewHolder.play_bt = (Button) view.findViewById(R.id.item_play);
             viewHolder.card = (CardView) view.findViewById(R.id.card);
-            viewHolder.duration = (TextView)view.findViewById(R.id.item_duration);
+            viewHolder.duration = (TextView) view.findViewById(R.id.item_duration);
+            viewHolder.checkBox = (CheckBox) view.findViewById(R.id.cb);
             view.setTag(viewHolder);
         } else {
             view = convertView;
@@ -116,35 +119,64 @@ public class MySimpleAdapter extends BaseAdapter {
 
 
         int duration = Integer.parseInt(resource.get(position).get("duration"));
-        String strdur = duration/1000/60 +":"+ duration%60 +"";
-        if(strdur.indexOf(':') == 1)
-            strdur = "0"+strdur;
-        if(strdur.length()<5)
-            strdur = strdur+"0";
+        String strdur = duration / 1000 / 60 + ":" + duration % 60 + "";
+        if (strdur.indexOf(':') == 1)
+            strdur = "0" + strdur;
+        if (strdur.length() < 5)
+            strdur = strdur + "0";
         viewHolder.duration.setText(strdur);            //将毫秒格式的时间 修改成 00:00格式的时间并显示在listview 的item中
+
 
         viewHolder.love_bt.setImageResource(R.drawable.ic_blackheart); //默认设置为非红心
 
-        if(pos.size()!=0 && pos!=null)
-        for(Integer a : pos){
-            if(resource.get(position).get("position").equals(a.toString()))
-            {
-                viewHolder.love_bt.setImageResource(R.drawable.love);   //根据一开始读入的 喜欢歌曲的位置信息 来设置 是否为红心
-                break;
+        if (pos.size() != 0 && pos != null) {
+            Log.e("like",pos.toString());
+            for (Integer a : pos) {
+                if (resource.get(position).get("position").equals(a.toString())) {
+                    viewHolder.love_bt.setImageResource(R.drawable.love);   //根据一开始读入的 喜欢歌曲的位置信息 来设置 是否为红心
+                    break;
+                }
             }
         }
+
+
+        if (resource.get(position).get("isChecked").equals("true")) {
+            viewHolder.checkBox.setChecked(true);
+        } else {
+            viewHolder.checkBox.setChecked(false);
+        }
+
+        if (myApplication.isDeleteAll()) {
+            viewHolder.checkBox.setVisibility(View.VISIBLE);
+        } else {
+            viewHolder.checkBox.setVisibility(View.GONE);
+        }
+
+        viewHolder.checkBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                resource.get(position).remove("isChecked");
+                if (viewHolder.checkBox.isChecked()) {
+                    resource.get(position).put("isChecked", "true");
+                    deletePos.add(position);
+                } else {
+                    resource.get(position).put("isChecked", "false");
+                    deletePos.remove(Integer.valueOf(position));
+                }
+            }
+        });
 
         viewHolder.play_bt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                if(resource == myApplication.getRecentdata()){
+                if (resource == myApplication.getRecentdata()) {
                     myApplication.setData(myApplication.getRecentdata());
                 }
-                if(resource == myApplication.getFinaldata()){
+                if (resource == myApplication.getFinaldata()) {
                     myApplication.setData(myApplication.getFinaldata());
                 }
-                if(resource == myApplication.getLikedata()){
+                if (resource == myApplication.getLikedata()) {
                     myApplication.setData(myApplication.getLikedata());
                 }
 
@@ -152,14 +184,13 @@ public class MySimpleAdapter extends BaseAdapter {
                 myApplication.setIsPlay(true);
                 Intent intent = new Intent("com.example.MainActivity.STARTMUSIC");
                 intent.putExtra("POSITION", true);
-                intent.putExtra("LOCATION",position);
+                intent.putExtra("LOCATION", position);
 
                 context.sendBroadcast(intent);
-                                                                                //点击后通知主界面更新图标并播放歌曲
+                //点击后通知主界面更新图标并播放歌曲
                 Intent intent2 = new Intent("notification_play_pause");
                 intent2.putExtra("LIST", true);                                 //LIST表明点击事件是从LISTVIEW中发生的 播放音乐的位置要手动设置
                 context.sendBroadcast(intent2);
-
 
 
             }
@@ -176,7 +207,7 @@ public class MySimpleAdapter extends BaseAdapter {
                 values.put("title", resource.get(position).get("title"));
                 values.put("singer", resource.get(position).get("singer"));
                 values.put("duration", resource.get(position).get("duration"));
-                values.put("data",resource.get(position).get("data"));
+                values.put("data", resource.get(position).get("data"));
                 values.put("position", resource.get(position).get("position"));  //准备要写入数据库的信息
 
                 boolean common = false;
@@ -186,7 +217,7 @@ public class MySimpleAdapter extends BaseAdapter {
                                 cursor.getString(cursor.getColumnIndex("duration")).equals(values.get("duration"))) {
 
                             common = true;
-                            db.delete("Like","title=?",new String[]{String.valueOf(values.get("title"))});
+                            db.delete("Like", "title=?", new String[]{String.valueOf(values.get("title"))});
                             pos.remove(Integer.valueOf(resource.get(position).get("position")));
                             MySimpleAdapter.this.notifyDataSetChanged();
                             ToastHelper.showToast("已取消收藏");
@@ -220,7 +251,7 @@ public class MySimpleAdapter extends BaseAdapter {
                 popupWindow.setAnimationStyle(R.style.popup);
                 popupWindow.showAsDropDown(viewHolder.love_bt, -360, -20);      // 长按弹出窗口
 
-                 final CheckBox checkBox = (CheckBox) contentView.findViewById(R.id.checkBox);
+                final CheckBox checkBox = (CheckBox) contentView.findViewById(R.id.checkBox);
 
                 Button ensure = (Button) contentView.findViewById(R.id.ensure);
                 Button quit = (Button) contentView.findViewById(R.id.quit);
@@ -231,31 +262,35 @@ public class MySimpleAdapter extends BaseAdapter {
                     public void onClick(View v) {
                         SQLiteDatabase db = myApplication.getDp();
 
-                        if( checkBox.isChecked()){
+                        if (checkBox.isChecked()) {
                             //判断是否删除本地文件 如果为真 则获取文件的地址 并删除 文件 数据库的数据 我喜欢List中的数据
                             String path = data.get(position).get("data");
                             File file = new File(path);
                             file.delete();
 
-                            db.delete("MyMusic","title=?",new String[]{resource.get(position).get("title")});
+                            db.delete("MyMusic", "title=?", new String[]{resource.get(position).get("title")});
+
+                            for (Integer p : pos) {
+                                if (p.equals(Integer.valueOf(resource.get(position).get("position")))) {
+                                    pos.remove(p);
+                                    break;
+                                }
+                            }
+
                         }
 
 
-                        if(myApplication.getFinaldata()==resource)
-                            db.delete("MyMusic","title=?",new String[]{resource.get(position).get("title")});
+                        if (myApplication.getFinaldata() == resource)
+                            db.delete("MyMusic", "title=?", new String[]{resource.get(position).get("title")});
 
+                        if(myApplication.getLikedata() == resource)
                         db.delete("Like", "title=?", new String[]{resource.get(position).get("title")});
 
+                        if(myApplication.getRecentdata() == resource)
                         db.delete("Recent", "title=?", new String[]{resource.get(position).get("title")});
 
 
                         //遍历查找pos数组(我喜欢的数组) 若存在相同的则去除
-                        for(Integer p : pos){
-                            if(p.equals(Integer.valueOf(resource.get(position).get("position")))) {
-                                pos.remove(p);
-                                break;
-                            }
-                        }
 
                         resource.remove(position);
                         MySimpleAdapter.this.notifyDataSetChanged();
@@ -290,14 +325,72 @@ public class MySimpleAdapter extends BaseAdapter {
         ImageButton love_bt;
         Button play_bt;
         CardView card;
-        ViewStub stub;
+        CheckBox checkBox;
     }
 
-    class Receiver extends BroadcastReceiver{
+    class Receiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            notifyDataSetChanged();
+
+            if (intent.getAction().equals("ShowOrHideCheckBox")) {
+                if (!myApplication.isDeleteAll())
+                    for (Integer i : deletePos) {
+                        resource.get(i).remove("isChecked");
+                        resource.get(i).put("isChecked", "false");
+                    }
+                notifyDataSetChanged();
+
+            }
+
+
+            if (intent.getAction().equals("DeleteEnsure")) {
+
+                int position;
+                SQLiteDatabase db = myApplication.getDp();
+                Collections.sort(deletePos);
+                boolean  isLocal= myApplication.getFinaldata() == resource;
+                boolean isLike =  myApplication.getLikedata() == resource;
+                boolean isRecent = myApplication.getRecentdata() == resource;
+                boolean  deleteFile = intent.getBooleanExtra("deleteFile",false);
+
+                for (int i = deletePos.size() - 1; i >= 0; i--) {
+
+                    position = deletePos.get(i);
+
+                    if (isLocal)
+                        db.delete("MyMusic", "title=?", new String[]{resource.get(position).get("title")});
+
+                    if(isLike)
+                    db.delete("Like", "title=?", new String[]{resource.get(position).get("title")});
+
+                    if(isRecent)
+                    db.delete("Recent", "title=?", new String[]{resource.get(position).get("title")});
+
+                    if(deleteFile){
+                        String path = data.get(position).get("data");
+                        File file = new File(path);
+                        file.delete();
+                        db.delete("MyMusic","title=?",new String[]{resource.get(position).get("title")});
+
+                        for (Integer p : pos) {
+                            if (p.equals(Integer.valueOf(resource.get(position).get("position")))) {
+                                pos.remove(p);
+                                break;
+                            }    //遍历查找pos数组(我喜欢的数组) 若存在相同的则去除
+                        }
+
+                    }
+
+                    resource.remove(position);
+                }
+                deletePos.clear();
+                MySimpleAdapter.this.notifyDataSetChanged();//移除相关的数据 并 更新listview
+
+            }
+
         }
+
     }
+
 
 }

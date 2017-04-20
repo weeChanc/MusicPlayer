@@ -55,6 +55,7 @@ public class FragRecent extends Fragment {
                 map.put("position", cursor.getString(cursor.getColumnIndex("position")));
                 map.put("duration",cursor.getString(cursor.getColumnIndex("duration")));
                 map.put("data",cursor.getString(cursor.getColumnIndex("data")));
+                map.put("isChecked","false");
                 data.add(map);
                 if(i++ == 20){
                     break;   //最多截取20首
