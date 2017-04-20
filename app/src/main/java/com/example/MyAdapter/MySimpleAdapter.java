@@ -265,7 +265,12 @@ public class MySimpleAdapter extends BaseAdapter {
                             //判断是否删除本地文件 如果为真 则获取文件的地址 并删除 文件 数据库的数据 我喜欢List中的数据
                             String path = data.get(position).get("data");
                             File file = new File(path);
-                            file.delete();
+
+                            if(file.delete()){
+                                ToastHelper.showToast("删除成功");
+                            }else{
+                                ToastHelper.showToast("删除失败");
+                            }
 
                             db.delete("MyMusic", "title=?", new String[]{resource.get(position).get("title")});
 
@@ -372,11 +377,16 @@ public class MySimpleAdapter extends BaseAdapter {
                     if(deleteFile){
                         String path = data.get(position).get("data");
                         File file = new File(path);
-                        file.delete();
+                        if(file.delete()){
+                            ToastHelper.showToast("删除成功");
+                        }else{
+                            ToastHelper.showToast("删除失败");
+                        }
+
                         db.delete("MyMusic","title=?",new String[]{resource.get(position).get("title")});
 
                         for (Integer p : pos) {
-                            if (p.equals(Integer.valueOf(resource.get(position).get("position")))) {
+                            if (p.equals(Integer.valueOf(resource.get(position).get("duration")))) {
                                 pos.remove(p);
                                 break;
                             }    //遍历查找pos数组(我喜欢的数组) 若存在相同的则去除
