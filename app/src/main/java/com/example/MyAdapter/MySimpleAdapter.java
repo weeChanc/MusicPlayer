@@ -221,7 +221,7 @@ public class MySimpleAdapter extends BaseAdapter {
 
                         if( checkBox.isChecked()){
                             //判断是否删除本地文件 如果为真 则获取文件的地址 并删除 文件 数据库的数据 我喜欢List中的数据
-                            String path = data.get(Integer.parseInt(resource.get(position).get("position"))).get("data");
+                            String path = data.get(position).get("data");
                             File file = new File(path);
                             file.delete();
 

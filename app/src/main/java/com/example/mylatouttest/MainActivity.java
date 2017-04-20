@@ -43,9 +43,6 @@ public class MainActivity extends AppCompatActivity{
 
     FragmentManager fm = getSupportFragmentManager();
 
-    File file ;
-    File[] files;
-
     private VolumnChangeReceiver volumnChangeReceiver;
     private MusicService musicService;
 
@@ -69,11 +66,9 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.musicplayer_main);
 
-
-        file = myApplication.getFile();
-        files = file.listFiles();
-
         myApplication.setActivity(this);
+
+
 
         readytoplay(); //绑服务 注册广播( //音量变化广播//耳机插拔广播)
 
@@ -90,7 +85,14 @@ public class MainActivity extends AppCompatActivity{
 
         android.support.v4.app.FragmentTransaction ft = fm.beginTransaction();
         ft.add(R.id.frag_container,new FragMain());
-        ft.commit();                                                            //启动主界面的Fragment
+        ft.commit();
+
+        //启动主界面的Fragment
+
+
+            Intent intent = new Intent("com.example.MainActivity.REQUSETRES");
+            sendBroadcast(intent);
+
 
     }
 

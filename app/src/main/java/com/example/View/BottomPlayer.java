@@ -18,6 +18,7 @@ import com.example.mylatouttest.R;
 
 /**
  * Created by 铖哥 on 2017/4/7.
+ * 底部播放器
  */
 
 public class BottomPlayer extends RelativeLayout {
