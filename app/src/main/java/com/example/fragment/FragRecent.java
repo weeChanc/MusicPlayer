@@ -36,7 +36,6 @@ public class FragRecent extends Fragment {
     ArrayList<Map<String, String>> data;
     ImageButton back;
 
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

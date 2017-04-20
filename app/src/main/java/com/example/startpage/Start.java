@@ -163,6 +163,7 @@ public class Start extends Activity {
                 map.put("singer", cursor.getString(cursor.getColumnIndex("singer")));      //歌手名
                 map.put("fulltitle", cursor.getString(cursor.getColumnIndex("fulltitle")));   //歌手名+歌曲名
                 map.put("duration", cursor.getInt(cursor.getColumnIndex("duration"))+"");  //歌曲长度
+                map.put("isChecked","false");
                 data.add(map);
                 finaldata.add(map);
 

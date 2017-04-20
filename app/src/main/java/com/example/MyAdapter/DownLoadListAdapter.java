@@ -17,6 +17,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.Utils.ToastHelper;
 import com.example.mylatouttest.MyApplication;
 import com.example.mylatouttest.R;
 import com.example.song.Hash;
@@ -134,8 +135,6 @@ public class DownLoadListAdapter extends BaseAdapter {
                 if(!download.isAlive()){
                     download.start();
                 }
-
-
             }
         });
 
@@ -152,6 +151,7 @@ public class DownLoadListAdapter extends BaseAdapter {
     Thread download =  new Thread(new Runnable() {
         @Override
         public void run() {
+            int i = 0 ;
             try {
                 while (DownQuene.size() != 0) {
                     String hash = DownQuene.get(0);
@@ -194,8 +194,10 @@ public class DownLoadListAdapter extends BaseAdapter {
 //                        intent2.putExtra("LIST", true);
 //                        context.sendBroadcast(intent2);
 
-                    } else
+                    } else {
+                        DownQuene.remove(0);
                         toaster.sendEmptyMessage(3);
+                    }
                 }
 
             } catch (Exception e) {
@@ -211,11 +213,11 @@ public class DownLoadListAdapter extends BaseAdapter {
         @Override
         public void handleMessage(Message msg) {
             if (msg.what == 0) {
-                Toast.makeText(context, "下载失败", Toast.LENGTH_SHORT).show();
+                ToastHelper.showToast("下载失败");
             } else if (msg.what == 1) {
-                Toast.makeText(context, "下载成功", Toast.LENGTH_SHORT).show();
+                ToastHelper.showToast("下载成功");
             } else if (msg.what == 3) {
-                Toast.makeText(context, "您已经下载过这首歌了", Toast.LENGTH_SHORT).show();
+                ToastHelper.showToast("你已经下载过了");
             }
 
         }

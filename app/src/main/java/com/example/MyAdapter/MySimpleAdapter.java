@@ -1,27 +1,33 @@
 package com.example.MyAdapter;
 
+import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStub;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.Utils.ToastHelper;
 import com.example.mylatouttest.MyApplication;
 import com.example.mylatouttest.R;
 
@@ -48,6 +54,7 @@ public class MySimpleAdapter extends BaseAdapter {
     private Animation love ;
 
 
+
     public MySimpleAdapter(Context context, List<Map<String, String>> resource, int layoutID) {
         this.context = context;
         this.resource = resource;
@@ -56,6 +63,12 @@ public class MySimpleAdapter extends BaseAdapter {
 
         data = myApplication.getData();
         love = AnimationUtils.loadAnimation(context,R.anim.downloadanim);
+
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("ShowOrHideCheckBox");
+        Receiver receiver = new Receiver();
+        context.registerReceiver(receiver,intentFilter);
+
     }
 
     @Override
@@ -96,9 +109,11 @@ public class MySimpleAdapter extends BaseAdapter {
             viewHolder = (ViewHolder) view.getTag();
         }
 
+
         viewHolder.singer_tv.setText(resource.get(position).get("singer"));
         viewHolder.title_tv.setText(resource.get(position).get("title"));
         viewHolder.title_tv.setTextColor(Color.BLACK);
+
 
         int duration = Integer.parseInt(resource.get(position).get("duration"));
         String strdur = duration/1000/60 +":"+ duration%60 +"";
@@ -119,7 +134,6 @@ public class MySimpleAdapter extends BaseAdapter {
             }
         }
 
-
         viewHolder.play_bt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -138,12 +152,6 @@ public class MySimpleAdapter extends BaseAdapter {
                 myApplication.setIsPlay(true);
                 Intent intent = new Intent("com.example.MainActivity.STARTMUSIC");
                 intent.putExtra("POSITION", true);
-
-
-//                if (resource.get(position).get("title").equals(data.get(position).get("title")))
-//                    intent.putExtra("LOCATION", position);//本地列表                                      //为本地列表与其他列表做区分 本地列表直接根据position播放//其他列表根据一开始写入的位置信息 获取歌曲的 在data中的位置 来播放
-//                else
-//                    intent.putExtra("LOCATION", Integer.parseInt(resource.get(position).get("position")));  //设置播放的歌曲的位置
                 intent.putExtra("LOCATION",position);
 
                 context.sendBroadcast(intent);
@@ -151,6 +159,7 @@ public class MySimpleAdapter extends BaseAdapter {
                 Intent intent2 = new Intent("notification_play_pause");
                 intent2.putExtra("LIST", true);                                 //LIST表明点击事件是从LISTVIEW中发生的 播放音乐的位置要手动设置
                 context.sendBroadcast(intent2);
+
 
 
             }
@@ -180,7 +189,8 @@ public class MySimpleAdapter extends BaseAdapter {
                             db.delete("Like","title=?",new String[]{String.valueOf(values.get("title"))});
                             pos.remove(Integer.valueOf(resource.get(position).get("position")));
                             MySimpleAdapter.this.notifyDataSetChanged();
-                            Toast.makeText(context,"已取消收藏",Toast.LENGTH_SHORT).show();
+                            ToastHelper.showToast("已取消收藏");
+//                            Toast.makeText(context,"已取消收藏",Toast.LENGTH_SHORT).show();
                             //找到相同的 取消收藏 并删除数据库对应行 pos对应数据
 
                         }
@@ -189,7 +199,8 @@ public class MySimpleAdapter extends BaseAdapter {
                 if (!common) {
                     db.insert("Like", null, values);
                     pos.add(Integer.valueOf(resource.get(position).get("position")));
-                    Toast.makeText(context,"你收藏了该歌曲",Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(context,"你收藏了该歌曲",Toast.LENGTH_SHORT).show();
+                    ToastHelper.showToast("已收藏");
                     MySimpleAdapter.this.notifyDataSetChanged();
                     //若找不到相同的 则收藏歌曲
                 }
@@ -214,6 +225,7 @@ public class MySimpleAdapter extends BaseAdapter {
                 Button ensure = (Button) contentView.findViewById(R.id.ensure);
                 Button quit = (Button) contentView.findViewById(R.id.quit);
 
+
                 ensure.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -227,6 +239,7 @@ public class MySimpleAdapter extends BaseAdapter {
 
                             db.delete("MyMusic","title=?",new String[]{resource.get(position).get("title")});
                         }
+
 
                         if(myApplication.getFinaldata()==resource)
                             db.delete("MyMusic","title=?",new String[]{resource.get(position).get("title")});
@@ -277,6 +290,14 @@ public class MySimpleAdapter extends BaseAdapter {
         ImageButton love_bt;
         Button play_bt;
         CardView card;
+        ViewStub stub;
+    }
+
+    class Receiver extends BroadcastReceiver{
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            notifyDataSetChanged();
+        }
     }
 
 }

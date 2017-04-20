@@ -17,6 +17,8 @@ import android.widget.RelativeLayout;
 import com.example.mylatouttest.MyApplication;
 import com.example.mylatouttest.R;
 
+import java.util.zip.Inflater;
+
 import static android.content.Context.MODE_PRIVATE;
 
 /**
@@ -38,6 +40,7 @@ public class ToolsView extends LinearLayout {
 
     MyApplication myApplication = MyApplication.getApplication();
     ImageButton mode_bt;
+    ImageButton delete;
     int mode = myApplication.getPlay_mode();
     Context context;
 
@@ -56,6 +59,21 @@ public class ToolsView extends LinearLayout {
             }
         });
 
+        delete = (ImageButton) view.findViewById(R.id.delete);
+        delete.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(myApplication.isDeleteAll()) {
+                    myApplication.setDeleteAll(false);
+                }else{
+                    myApplication.setDeleteAll(true);
+                }
+                Intent intent = new Intent("ShowOrHideCheckBox");
+                context.sendBroadcast(intent);
+            }
+        });
+
+
         if (mode == ORDER) {
             mode_bt.setImageResource(R.drawable.ic_order);
         } else if (mode == RANDOM) {
@@ -63,6 +81,8 @@ public class ToolsView extends LinearLayout {
         } else if (mode == LOOP) {
             mode_bt.setImageResource((R.drawable.ic_loop));      //初始化图标
         }
+
+
 
 
 

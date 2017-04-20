@@ -34,7 +34,7 @@
         android:background="@color/drak_gray" />
 
     <ImageButton
-        android:id="@+id/play2"
+        android:id="@+id/delete"
         android:layout_width="34dp"
         android:layout_height="34dp"
         android:layout_alignParentLeft="true"
@@ -53,8 +53,8 @@
         android:layout_centerVertical="true"
         android:layout_marginLeft="13dp"
         android:layout_marginStart="13dp"
-        android:layout_toEndOf="@+id/play2"
-        android:layout_toRightOf="@+id/play2"
-        android:text="播放该列表" />
+        android:layout_toEndOf="@+id/delete"
+        android:layout_toRightOf="@+id/delete"
+        android:text="列表删除" />
 
 </RelativeLayout>

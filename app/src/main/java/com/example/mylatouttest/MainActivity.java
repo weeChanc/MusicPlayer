@@ -25,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.example.MusicService.MusicService;
 import com.example.MyAdapter.ViewPagerAdapter;
+import com.example.Utils.ToastHelper;
 import com.example.VolumechangeReceiver.VolumnChangeReceiver;
 import com.example.fragment.FragDown;
 import com.example.fragment.FragLocal;
@@ -63,10 +64,25 @@ public class MainActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
 
         myApplication = (MyApplication) getApplication();
+        myApplication.setActivity(this);
+
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                MyApplication.getApplication().getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(MyApplication.getApplication().getActivity(), myApplication.getActivity().toString(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        }).start();
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.musicplayer_main);
 
-        myApplication.setActivity(this);
+
 
 
 

@@ -21,6 +21,7 @@ import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
+import com.example.Utils.ToastHelper;
 import com.example.mylatouttest.MainActivity;
 import com.example.mylatouttest.MyApplication;
 import com.example.mylatouttest.R;
@@ -86,7 +87,7 @@ public class MusicService extends Service {
                         position = position - 1;
                         mediaPlayer.reset();
                     }else
-                        Toast.makeText(context, "已经是第一首了", Toast.LENGTH_SHORT).show();
+                        ToastHelper.showToast("已经是第一首了");
                 }
 
                 if (intent.getBooleanExtra("POSITION", false)) {

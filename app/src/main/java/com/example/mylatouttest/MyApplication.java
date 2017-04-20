@@ -46,6 +46,15 @@ public class MyApplication  extends Application{
     private SQLiteDatabase dp;
     private Activity activity;
     private int play_mode;
+    private boolean isDeleteAll = false;
+
+    public boolean isDeleteAll() {
+        return isDeleteAll;
+    }
+
+    public void setDeleteAll(boolean isDeleteAll){
+        this.isDeleteAll = isDeleteAll;
+    }
 
     public void setLikedata(ArrayList<Map<String, String>> likedata) {
         this.likedata = likedata;
