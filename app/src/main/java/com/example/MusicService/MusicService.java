@@ -255,7 +255,6 @@ public class MusicService extends Service {
                 values.put("singer", data.get(position).get("singer"));
                 values.put("duration", data.get(position).get("duration"));
                 values.put("title", data.get(position).get("title"));
-                values.put("position", position);
                 values.put("data",data.get(position).get("data"));
 
 

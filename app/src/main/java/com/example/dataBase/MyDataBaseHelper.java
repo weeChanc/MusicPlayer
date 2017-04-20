@@ -11,14 +11,12 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class MyDataBaseHelper extends SQLiteOpenHelper {
 
     public static final String LIKE = "create table Like (" //喜欢列表
-            +"position integer, "
             +"duration integer, "
             +"singer text, "
             +"data text, "
             +"title text)";
 
     public static final String RECENT = "create table Recent ("  //最近播放列表
-            +"position integer, "
             +"duration integer, "
             +"singer text, "
             +"data text, "
@@ -29,7 +27,6 @@ public class MyDataBaseHelper extends SQLiteOpenHelper {
             +"duration integer, "
             +"singer text, "
             +"data text, "
-            +"fulltitle text, "
             +"title text)";
 
     public MyDataBaseHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {

@@ -102,7 +102,7 @@ public class Start extends Activity {
 
             readMusicData();
             readLovePos();          //读取数据
-//            readPlayTime();
+
 
             myApplication.setData(data);
 
@@ -161,7 +161,6 @@ public class Start extends Activity {
                 map.put("title", cursor.getString(cursor.getColumnIndex("title")));       //歌曲标题
                 map.put("data", cursor.getString(cursor.getColumnIndex("data")));        //歌曲路径              //读取音乐文件
                 map.put("singer", cursor.getString(cursor.getColumnIndex("singer")));      //歌手名
-                map.put("fulltitle", cursor.getString(cursor.getColumnIndex("fulltitle")));   //歌手名+歌曲名
                 map.put("duration", cursor.getInt(cursor.getColumnIndex("duration"))+"");  //歌曲长度
                 map.put("isChecked","false");
                 data.add(map);
@@ -172,10 +171,6 @@ public class Start extends Activity {
 
         }
 
-        for (int i = 0; i < data.size(); i++) {
-            data.get(i).put("position", i + "");            //为每首歌曲标记绝对位置
-            finaldata.get(i).put("position", i + "");
-        }
         /**
          *    该data为音乐播放的时候选择路径的唯一一个数据源
          *    每个表的数据库都包含对应歌曲在此data中的position
@@ -195,7 +190,7 @@ public class Start extends Activity {
         Cursor cursor = db.query("Like", null, null, null, null, null, null, null);
         if (cursor.moveToFirst()) {
             do {
-                pos.add(cursor.getInt(cursor.getColumnIndex("position")));          //添加我喜欢的歌曲到Arraylist中
+                pos.add(cursor.getInt(cursor.getColumnIndex("duration")));          //添加我喜欢的歌曲到Arraylist中
             } while (cursor.moveToNext());
         }
 

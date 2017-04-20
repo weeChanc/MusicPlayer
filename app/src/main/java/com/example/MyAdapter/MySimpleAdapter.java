@@ -132,7 +132,7 @@ public class MySimpleAdapter extends BaseAdapter {
         if (pos.size() != 0 && pos != null) {
             Log.e("like",pos.toString());
             for (Integer a : pos) {
-                if (resource.get(position).get("position").equals(a.toString())) {
+                if (resource.get(position).get("duration").equals(a.toString())) {
                     viewHolder.love_bt.setImageResource(R.drawable.love);   //根据一开始读入的 喜欢歌曲的位置信息 来设置 是否为红心
                     break;
                 }
@@ -207,8 +207,7 @@ public class MySimpleAdapter extends BaseAdapter {
                 values.put("title", resource.get(position).get("title"));
                 values.put("singer", resource.get(position).get("singer"));
                 values.put("duration", resource.get(position).get("duration"));
-                values.put("data", resource.get(position).get("data"));
-                values.put("position", resource.get(position).get("position"));  //准备要写入数据库的信息
+                values.put("data", resource.get(position).get("data"));//准备要写入数据库的信息
 
                 boolean common = false;
                 if (cursor.moveToFirst()) {
@@ -218,7 +217,7 @@ public class MySimpleAdapter extends BaseAdapter {
 
                             common = true;
                             db.delete("Like", "title=?", new String[]{String.valueOf(values.get("title"))});
-                            pos.remove(Integer.valueOf(resource.get(position).get("position")));
+                            pos.remove(Integer.valueOf(resource.get(position).get("duration")));
                             MySimpleAdapter.this.notifyDataSetChanged();
                             ToastHelper.showToast("已取消收藏");
 //                            Toast.makeText(context,"已取消收藏",Toast.LENGTH_SHORT).show();
@@ -229,7 +228,7 @@ public class MySimpleAdapter extends BaseAdapter {
                 }
                 if (!common) {
                     db.insert("Like", null, values);
-                    pos.add(Integer.valueOf(resource.get(position).get("position")));
+                    pos.add(Integer.valueOf(resource.get(position).get("duration")));
 //                    Toast.makeText(context,"你收藏了该歌曲",Toast.LENGTH_SHORT).show();
                     ToastHelper.showToast("已收藏");
                     MySimpleAdapter.this.notifyDataSetChanged();
@@ -283,8 +282,10 @@ public class MySimpleAdapter extends BaseAdapter {
                         if (myApplication.getFinaldata() == resource)
                             db.delete("MyMusic", "title=?", new String[]{resource.get(position).get("title")});
 
-                        if(myApplication.getLikedata() == resource)
-                        db.delete("Like", "title=?", new String[]{resource.get(position).get("title")});
+                        if(myApplication.getLikedata() == resource) {
+                            db.delete("Like", "title=?", new String[]{resource.get(position).get("title")});
+                            pos.remove(Integer.valueOf(resource.get(position).get("duration")));
+                        }
 
                         if(myApplication.getRecentdata() == resource)
                         db.delete("Recent", "title=?", new String[]{resource.get(position).get("title")});
@@ -360,8 +361,10 @@ public class MySimpleAdapter extends BaseAdapter {
                     if (isLocal)
                         db.delete("MyMusic", "title=?", new String[]{resource.get(position).get("title")});
 
-                    if(isLike)
-                    db.delete("Like", "title=?", new String[]{resource.get(position).get("title")});
+                    if(isLike) {
+                        db.delete("Like", "title=?", new String[]{resource.get(position).get("title")});
+                        pos.remove(Integer.valueOf(resource.get(position).get("duration")));
+                    }
 
                     if(isRecent)
                     db.delete("Recent", "title=?", new String[]{resource.get(position).get("title")});

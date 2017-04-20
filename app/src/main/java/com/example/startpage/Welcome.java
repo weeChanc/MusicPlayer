@@ -120,7 +120,6 @@ public class Welcome extends AppCompatActivity {
                     map.put("title", cursor.getString(0));       //歌曲标题
                     map.put("data", cursor.getString(1));        //歌曲路径              //读取音乐文件
                     map.put("singer", cursor.getString(2));      //歌手名
-                    map.put("fulltitle", cursor.getString(3));   //歌手名+歌曲名
                     map.put("duration", cursor.getInt(4) + "");  //歌曲长度
                     data.add(map);
                     finaldata.add(map);
@@ -129,7 +128,6 @@ public class Welcome extends AppCompatActivity {
                     values.put("title", cursor.getString(0));
                     values.put("data", cursor.getString(1));
                     values.put("singer", cursor.getString(2));
-                    values.put("fulltitle", cursor.getString(3));
                     values.put("duration", cursor.getInt(4));
                     db.insert("MyMusic", null, values);  //导入到自己的数据库
 
@@ -139,10 +137,6 @@ public class Welcome extends AppCompatActivity {
             }
         }
 
-        for (int i = 0; i < data.size(); i++) {
-            data.get(i).put("position", i + "");            //为每首歌曲标记绝对位置
-            finaldata.get(i).put("position", i + "");
-        }
         /**
          *    该data为音乐播放的时候选择路径的唯一一个数据源
          *    每个表的数据库都包含对应歌曲在此data中的position
