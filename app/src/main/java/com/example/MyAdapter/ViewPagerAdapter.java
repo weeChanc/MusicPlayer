@@ -8,14 +8,21 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.PixelFormat;
 import android.media.Image;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Vibrator;
 import android.support.v4.view.PagerAdapter;
+import android.text.Layout;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
@@ -47,6 +54,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.Inflater;
 
 import jp.wasabeef.glide.transformations.BlurTransformation;
 import okhttp3.OkHttpClient;
@@ -54,6 +62,8 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 import static android.content.Context.MODE_PRIVATE;
+import static android.content.Context.VIBRATOR_SERVICE;
+import static android.view.MotionEvent.ACTION_DOWN;
 
 /**
  * Created by 铖哥 on 2017/4/4.
@@ -68,6 +78,12 @@ import static android.content.Context.MODE_PRIVATE;
 
 public class ViewPagerAdapter extends PagerAdapter {
 
+
+
+    private int mY = 0 ;
+    private int startY = 0;
+
+
     private List<View> list;
     private ArrayList<Map<String, String>> data = null; //所有歌曲信息
     private ImageButton bottomnext;
@@ -75,14 +91,16 @@ public class ViewPagerAdapter extends PagerAdapter {
     private ImageButton bottomplay_pause;
     private TextView bottomtitle;
     private TextView bottomsinger;
+
     private SeekBar bottomSeekbar;
     private SongData songData;
 
     Bitmap bitmap;
 
-
     private static TextView lyric1;
     private static TextView lyric2;
+    private static TextView simpleLyric1;
+    private static TextView simpleLyric2;
 
     private MyApplication myApplication;
     private int max;
@@ -95,12 +113,18 @@ public class ViewPagerAdapter extends PagerAdapter {
     private File[] files;
     private ImageView bottomHead;
 
+    private WindowManager mWindowManager;
+    private WindowManager.LayoutParams params;
+    private View destopLyric;
+    private boolean isTouch = false;
+
 
     public ViewPagerAdapter(List<View> list, final Context context) {
 
         this.list = list;
         View view = list.get(0);
         View viewlyric = list.get(1);
+
 
         bottomtitle = (TextView) view.findViewById(R.id.bottom_title);
         bottomnext = (ImageButton) view.findViewById(R.id.bottom_next);
@@ -133,7 +157,7 @@ public class ViewPagerAdapter extends PagerAdapter {
         intentFilter.addAction("com.example.MusicService.PROGRESS");
         intentFilter.addAction("com.example.MusicService.DETIAL");
         intentFilter.addAction("CHANGEMAINBUTTON");
-        intentFilter.addAction("TOAST");
+        intentFilter.addAction("ShowOrHideDestopLyric");
         context.registerReceiver(messageReceiver, intentFilter);
         setThread();
 
@@ -205,6 +229,62 @@ public class ViewPagerAdapter extends PagerAdapter {
             }
         });
 
+        destopLyric = LayoutInflater.from(context).inflate(R.layout.simplelyric, null);
+        mWindowManager = (WindowManager) context.getApplicationContext().
+                getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
+
+        params = new WindowManager.LayoutParams
+                (WindowManager.LayoutParams.TYPE_TOAST,WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
+
+
+
+        params.width = WindowManager.LayoutParams.MATCH_PARENT;
+        params.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        params.format = PixelFormat.TRANSLUCENT;
+        params.gravity = Gravity.TOP | Gravity.LEFT;
+        params.y =  mWindowManager.getDefaultDisplay().getHeight();
+
+        destopLyric.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+
+                if(event.getAction() == MotionEvent.ACTION_DOWN){
+                    mY = params.y;
+                    startY = (int) event.getRawY();
+                }
+                if(isTouch) {
+                    params.y = (int)(mY - (startY - event.getRawY()));
+                    mWindowManager.updateViewLayout(destopLyric, params);
+                }
+
+                if(event.getAction() == MotionEvent.ACTION_UP){
+
+                    isTouch = false;
+                }
+
+                return false;
+
+            }
+        });
+
+
+        destopLyric.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                isTouch = true;
+
+                Vibrator vibrator = (Vibrator) context.getSystemService(VIBRATOR_SERVICE);
+                vibrator.vibrate(100);
+
+                return false;
+            }
+        });
+
+
+
+
+        simpleLyric1 = (TextView) destopLyric.findViewById(R.id.simplelyric1);
+        simpleLyric2 = (TextView) destopLyric.findViewById(R.id.simplelyric2);
 
     }
 
@@ -248,6 +328,18 @@ public class ViewPagerAdapter extends PagerAdapter {
                 bottomtitle.setText(myApplication.getBottomTitle());        //根据服务传来的数据 设置标题 seekbar最大值
                 max = myApplication.getSeekBarMax();
                 bottomSeekbar.setMax(max);
+            }
+
+            if(intent.getAction().equals("ShowOrHideDestopLyric")) {
+
+                if(myApplication.isShow()){
+                    mWindowManager.removeView(destopLyric);
+                    myApplication.setShow(false);
+                }else {
+                    mWindowManager.addView(destopLyric, params);
+                    myApplication.setShow(true);
+                }
+
             }
 
 
@@ -335,13 +427,19 @@ public class ViewPagerAdapter extends PagerAdapter {
         @Override
         public void handleMessage(Message msg) {
             lyric1.setText(msg.obj.toString());                     //设置  歌词(前)的handler
+            if(simpleLyric1!=null){
+                simpleLyric1.setText(msg.obj.toString());
+            }
         }
     };
 
     private static Handler handler2 = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            lyric2.setText(msg.obj.toString());                     //设置 歌词(后)/handler
+            lyric2.setText(msg.obj.toString());
+            if(simpleLyric2!=null){
+                simpleLyric2.setText(msg.obj.toString());                      //设置 歌词(后)/handler
+            }
         }
     };
 
@@ -455,4 +553,5 @@ public class ViewPagerAdapter extends PagerAdapter {
         int start;                      //每行歌词存放的地方 (开始时间 以及内容)
         String line;
     }
+
 }

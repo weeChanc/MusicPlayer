@@ -47,6 +47,16 @@ public class MyApplication  extends Application{
     private Activity activity;
     private int play_mode;
     private boolean isDeleteAll = false;
+    private boolean isShow = false;
+
+    public boolean isShow() {
+        return isShow;
+    }
+
+    public void setShow(boolean isShow){
+        this.isShow = isShow;
+    }
+
 
     public boolean isDeleteAll() {
         return isDeleteAll;

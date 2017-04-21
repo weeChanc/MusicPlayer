@@ -56,13 +56,11 @@ public class MySimpleAdapter extends BaseAdapter {
     private List<Integer> deletePos = new ArrayList<>();
 
 
-    public MySimpleAdapter(Context context, List<Map<String, String>> resource, int layoutID) {
+    public MySimpleAdapter(Context context, ArrayList<Map<String, String>> resource, int layoutID) {
         this.context = context;
         this.resource = resource;
         this.layoutID = layoutID;
         inflater = LayoutInflater.from(context);
-
-        data = myApplication.getData();
         love = AnimationUtils.loadAnimation(context, R.anim.downloadanim);
 
         IntentFilter intentFilter = new IntentFilter();
@@ -70,6 +68,16 @@ public class MySimpleAdapter extends BaseAdapter {
         intentFilter.addAction("DeleteEnsure");
         Receiver receiver = new Receiver();
         context.registerReceiver(receiver, intentFilter);
+
+        if (resource == myApplication.getRecentdata()) {
+            myApplication.setData(resource);
+        }
+        if (resource == myApplication.getFinaldata()) {
+            myApplication.setData(resource);
+        }
+        if (resource == myApplication.getLikedata()) {
+            myApplication.setData(resource);
+        }
 
     }
 
@@ -169,16 +177,6 @@ public class MySimpleAdapter extends BaseAdapter {
         viewHolder.play_bt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                if (resource == myApplication.getRecentdata()) {
-                    myApplication.setData(myApplication.getRecentdata());
-                }
-                if (resource == myApplication.getFinaldata()) {
-                    myApplication.setData(myApplication.getFinaldata());
-                }
-                if (resource == myApplication.getLikedata()) {
-                    myApplication.setData(myApplication.getLikedata());
-                }
 
                 myApplication.setPosition(position);
                 myApplication.setIsPlay(true);
@@ -375,15 +373,18 @@ public class MySimpleAdapter extends BaseAdapter {
                     db.delete("Recent", "title=?", new String[]{resource.get(position).get("title")});
 
                     if(deleteFile){
-                        String path = data.get(position).get("data");
+                        String path = resource.get(position).get("data");
+                        Log.e("delete",path);
                         File file = new File(path);
                         if(file.delete()){
-                            ToastHelper.showToast("删除成功");
+                            ToastHelper.showToast("删除成");
+
                         }else{
                             ToastHelper.showToast("删除失败");
                         }
 
                         db.delete("MyMusic","title=?",new String[]{resource.get(position).get("title")});
+
 
                         for (Integer p : pos) {
                             if (p.equals(Integer.valueOf(resource.get(position).get("duration")))) {
@@ -395,6 +396,9 @@ public class MySimpleAdapter extends BaseAdapter {
                     }
 
                     resource.remove(position);
+                }
+                for(Integer t: deletePos){
+                    Log.e("deletePos",t.toString());
                 }
                 deletePos.clear();
                 MySimpleAdapter.this.notifyDataSetChanged();//移除相关的数据 并 更新listview

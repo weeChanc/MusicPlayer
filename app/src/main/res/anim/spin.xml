@@ -5,20 +5,20 @@
         android:fromDegrees="0"
         android:pivotX="50%"
         android:pivotY="50%"
-        android:toDegrees="5"
+        android:toDegrees="2"
         android:fillAfter="true"/>
 
     <rotate
         android:duration="200"
-        android:fromDegrees="5"
+        android:fromDegrees="2"
         android:pivotX="50%"
         android:pivotY="50%"
-        android:toDegrees="-5"
+        android:toDegrees="-2"
         android:startOffset="200"/>
 
     <rotate
         android:duration="200"
-        android:fromDegrees="-5"
+        android:fromDegrees="-2"
         android:pivotX="50%"
         android:pivotY="50%"
         android:toDegrees="0"

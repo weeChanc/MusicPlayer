@@ -229,8 +229,13 @@ public class MusicService extends Service {
     }
 
     private void initMediaPlayer(String location) {
+
         try {
             File file = new File(location);
+           if(!file.exists()) {
+               ToastHelper.showToast("该文件不存在");
+               return;
+           }
 
             if (mediaPlayer.isPlaying()) {
                 mediaPlayer.reset();              //初始化播放器 并播放
@@ -240,7 +245,6 @@ public class MusicService extends Service {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         mediaPlayer.start();
     }
 
@@ -330,13 +334,15 @@ public class MusicService extends Service {
         Intent intent2 = new Intent("CHANGENEXT");
         contentView.setOnClickPendingIntent(R.id.next_image, PendingIntent.getBroadcast(this, 0, intent2, PendingIntent.FLAG_UPDATE_CURRENT));
 
+        Intent intent3 = new Intent("ShowOrHideDestopLyric");
+        contentView.setOnClickPendingIntent(R.id.lyric_image,PendingIntent.getBroadcast(this,0,intent3,PendingIntent.FLAG_UPDATE_CURRENT));
+
 
         Intent intentstartactivity = new Intent(MusicService.this, MainActivity.class);
         pendingIntent = PendingIntent.getActivity(MusicService.this, 0, intentstartactivity, 0); //点击通知执行 打开活动
 
         builder = new NotificationCompat.Builder(MusicService.this);
         notification = builder
-                .setContentIntent(pendingIntent)
                 .setContent(contentView)
                 .setContentIntent(pendingIntent)
                 .setSmallIcon(R.drawable.ic_yinfu)

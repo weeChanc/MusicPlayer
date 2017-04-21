@@ -161,18 +161,14 @@ public class DownLoadListAdapter extends BaseAdapter {
                         map.put("title", SongGetter.getSongData(hash).getData().getAudio_name().replaceAll("<em>", "").replaceAll("</em>", ""));
                         map.put("data", path);
                         map.put("singer", SongGetter.getSongData(hash).getData().getAuthor_name().replaceAll("<em>", "").replaceAll("</em>", ""));
-                        map.put("fulltitle", SongGetter.getSongData(hash).getData().getAudio_name().replaceAll("<em>", "").replaceAll("</em>", ""));
                         map.put("duration", SongGetter.getSongData(hash).getData().getTimelength());
-                        map.put("position", data.size() + "");
-
 
                         SQLiteDatabase db = myApplication.getDp();
                         ContentValues values = new ContentValues();
                         values.put("title", map.get("title"));
                         values.put("data", map.get("data"));
                         values.put("singer", map.get("singer"));
-                        values.put("fulltitle", map.get("fulltitle"));
-                        values.put("duration", map.get("duration"));
+                        values.put("duration", Integer.parseInt(map.get("duration")));
                         db.insert("MyMusic", null, values);  //导入到自己的数据库
 
                         toaster.sendEmptyMessage(1);
@@ -183,16 +179,6 @@ public class DownLoadListAdapter extends BaseAdapter {
 
                         Intent intent = new Intent("com.example.MusicService.DETIAL");
                         context.sendBroadcast(intent);//改变FRAGMAIN歌曲数目
-//
-//                        myApplication.setPosition(position);
-//                        myApplication.setIsPlay(true);
-//                        Intent intent = new Intent("com.example.MainActivity.STARTMUSIC");
-//                        intent.putExtra("POSITION", true);
-//                        intent.putExtra("LOCATION", data.size() - 1);
-//                        context.sendBroadcast(intent);
-//                        Intent intent2 = new Intent("notification_play_pause");
-//                        intent2.putExtra("LIST", true);
-//                        context.sendBroadcast(intent2);
 
                     } else {
                         DownQuene.remove(0);

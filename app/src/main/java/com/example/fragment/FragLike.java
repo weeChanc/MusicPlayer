@@ -15,6 +15,7 @@ import com.example.MyAdapter.MySimpleAdapter;
 import com.example.mylatouttest.MyApplication;
 import com.example.mylatouttest.R;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -44,20 +45,22 @@ public class FragLike extends Fragment  {
 
         if(cursor.moveToLast()){
             do{
-                Map<String,String> map = new HashMap<>();
-                map.put("singer",cursor.getString(cursor.getColumnIndex("singer")));
-                map.put("title",cursor.getString(cursor.getColumnIndex("title")));
-                map.put("duration",cursor.getString(cursor.getColumnIndex("duration")));
-                map.put("data",cursor.getString(cursor.getColumnIndex("data")));
-                map.put("isChecked","false");
-
-                data.add(map);
+                if( new File(cursor.getString(cursor.getColumnIndex("data"))).exists()) {
+                    Map<String, String> map = new HashMap<>();
+                    map.put("singer", cursor.getString(cursor.getColumnIndex("singer")));
+                    map.put("title", cursor.getString(cursor.getColumnIndex("title")));
+                    map.put("duration", cursor.getString(cursor.getColumnIndex("duration")));
+                    map.put("data", cursor.getString(cursor.getColumnIndex("data")));
+                    map.put("isChecked", "false");
+                    data.add(map);
+                }
             }while(cursor.moveToPrevious());
         }
         cursor.close();
         //从数据库从读取数据转化为数据源
 
         myApplication.setLikedata(data);
+
         MySimpleAdapter mySimpleAdapter =
                 new MySimpleAdapter(getContext(),data,R.layout.listitem);
 
