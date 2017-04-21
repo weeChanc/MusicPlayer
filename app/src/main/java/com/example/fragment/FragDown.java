@@ -80,18 +80,7 @@ public class FragDown extends Fragment {
             public boolean onEditorAction(final TextView v, int actionId, KeyEvent event) {
                 if(actionId == EditorInfo.IME_ACTION_SEARCH){
 
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {          //设置 软键盘回车按键 为 搜索 歌曲
-                            try {
-                                hashes = (ArrayList<Hash>) SongGetter.getAllSong(v.getText().toString());
-                                handler.sendEmptyMessage(0);
-                            }catch(Exception e) {
-
-                                e.printStackTrace();
-                            }
-                        }
-                    }).start();
+                      search(); //设置 软键盘回车按键 为 搜索 歌曲
 
                 }
                 return true;
@@ -108,19 +97,7 @@ public class FragDown extends Fragment {
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            hashes = (ArrayList<Hash>) SongGetter.getAllSong(editText.getText().toString());
-                            handler.sendEmptyMessage(0);
-                        }catch (Exception e)
-                        {
-                            e.printStackTrace();            //下拉刷新列表
-                        }
-                    }
-                }).start();
-
+                search();
             }
         });
 
@@ -129,6 +106,12 @@ public class FragDown extends Fragment {
             @Override
             public void onClick(View v) {
                 getActivity().onBackPressed();
+            }
+        });
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                search();
             }
         });
     }
@@ -147,6 +130,21 @@ public class FragDown extends Fragment {
          hashes = new ArrayList<>();
 
         return view;
+    }
+
+    private void search(){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    hashes = (ArrayList<Hash>) SongGetter.getAllSong(editText.getText().toString());
+                    handler.sendEmptyMessage(0);
+                }catch (Exception e)
+                {
+                    e.printStackTrace();            //下拉刷新列表
+                }
+            }
+        }).start();
     }
 
 

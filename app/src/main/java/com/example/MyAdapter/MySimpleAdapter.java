@@ -140,7 +140,6 @@ public class MySimpleAdapter extends BaseAdapter {
         viewHolder.love_bt.setImageResource(R.drawable.ic_blackheart); //默认设置为非红心
 
         if (pos.size() != 0 && pos != null) {
-            Log.e("like",pos.toString());
             for (Integer a : pos) {
                 if (resource.get(position).get("duration").equals(a.toString())) {
                     viewHolder.love_bt.setImageResource(R.drawable.love);   //根据一开始读入的 喜欢歌曲的位置信息 来设置 是否为红心
@@ -376,7 +375,6 @@ public class MySimpleAdapter extends BaseAdapter {
 
                     if(deleteFile){
                         String path = resource.get(position).get("data");
-                        Log.e("delete",path);
                         File file = new File(path);
                         if(file.delete()){
                             ToastHelper.showToast("删除成");
@@ -398,9 +396,6 @@ public class MySimpleAdapter extends BaseAdapter {
                     }
 
                     resource.remove(position);
-                }
-                for(Integer t: deletePos){
-                    Log.e("deletePos",t.toString());
                 }
                 deletePos.clear();
                 MySimpleAdapter.this.notifyDataSetChanged();//移除相关的数据 并 更新listview

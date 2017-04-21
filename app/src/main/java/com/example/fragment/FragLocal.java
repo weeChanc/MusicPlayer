@@ -57,7 +57,6 @@ public class FragLocal extends Fragment {
                     Map<String, String> map = new HashMap<>();
                     map.put("singer", cursor.getString(cursor.getColumnIndex("singer")));
                     map.put("title", cursor.getString(cursor.getColumnIndex("title")));
-                    map.put("position", cursor.getString(cursor.getColumnIndex("position")));
                     map.put("duration", cursor.getString(cursor.getColumnIndex("duration")));
                     map.put("data", cursor.getString(cursor.getColumnIndex("data")));
                     map.put("isChecked", "false");
@@ -87,12 +86,6 @@ public class FragLocal extends Fragment {
         });
 
         return view;
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.e("fragmen","destory");
     }
 
 }

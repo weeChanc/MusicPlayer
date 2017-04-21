@@ -23,7 +23,6 @@ public class MyDataBaseHelper extends SQLiteOpenHelper {
             +"title text)";
 
     public static final String MYMUSIC = "create table MyMusic (" //本地音乐列表 系统读取存入自身数据库
-            +"position integer primary key autoincrement, "
             +"duration integer, "
             +"singer text, "
             +"data text, "

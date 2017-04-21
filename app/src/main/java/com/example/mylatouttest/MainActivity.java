@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
@@ -56,7 +57,6 @@ public class MainActivity extends AppCompatActivity{
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            Log.e("info", "service disconnected");
         }
     };
 
@@ -66,24 +66,8 @@ public class MainActivity extends AppCompatActivity{
         myApplication = (MyApplication) getApplication();
         myApplication.setActivity(this);
 
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                MyApplication.getApplication().getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(MyApplication.getApplication().getActivity(), myApplication.getActivity().toString(), Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
-        }).start();
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.musicplayer_main);
-
-
-
 
 
         readytoplay(); //绑服务 注册广播( //音量变化广播//耳机插拔广播)
@@ -105,10 +89,8 @@ public class MainActivity extends AppCompatActivity{
 
         //启动主界面的Fragment
 
-
             Intent intent = new Intent("com.example.MainActivity.REQUSETRES");
             sendBroadcast(intent);
-
 
     }
 

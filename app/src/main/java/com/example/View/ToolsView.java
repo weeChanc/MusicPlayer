@@ -36,9 +36,9 @@ import static android.content.Context.MODE_PRIVATE;
 public class ToolsView extends LinearLayout {
 
 
-    public static final int ORDER = 1;
-    public static final int RANDOM = 2;
-    public static final int LOOP = 3;
+    public static final int ORDER = 1;  //顺序
+    public static final int RANDOM = 2; //随机
+    public static final int LOOP = 3;   //循环
 
 
     MyApplication myApplication = MyApplication.getApplication();
@@ -64,6 +64,8 @@ public class ToolsView extends LinearLayout {
         mode_bt = (ImageButton) view.findViewById(R.id.mode_bt);
         deleteEnsure = (ImageButton) view.findViewById(R.id.delete_ensure);
         checkBox = (CheckBox) view.findViewById(R.id.delall);
+
+
 
         mode_bt.setOnClickListener(new OnClickListener() {
             @Override
@@ -118,7 +120,6 @@ public class ToolsView extends LinearLayout {
 
     void setMode() {
         SharedPreferences.Editor editor = context.getSharedPreferences("data", MODE_PRIVATE).edit();
-
         if (mode == LOOP) mode = 0;    //处理 LOOP的情况
         ++mode;
         Log.e("tag", mode + "");

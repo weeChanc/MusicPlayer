@@ -65,41 +65,51 @@ public class MusicService extends Service {
             play_mode= myApplication.getPlay_mode();
 
             data = myApplication.getData(); //更新来自新下载的歌曲
-            Log.e("tag", data.size()+"");
-            if(data.size()!=0)
-            if (intent.getAction().equals("com.example.MainActivity.STARTMUSIC")) {   //任何播放音乐的操作都要发送该广播
 
-                if (intent.getBooleanExtra("NEXT", false)) {                                //判断按下的是否为下一首
-                    contentView.setImageViewResource(R.id.play_image, R.drawable.ic_pause); //更改前台播放栏图标为暂停
+            if(data.size()!=0)
+
+            if (intent.getAction().equals("com.example.MainActivity.STARTMUSIC")) {
+                    //任何播放音乐的操作都要发送该广播
+                if (intent.getBooleanExtra("NEXT", false)) {
+                    //判断按下的是否为下一首
+                    contentView.setImageViewResource(R.id.play_image, R.drawable.ic_pause);
                     notification = builder.setContent(contentView).build();
+                    //更改前台播放栏图标为暂停
                     startForeground(1, notification);
                     if(position < data.size()-1) {
                         position = position + 1;  // 避免最后一首 选择下一首崩溃的情况
+                    }else{
+                        ToastHelper.showToast("已经是最后一首了");
                     }
-                    mediaPlayer.reset();        //下一首之前要重置播放器
+                    mediaPlayer.reset();
+                    //下一首之前要重置播放器
                 }
 
                 if(intent.getBooleanExtra("PRE",false)){
                     contentView.setImageViewResource(R.id.play_image, R.drawable.ic_pause);
                     notification = builder.setContent(contentView).build();
-                    startForeground(1, notification);                                       //判断是否为上一首 与下一首同理
+                    startForeground(1, notification);
                     if(position!=0) {
-                        position = position - 1;
+                        position = position - 1;        //判断是否为上一首 与下一首同理
                         mediaPlayer.reset();
-                    }else
+                    }else {
                         ToastHelper.showToast("已经是第一首了");
+                    }
                 }
 
+                //如果有位置信息 则根据发送过来的位置选择播放的曲目
                 if (intent.getBooleanExtra("POSITION", false)) {
                     setPosition(intent.getIntExtra("LOCATION", 0));
-                        mediaPlayer.reset();                        //如果有位置信息 则根据发送过来的位置选择播放的曲目
+                        mediaPlayer.reset();
                 }
 
-                initMediaPlayer(data.get(position).get("data"));        //根据当当前位置选择播放的曲目 初始化播放器并开始播放音乐
+                //根据当当前位置选择播放的曲目 初始化播放器并开始播放音乐
+                initMediaPlayer(data.get(position).get("data"));
                 mainMessageCallBack(); // 发送 歌曲数量 以及 当前歌曲
                 upgradeDataNotification(); //notification 标题
                 progressCallBack();
                 putInData();
+
             }
 
 
@@ -261,8 +271,6 @@ public class MusicService extends Service {
                 values.put("title", data.get(position).get("title"));
                 values.put("data",data.get(position).get("data"));
 
-
-                Log.e("data",data.get(position).get("title"));
                 db.delete("Recent","title=?",new String[]{data.get(position).get("title")});
                 db.insert("Recent", null, values);  //先删再加保证只存在一个
 
@@ -329,15 +337,16 @@ public class MusicService extends Service {
 
 
         Intent intent = new Intent("notification_play_pause");
-        contentView.setOnClickPendingIntent(R.id.play_image, PendingIntent.getBroadcast(MusicService.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT));
-                                                                                //Button点击事件
+        contentView.setOnClickPendingIntent(R.id.play_image, PendingIntent.getBroadcast
+                (MusicService.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT));
+
         Intent intent2 = new Intent("CHANGENEXT");
         contentView.setOnClickPendingIntent(R.id.next_image, PendingIntent.getBroadcast(this, 0, intent2, PendingIntent.FLAG_UPDATE_CURRENT));
 
         Intent intent3 = new Intent("ShowOrHideDestopLyric");
         contentView.setOnClickPendingIntent(R.id.lyric_image,PendingIntent.getBroadcast(this,0,intent3,PendingIntent.FLAG_UPDATE_CURRENT));
 
-
+        //Button点击事件
         Intent intentstartactivity = new Intent(MusicService.this, MainActivity.class);
         pendingIntent = PendingIntent.getActivity(MusicService.this, 0, intentstartactivity, 0); //点击通知执行 打开活动
 
