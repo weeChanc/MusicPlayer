@@ -115,9 +115,9 @@ public class Welcome extends AppCompatActivity {
 
         if(myApplication.getData()!=null) {
             Cursor cursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, want, MediaStore.Audio.Media.DURATION + ">60000", null, MediaStore.Audio.Media.TITLE);
-            if (cursor.moveToFirst() && cursor != null) {            //读取时间大于一分钟的歌曲  并且按照歌名排序
+            if (cursor != null  && cursor.moveToFirst() ) {            //读取时间大于一分钟的歌曲  并且按照歌名排序
                 do {
-                    if( new File(cursor.getString(cursor.getColumnIndex("data"))).exists()) {
+
                         Map<String, String> map = new HashMap<>();
                         map.put("title", cursor.getString(0));       //歌曲标题
                         map.put("data", cursor.getString(1));        //歌曲路径              //读取音乐文件
@@ -127,14 +127,16 @@ public class Welcome extends AppCompatActivity {
                         finaldata.add(map);
 
                         ContentValues values = new ContentValues();
-                        values.put("title", cursor.getString(0));
-                        values.put("data", cursor.getString(1));
-                        values.put("singer", cursor.getString(2));
-                        values.put("duration", cursor.getInt(4));
+                        values.put("title", map.get("title"));
+                        values.put("data", map.get("data"));
+                        values.put("singer", map.get("singer"));
+                        values.put("duration", Integer.parseInt(map.get("duration")));
                         db.insert("MyMusic", null, values);  //导入到自己的数据库
-                    }
+
 
                 } while (cursor.moveToNext());
+
+
                 cursor.close();
 
             }

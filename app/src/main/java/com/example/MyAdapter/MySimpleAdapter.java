@@ -63,6 +63,8 @@ public class MySimpleAdapter extends BaseAdapter {
         inflater = LayoutInflater.from(context);
         love = AnimationUtils.loadAnimation(context, R.anim.downloadanim);
 
+        data = myApplication.getData();
+
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction("ShowOrHideCheckBox");
         intentFilter.addAction("DeleteEnsure");
