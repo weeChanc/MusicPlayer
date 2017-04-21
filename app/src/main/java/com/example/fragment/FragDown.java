@@ -26,6 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.MyAdapter.DownLoadListAdapter;
+import com.example.Utils.ToastHelper;
 import com.example.mylatouttest.MainActivity;
 import com.example.mylatouttest.MyApplication;
 import com.example.mylatouttest.R;
@@ -54,19 +55,19 @@ public class FragDown extends Fragment {
     DownLoadListAdapter downLoadListAdapter;
     ImageButton back;
 
-    public Handler  handler = new Handler(){
+    public Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             refreshLayout.setRefreshing(false);
-            if(hashes!=null) {
+            if (hashes != null) {
                 downLoadListAdapter = new DownLoadListAdapter(getContext(), hashes, R.layout.downitem, new int[]{R.id.item_title, R.id.down_singer, R.id.down_bt});
-                LayoutAnimationController controller = new LayoutAnimationController(AnimationUtils.loadAnimation(getContext(),R.anim.downloadanim));
+                LayoutAnimationController controller = new LayoutAnimationController(AnimationUtils.loadAnimation(getContext(), R.anim.downloadanim));
                 controller.setOrder(LayoutAnimationController.ORDER_NORMAL);
                 listView.setLayoutAnimation(controller);
                 listView.setAdapter(downLoadListAdapter);
-                Toast.makeText(getContext(), "为您推荐了30首歌曲", Toast.LENGTH_SHORT).show();
-            }else
-            Toast.makeText(getContext(), "加载失败", Toast.LENGTH_SHORT).show();
+                ToastHelper.showToast("为你加载了30首歌曲");
+            } else
+                ToastHelper.showToast("加载失败");
         }
     };
 
@@ -78,9 +79,9 @@ public class FragDown extends Fragment {
         editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(final TextView v, int actionId, KeyEvent event) {
-                if(actionId == EditorInfo.IME_ACTION_SEARCH){
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
 
-                      search(); //设置 软键盘回车按键 为 搜索 歌曲
+                    search(); //设置 软键盘回车按键 为 搜索 歌曲
 
                 }
                 return true;
@@ -88,7 +89,6 @@ public class FragDown extends Fragment {
 
 
         });
-
 
 
         InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -101,7 +101,7 @@ public class FragDown extends Fragment {
             }
         });
 
-        refreshLayout.setColorSchemeColors(0xff34a853,0xffea4335,0xfffbbc05,0xff4285f4); //进度条颜色变化
+        refreshLayout.setColorSchemeColors(0xff34a853, 0xffea4335, 0xfffbbc05, 0xff4285f4); //进度条颜色变化
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -119,28 +119,27 @@ public class FragDown extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragdown,container,false);
+        final View view = inflater.inflate(R.layout.fragdown, container, false);
 
-         editText = (EditText) view.findViewById(R.id.edit);
-         button = (Button) view.findViewById(R.id.button2);
-         listView = (ListView) view.findViewById(R.id.down_list);
-         refreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.Refesh);
-         back = (ImageButton)view.findViewById(R.id.down_back);
+        editText = (EditText) view.findViewById(R.id.edit);
+        button = (Button) view.findViewById(R.id.button2);
+        listView = (ListView) view.findViewById(R.id.down_list);
+        refreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.Refesh);
+        back = (ImageButton) view.findViewById(R.id.down_back);
 
-         hashes = new ArrayList<>();
+        hashes = new ArrayList<>();
 
         return view;
     }
 
-    private void search(){
+    private void search() {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
                     hashes = (ArrayList<Hash>) SongGetter.getAllSong(editText.getText().toString());
                     handler.sendEmptyMessage(0);
-                }catch (Exception e)
-                {
+                } catch (Exception e) {
                     e.printStackTrace();            //下拉刷新列表
                 }
             }

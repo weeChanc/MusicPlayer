@@ -23,11 +23,11 @@ import com.example.mylatouttest.R;
 
 public class BottomPlayer extends RelativeLayout {
 
-        class MyReceiver extends BroadcastReceiver{
+    class MyReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if(intent.getAction().equals("com.example.MusicService.PROGRESS")){
-                seekbar.setProgress(intent.getIntExtra("PROGRESS",0));
+            if (intent.getAction().equals("com.example.MusicService.PROGRESS")) {
+                seekbar.setProgress(intent.getIntExtra("PROGRESS", 0));
             }
         }
     }
@@ -35,7 +35,6 @@ public class BottomPlayer extends RelativeLayout {
     MyReceiver myReceiver = new MyReceiver();
     MyApplication myApplication = MyApplication.getApplication();
     SeekBar seekbar;
-
 
 
     public BottomPlayer(Context context, AttributeSet attrs) {
@@ -62,10 +61,9 @@ public class BottomPlayer extends RelativeLayout {
                 intentnotify.putExtra("PLAY", true);
                 getContext().sendBroadcast(intentnotify);
 
-                Toast.makeText(getContext(), myApplication.isSeekBarTouch()+"", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), myApplication.isSeekBarTouch() + "", Toast.LENGTH_SHORT).show();
             }
         });
-
 
 
         seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -77,7 +75,7 @@ public class BottomPlayer extends RelativeLayout {
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {     //按下进度条 先调用onStartTrackingTouch一次，再调用onProgressChanged一次
                 if (!myApplication.isPlay()) {
-                     myApplication.setIsPlay(true);
+                    myApplication.setIsPlay(true);
                 }
                 myApplication.setIsSeekBarTouch(true);
             }
@@ -85,17 +83,18 @@ public class BottomPlayer extends RelativeLayout {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 Intent intent2 = new Intent("com.example.MainActivity.STARTMUSIC");
-                intent2.putExtra("PROGRESS", seekBar.getProgress() );
+                intent2.putExtra("PROGRESS", seekBar.getProgress());
                 getContext().sendBroadcast(intent2);
                 myApplication.setIsSeekBarTouch(false);
             }
         });
 
     }
-    void registerMyReceiver(){
+
+    void registerMyReceiver() {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction("com.example.MusicService.PROGRESS");
-        getContext().registerReceiver(myReceiver,intentFilter);
+        getContext().registerReceiver(myReceiver, intentFilter);
     }
 }
 

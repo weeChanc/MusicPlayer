@@ -265,9 +265,9 @@ public class MySimpleAdapter extends BaseAdapter {
                             String path = data.get(position).get("data");
                             File file = new File(path);
 
-                            if(file.delete()){
+                            if (file.delete()) {
                                 ToastHelper.showToast("删除成功");
-                            }else{
+                            } else {
                                 ToastHelper.showToast("删除失败");
                             }
 
@@ -286,13 +286,13 @@ public class MySimpleAdapter extends BaseAdapter {
                         if (myApplication.getFinaldata() == resource)
                             db.delete("MyMusic", "title=?", new String[]{resource.get(position).get("title")});
 
-                        if(myApplication.getLikedata() == resource) {
+                        if (myApplication.getLikedata() == resource) {
                             db.delete("Like", "title=?", new String[]{resource.get(position).get("title")});
                             pos.remove(Integer.valueOf(resource.get(position).get("duration")));
                         }
 
-                        if(myApplication.getRecentdata() == resource)
-                        db.delete("Recent", "title=?", new String[]{resource.get(position).get("title")});
+                        if (myApplication.getRecentdata() == resource)
+                            db.delete("Recent", "title=?", new String[]{resource.get(position).get("title")});
 
 
                         //遍历查找pos数组(我喜欢的数组) 若存在相同的则去除
@@ -353,10 +353,10 @@ public class MySimpleAdapter extends BaseAdapter {
                 int position;
                 SQLiteDatabase db = myApplication.getDp();
                 Collections.sort(deletePos);
-                boolean  isLocal= myApplication.getFinaldata() == resource;
-                boolean isLike =  myApplication.getLikedata() == resource;
+                boolean isLocal = myApplication.getFinaldata() == resource;
+                boolean isLike = myApplication.getLikedata() == resource;
                 boolean isRecent = myApplication.getRecentdata() == resource;
-                boolean  deleteFile = intent.getBooleanExtra("deleteFile",false);
+                boolean deleteFile = intent.getBooleanExtra("deleteFile", false);
 
                 for (int i = deletePos.size() - 1; i >= 0; i--) {
 
@@ -365,25 +365,25 @@ public class MySimpleAdapter extends BaseAdapter {
                     if (isLocal)
                         db.delete("MyMusic", "title=?", new String[]{resource.get(position).get("title")});
 
-                    if(isLike) {
+                    if (isLike) {
                         db.delete("Like", "title=?", new String[]{resource.get(position).get("title")});
                         pos.remove(Integer.valueOf(resource.get(position).get("duration")));
                     }
 
-                    if(isRecent)
-                    db.delete("Recent", "title=?", new String[]{resource.get(position).get("title")});
+                    if (isRecent)
+                        db.delete("Recent", "title=?", new String[]{resource.get(position).get("title")});
 
-                    if(deleteFile){
+                    if (deleteFile) {
                         String path = resource.get(position).get("data");
                         File file = new File(path);
-                        if(file.delete()){
-                            ToastHelper.showToast("删除成");
+                        if (file.delete()) {
+                            ToastHelper.showToast("删除成功");
 
-                        }else{
+                        } else {
                             ToastHelper.showToast("删除失败");
                         }
 
-                        db.delete("MyMusic","title=?",new String[]{resource.get(position).get("title")});
+                        db.delete("MyMusic", "title=?", new String[]{resource.get(position).get("title")});
 
 
                         for (Integer p : pos) {

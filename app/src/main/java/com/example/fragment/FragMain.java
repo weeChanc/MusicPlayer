@@ -42,7 +42,6 @@ import java.util.Map;
 
 /**
  * 主frament的界面 包括 我喜欢列表按钮 最近列表按钮 下载列表按钮 本地列表按钮 本地歌曲数目 以及一个播放暂停按钮
- *
  */
 public class FragMain extends Fragment {
 
@@ -68,7 +67,7 @@ public class FragMain extends Fragment {
         main_like_bt = (ImageButton) view.findViewById(R.id.main_like_bt);
         main_recent_bt = (ImageButton) view.findViewById(R.id.main_recent_bt);
         main_count_tv = (TextView) view.findViewById(R.id.main_count_tv);
-        main_search_bt = (ImageButton)view.findViewById(R.id.main_search_bt);
+        main_search_bt = (ImageButton) view.findViewById(R.id.main_search_bt);
 
         main_count_tv.setText(String.valueOf(myApplication.getData().size()));
 
@@ -80,12 +79,12 @@ public class FragMain extends Fragment {
         getActivity().registerReceiver(messageReceiver, intentFilter);
         //注册广播 用于修改下载歌曲后 修改 歌曲数目 以及 播放歌曲后 修改按键图标
 
-        if(myApplication.isPlay()){
+        if (myApplication.isPlay()) {
             main_play_pause_bt.setImageResource(R.drawable.pausewhite);
         }
 
 
-        main_count_tv.setText(myApplication.getFinaldata().size()+"");
+        main_count_tv.setText(myApplication.getFinaldata().size() + "");
 
         return view;
 
@@ -94,7 +93,7 @@ public class FragMain extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-                                                                    //给不同按键设置监听器 打开不同的fragment
+        //给不同按键设置监听器 打开不同的fragment
         main_recent_bt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -120,7 +119,7 @@ public class FragMain extends Fragment {
         main_search_bt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)(getActivity())).fragDown();
+                ((MainActivity) (getActivity())).fragDown();
             }
         });
 
@@ -147,8 +146,8 @@ public class FragMain extends Fragment {
                     main_play_pause_bt.setImageResource(R.drawable.startwhite);
             }
 
-            if(intent.getAction().equals("com.example.MusicService.DETIAL")){
-                main_count_tv.setText(myApplication.getFinaldata().size()+"");
+            if (intent.getAction().equals("com.example.MusicService.DETIAL")) {
+                main_count_tv.setText(myApplication.getFinaldata().size() + "");
             }
 
         }

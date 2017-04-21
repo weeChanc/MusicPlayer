@@ -48,7 +48,7 @@ public class DownLoadListAdapter extends BaseAdapter {
     String hash = null;
     String path = null;
     Map<String, String> map = new HashMap<>();
-    ArrayList<Map<String, String>> data ;
+    ArrayList<Map<String, String>> data;
 
     public DownLoadListAdapter(Context context, ArrayList<Hash> resource, int layoutID, int[] to) {
         super();
@@ -121,18 +121,17 @@ public class DownLoadListAdapter extends BaseAdapter {
             @Override
             public void onClick(View v) {
 
-                        boolean commom = false;
-                        hash = resource.get(position).getFileHash();
-                        for(String str : DownQuene){
-                            if(str==hash || str.equals(""))
-                            commom = true;
-                        }
-                        if(!commom)
-                            DownQuene.add(hash);
+                boolean commom = false;
+                hash = resource.get(position).getFileHash();
+                for (String str : DownQuene) {
+                    if (str == hash || str.equals(""))
+                        commom = true;
+                }
+                if (!commom)
+                    DownQuene.add(hash);
 
 
-
-                if(!download.isAlive()){
+                if (!download.isAlive()) {
                     download.start();
                 }
             }
@@ -148,10 +147,10 @@ public class DownLoadListAdapter extends BaseAdapter {
         Button down_play;
     }
 
-    Thread download =  new Thread(new Runnable() {
+    Thread download = new Thread(new Runnable() {
         @Override
         public void run() {
-            int i = 0 ;
+            int i = 0;
             try {
                 while (DownQuene.size() != 0) {
                     String hash = DownQuene.get(0);

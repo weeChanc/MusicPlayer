@@ -136,7 +136,7 @@ public class MainActivity extends AppCompatActivity{
             sendBroadcast(intent2);
         }else if(System.currentTimeMillis() - start > 2000 && fm.getBackStackEntryCount() == 0){
             start = System.currentTimeMillis();
-            Toast.makeText(this,"再按一次退出", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "再按一次退出", Toast.LENGTH_SHORT).show();
         }else {                                                                 //设置按两次退出程序
             super.onBackPressed();
         }

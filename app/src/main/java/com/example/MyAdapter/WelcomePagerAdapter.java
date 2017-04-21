@@ -34,7 +34,7 @@ public class WelcomePagerAdapter extends PagerAdapter {
         return list.get(position);
     }
 
-    public WelcomePagerAdapter(List<View> list , final Context context) {
+    public WelcomePagerAdapter(List<View> list, final Context context) {
         super();
         this.context = context;
         this.list = list;
@@ -47,10 +47,10 @@ public class WelcomePagerAdapter extends PagerAdapter {
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 context.startActivity(intent);
 
-                SharedPreferences share = context.getSharedPreferences("data",MODE_PRIVATE);
+                SharedPreferences share = context.getSharedPreferences("data", MODE_PRIVATE);
                 share.edit().putInt("MODE", MyApplication.ORDER).apply();
-    }
-});
+            }
+        });
 
     }
 

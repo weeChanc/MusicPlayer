@@ -24,7 +24,6 @@ public class AutoMoveTextView extends android.support.v7.widget.AppCompatTextVie
     }
 
 
-
     @Override
     public boolean isFocused() {
         return true;

@@ -62,56 +62,55 @@ public class MusicService extends Service {
         @Override
         public void onReceive(Context context, Intent intent) {
 
-            play_mode= myApplication.getPlay_mode();
+            play_mode = myApplication.getPlay_mode();
 
             data = myApplication.getData(); //更新来自新下载的歌曲
 
-            if(data.size()!=0)
+            if (data.size() != 0)
 
-            if (intent.getAction().equals("com.example.MainActivity.STARTMUSIC")) {
+                if (intent.getAction().equals("com.example.MainActivity.STARTMUSIC")) {
                     //任何播放音乐的操作都要发送该广播
-                if (intent.getBooleanExtra("NEXT", false)) {
-                    //判断按下的是否为下一首
-                    contentView.setImageViewResource(R.id.play_image, R.drawable.ic_pause);
-                    notification = builder.setContent(contentView).build();
-                    //更改前台播放栏图标为暂停
-                    startForeground(1, notification);
-                    if(position < data.size()-1) {
-                        position = position + 1;  // 避免最后一首 选择下一首崩溃的情况
-                    }else{
-                        ToastHelper.showToast("已经是最后一首了");
-                    }
-                    mediaPlayer.reset();
-                    //下一首之前要重置播放器
-                }
-
-                if(intent.getBooleanExtra("PRE",false)){
-                    contentView.setImageViewResource(R.id.play_image, R.drawable.ic_pause);
-                    notification = builder.setContent(contentView).build();
-                    startForeground(1, notification);
-                    if(position!=0) {
-                        position = position - 1;        //判断是否为上一首 与下一首同理
+                    if (intent.getBooleanExtra("NEXT", false)) {
+                        //判断按下的是否为下一首
+                        contentView.setImageViewResource(R.id.play_image, R.drawable.ic_pause);
+                        notification = builder.setContent(contentView).build();
+                        //更改前台播放栏图标为暂停
+                        startForeground(1, notification);
+                        if (position < data.size() - 1) {
+                            position = position + 1;  // 避免最后一首 选择下一首崩溃的情况
+                        } else {
+                            ToastHelper.showToast("已经是最后一首了");
+                        }
                         mediaPlayer.reset();
-                    }else {
-                        ToastHelper.showToast("已经是第一首了");
+                        //下一首之前要重置播放器
                     }
-                }
 
-                //如果有位置信息 则根据发送过来的位置选择播放的曲目
-                if (intent.getBooleanExtra("POSITION", false)) {
-                    setPosition(intent.getIntExtra("LOCATION", 0));
+                    if (intent.getBooleanExtra("PRE", false)) {
+                        contentView.setImageViewResource(R.id.play_image, R.drawable.ic_pause);
+                        notification = builder.setContent(contentView).build();
+                        startForeground(1, notification);
+                        if (position != 0) {
+                            position = position - 1;        //判断是否为上一首 与下一首同理
+                            mediaPlayer.reset();
+                        } else {
+                            ToastHelper.showToast("已经是第一首了");
+                        }
+                    }
+
+                    //如果有位置信息 则根据发送过来的位置选择播放的曲目
+                    if (intent.getBooleanExtra("POSITION", false)) {
+                        setPosition(intent.getIntExtra("LOCATION", 0));
                         mediaPlayer.reset();
+                    }
+
+                    //根据当当前位置选择播放的曲目 初始化播放器并开始播放音乐
+                    initMediaPlayer(data.get(position).get("data"));
+                    mainMessageCallBack(); // 发送 歌曲数量 以及 当前歌曲
+                    upgradeDataNotification(); //notification 标题
+                    progressCallBack();
+                    putInData();
+
                 }
-
-                //根据当当前位置选择播放的曲目 初始化播放器并开始播放音乐
-                initMediaPlayer(data.get(position).get("data"));
-                mainMessageCallBack(); // 发送 歌曲数量 以及 当前歌曲
-                upgradeDataNotification(); //notification 标题
-                progressCallBack();
-                putInData();
-
-            }
-
 
 
             if (intent.getBooleanExtra("SEEK", false)) {
@@ -119,16 +118,16 @@ public class MusicService extends Service {
             }
 
             if (intent.getAction().equals("notification_play_pause")) {
-                if (mediaPlayer.isPlaying() && !intent.getBooleanExtra("LIST",false)) {
+                if (mediaPlayer.isPlaying() && !intent.getBooleanExtra("LIST", false)) {
                     mediaPlayer.pause();
                     myApplication.setIsPlay(false);
                     contentView.setImageViewResource(R.id.play_image, R.drawable.ic_play);
                     notification = builder.setContent(contentView).build();
-                      //设置前台服务图标
+                    //设置前台服务图标
                 } else {                                                            //Notification的点击事件 无法自己修改自己的图标、只能通过发广播
                     myApplication.setIsPlay(true);
                     Intent intentstartmusic = new Intent("com.example.MainActivity.STARTMUSIC");
-                    if(!intent.getBooleanExtra("LIST",false)){
+                    if (!intent.getBooleanExtra("LIST", false)) {
                         sendBroadcast(intentstartmusic);          //如果是列表中选择，则列表内启动服务播放。否则 继续播放
                     }
                 }
@@ -159,11 +158,11 @@ public class MusicService extends Service {
     public void onCreate() {
 
         super.onCreate();
-        try{
-        myApplication = (MyApplication) getApplication();
-        data = myApplication.getData();
-        play_mode = myApplication.getPlay_mode();
-        db = myApplication.getDp();
+        try {
+            myApplication = (MyApplication) getApplication();
+            data = myApplication.getData();
+            play_mode = myApplication.getPlay_mode();
+            db = myApplication.getDp();
             position = myApplication.getPosition();
 
             registerMyReceiver();//注册广播
@@ -185,7 +184,7 @@ public class MusicService extends Service {
                 }
             });
             initNotification();  //创建前台服务
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             onDestroy();
         }
@@ -242,10 +241,10 @@ public class MusicService extends Service {
 
         try {
             File file = new File(location);
-           if(!file.exists()) {
-               ToastHelper.showToast("该文件不存在");
-               return;
-           }
+            if (!file.exists()) {
+                ToastHelper.showToast("该文件不存在");
+                return;
+            }
 
             if (mediaPlayer.isPlaying()) {
                 mediaPlayer.reset();              //初始化播放器 并播放
@@ -259,8 +258,7 @@ public class MusicService extends Service {
     }
 
 
-
-    public void putInData(){
+    public void putInData() {
 
         new Thread(new Runnable() {
             @Override
@@ -269,21 +267,20 @@ public class MusicService extends Service {
                 values.put("singer", data.get(position).get("singer"));
                 values.put("duration", data.get(position).get("duration"));
                 values.put("title", data.get(position).get("title"));
-                values.put("data",data.get(position).get("data"));
+                values.put("data", data.get(position).get("data"));
 
-                db.delete("Recent","title=?",new String[]{data.get(position).get("title")});
+                db.delete("Recent", "title=?", new String[]{data.get(position).get("title")});
                 db.insert("Recent", null, values);  //先删再加保证只存在一个
 
                 SharedPreferences.Editor editor = getSharedPreferences("last", MODE_PRIVATE).edit();
                 editor.putInt("position", position);
                 editor.putString("singer", data.get(position).get("singer"));
                 editor.putString("title", data.get(position).get("title"));
-                editor.putString("duration",data.get(position).get("duration"));
+                editor.putString("duration", data.get(position).get("duration"));
                 editor.apply();
 
             }
         }).start();  //播放历史 加入数据库存下
-
 
 
     }
@@ -292,7 +289,7 @@ public class MusicService extends Service {
     public int setPosition() {
 
         if (play_mode == ORDER) {
-            if(position < data.size()-1) {
+            if (position < data.size() - 1) {
                 position++;                                          // 避免最后一首 选择下一首崩溃的情况
             }
             mediaPlayer.reset();                                    //根据模式选择下一首播放歌曲的位置
@@ -344,7 +341,7 @@ public class MusicService extends Service {
         contentView.setOnClickPendingIntent(R.id.next_image, PendingIntent.getBroadcast(this, 0, intent2, PendingIntent.FLAG_UPDATE_CURRENT));
 
         Intent intent3 = new Intent("ShowOrHideDestopLyric");
-        contentView.setOnClickPendingIntent(R.id.lyric_image,PendingIntent.getBroadcast(this,0,intent3,PendingIntent.FLAG_UPDATE_CURRENT));
+        contentView.setOnClickPendingIntent(R.id.lyric_image, PendingIntent.getBroadcast(this, 0, intent3, PendingIntent.FLAG_UPDATE_CURRENT));
 
         //Button点击事件
         Intent intentstartactivity = new Intent(MusicService.this, MainActivity.class);
@@ -365,16 +362,14 @@ public class MusicService extends Service {
         contentView.setTextViewText(R.id.title_tv, data.get(position).get("title"));
         contentView.setTextViewText(R.id.singer_tv, data.get(position).get("singer"));
 
-        if(mediaPlayer.isPlaying()){
-            contentView.setImageViewResource(R.id.play_image,R.drawable.ic_pause);
-        }else
-            contentView.setImageViewResource(R.id.play_image,R.drawable.ic_play);
+        if (mediaPlayer.isPlaying()) {
+            contentView.setImageViewResource(R.id.play_image, R.drawable.ic_pause);
+        } else
+            contentView.setImageViewResource(R.id.play_image, R.drawable.ic_play);
 
         notification = builder.setContent(contentView).build();
         startForeground(1, notification);
     }
-
-
 
 
 }

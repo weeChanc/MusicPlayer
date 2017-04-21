@@ -8,7 +8,7 @@ import java.util.List;
 
 public class ListGetter {
 
-    private  List<Hash> lists;
+    private List<Hash> lists;
 
     public List<Hash> getHashList() {
         return lists;

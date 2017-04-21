@@ -28,8 +28,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- *  导航界面 第一次启动程序的时候执行
- *  使用ViewPager实现导航页面
+ * 导航界面 第一次启动程序的时候执行
+ * 使用ViewPager实现导航页面
  */
 
 public class Welcome extends AppCompatActivity {
@@ -40,11 +40,6 @@ public class Welcome extends AppCompatActivity {
     SQLiteDatabase db = myApplication.getDp();
     int temp = 0;
 
-    @Override
-    protected void onDestroy() {
-        Log.e("destory","destory");
-        super.onDestroy();
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,8 +51,8 @@ public class Welcome extends AppCompatActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                if(temp == 1 )
-                readMusicData();
+                if (temp == 1)
+                    readMusicData();
             }
         }).start();
 
@@ -75,13 +70,12 @@ public class Welcome extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
-            //该方法在页面跳转后得到调用
-                if(position == 0 ){
+                //该方法在页面跳转后得到调用
+                if (position == 0) {
                     image.setImageResource(R.drawable.ic_one);
-                }else
-                if(position == 1){
+                } else if (position == 1) {
                     image.setImageResource(R.drawable.ic_two);
-                }else{
+                } else {
                     image.setImageResource(R.drawable.ic_three);
                 }
 
@@ -94,16 +88,16 @@ public class Welcome extends AppCompatActivity {
         });
 
         LayoutInflater inflater = LayoutInflater.from(this);        //三页导航
-        View wel1 = inflater.inflate(R.layout.welcome1,null);
-        View wel2 = inflater.inflate(R.layout.welcome2,null);
-        View wel3 = inflater.inflate(R.layout.welcome3,null);
+        View wel1 = inflater.inflate(R.layout.welcome1, null);
+        View wel2 = inflater.inflate(R.layout.welcome2, null);
+        View wel3 = inflater.inflate(R.layout.welcome3, null);
         ArrayList<View> arrayList = new ArrayList<>();
 
         arrayList.add(wel1);
         arrayList.add(wel2);
         arrayList.add(wel3);
 
-        WelcomePagerAdapter welcomeAdapter = new WelcomePagerAdapter(arrayList,this);
+        WelcomePagerAdapter welcomeAdapter = new WelcomePagerAdapter(arrayList, this);
         viewPager.setAdapter(welcomeAdapter);
 
     }
@@ -113,25 +107,25 @@ public class Welcome extends AppCompatActivity {
         String[] want = new String[]{MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.DATA, MediaStore.Audio.Media.ARTIST,
                 MediaStore.Audio.Media.DISPLAY_NAME, MediaStore.Audio.Media.DURATION};
 
-        if(myApplication.getData()!=null) {
+        if (myApplication.getData() != null) {
             Cursor cursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, want, MediaStore.Audio.Media.DURATION + ">60000", null, MediaStore.Audio.Media.TITLE);
-            if (cursor != null  && cursor.moveToFirst() ) {            //读取时间大于一分钟的歌曲  并且按照歌名排序
+            if (cursor != null && cursor.moveToFirst()) {            //读取时间大于一分钟的歌曲  并且按照歌名排序
                 do {
 
-                        Map<String, String> map = new HashMap<>();
-                        map.put("title", cursor.getString(0));       //歌曲标题
-                        map.put("data", cursor.getString(1));        //歌曲路径              //读取音乐文件
-                        map.put("singer", cursor.getString(2));      //歌手名
-                        map.put("duration", cursor.getInt(4) + "");  //歌曲长度
-                        data.add(map);
-                        finaldata.add(map);
+                    Map<String, String> map = new HashMap<>();
+                    map.put("title", cursor.getString(0));       //歌曲标题
+                    map.put("data", cursor.getString(1));        //歌曲路径              //读取音乐文件
+                    map.put("singer", cursor.getString(2));      //歌手名
+                    map.put("duration", cursor.getInt(4) + "");  //歌曲长度
+                    data.add(map);
+                    finaldata.add(map);
 
-                        ContentValues values = new ContentValues();
-                        values.put("title", map.get("title"));
-                        values.put("data", map.get("data"));
-                        values.put("singer", map.get("singer"));
-                        values.put("duration", Integer.parseInt(map.get("duration")));
-                        db.insert("MyMusic", null, values);  //导入到自己的数据库
+                    ContentValues values = new ContentValues();
+                    values.put("title", map.get("title"));
+                    values.put("data", map.get("data"));
+                    values.put("singer", map.get("singer"));
+                    values.put("duration", Integer.parseInt(map.get("duration")));
+                    db.insert("MyMusic", null, values);  //导入到自己的数据库
 
 
                 } while (cursor.moveToNext());

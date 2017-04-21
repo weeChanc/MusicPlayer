@@ -59,12 +59,11 @@ public class ToolsView extends LinearLayout {
         Receiver receiver = new Receiver();
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction("ChangeToolsButton");
-        context.registerReceiver(receiver,intentFilter);
+        context.registerReceiver(receiver, intentFilter);
 
         mode_bt = (ImageButton) view.findViewById(R.id.mode_bt);
         deleteEnsure = (ImageButton) view.findViewById(R.id.delete_ensure);
         checkBox = (CheckBox) view.findViewById(R.id.delall);
-
 
 
         mode_bt.setOnClickListener(new OnClickListener() {
@@ -122,7 +121,7 @@ public class ToolsView extends LinearLayout {
         SharedPreferences.Editor editor = context.getSharedPreferences("data", MODE_PRIVATE).edit();
         if (mode == LOOP) mode = 0;    //处理 LOOP的情况
         ++mode;
-        Log.e("tag", mode + "");
+
         if (mode == ORDER) {
             mode_bt.setImageResource(R.drawable.ic_order);
         } else if (mode == RANDOM) {
@@ -141,13 +140,13 @@ public class ToolsView extends LinearLayout {
 
             if (intent.getAction().equals("ChangeToolsButton")) {
 
-                    deleteEnsure.setVisibility(GONE);
-                    checkBox.setVisibility(GONE);
-                    checkBox.setChecked(false);
-                }
-
+                deleteEnsure.setVisibility(GONE);
+                checkBox.setVisibility(GONE);
+                checkBox.setChecked(false);
             }
 
         }
+
+    }
 
 }

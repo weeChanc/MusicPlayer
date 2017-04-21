@@ -13,9 +13,9 @@ public class MLog {
     public static final int ERROR = 5;
     public static final int level = 5;
 
-    public static void e (String tag , String msg){
-        if(level == 5){
-            Log.e(tag,msg);
+    public static void e(String tag, String msg) {
+        if (level == 5) {
+            Log.e(tag, msg);
         }
     }
 

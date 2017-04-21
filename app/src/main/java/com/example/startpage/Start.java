@@ -53,8 +53,8 @@ public class Start extends Activity {
                 PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(Start.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
         }                     //申请运行时权限
-        if( ContextCompat.checkSelfPermission(Start.this,Manifest.permission.SYSTEM_ALERT_WINDOW) != PackageManager.PERMISSION_GRANTED ){
-            ActivityCompat.requestPermissions(Start.this,new String[]{Manifest.permission.SYSTEM_ALERT_WINDOW},1);
+        if (ContextCompat.checkSelfPermission(Start.this, Manifest.permission.SYSTEM_ALERT_WINDOW) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(Start.this, new String[]{Manifest.permission.SYSTEM_ALERT_WINDOW}, 1);
         }
 
         while (ContextCompat.checkSelfPermission(Start.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
@@ -153,11 +153,11 @@ public class Start extends Activity {
 
     private void readMusicData() {
 
-       SQLiteDatabase db =  myApplication.getDp();
-        Cursor cursor = db.query("MyMusic",null,null,null,null,null,null);
+        SQLiteDatabase db = myApplication.getDp();
+        Cursor cursor = db.query("MyMusic", null, null, null, null, null, null);
         if (cursor.moveToFirst() && cursor != null) {            //读取时间大于一分钟的歌曲  并且按照歌名排序
             do {
-                if( new File(cursor.getString(cursor.getColumnIndex("data"))).exists()) {
+                if (new File(cursor.getString(cursor.getColumnIndex("data"))).exists()) {
                     Map<String, String> map = new HashMap<>();
                     map.put("title", cursor.getString(cursor.getColumnIndex("title")));       //歌曲标题
                     map.put("data", cursor.getString(cursor.getColumnIndex("data")));        //歌曲路径              //读取音乐文件

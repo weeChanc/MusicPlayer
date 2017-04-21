@@ -465,7 +465,7 @@ public class ViewPagerAdapter extends PagerAdapter {
 //                            }
 //                        }
 
-                        temp = SeekHelper.seekLine(lyricInfo.lineinfo,myApplication.getProgress());
+                        temp = SeekHelper.seekLine(lyricInfo.lineinfo, myApplication.getProgress());
                         message1.obj = lyricInfo.lineinfo.get(temp).line;
                         message2.obj = lyricInfo.lineinfo.get(temp + 1).line;
 
@@ -553,8 +553,8 @@ public class ViewPagerAdapter extends PagerAdapter {
     }
 
     public class LineInfo {
-       public int start;                      //每行歌词存放的地方 (开始时间 以及内容)
-       public String line;
+        public int start;                      //每行歌词存放的地方 (开始时间 以及内容)
+        public String line;
     }
 
 }

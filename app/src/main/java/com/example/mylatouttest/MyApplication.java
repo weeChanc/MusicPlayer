@@ -25,21 +25,21 @@ import java.util.Map;
  * 全局变量
  */
 
-public class MyApplication  extends Application{
+public class MyApplication extends Application {
     public static final int ORDER = 1;
-    private  static MyApplication myApplication;
+    private static MyApplication myApplication;
     private static Context context;
-    private  ArrayList<Map<String, String>> data ;
-    private ArrayList<Map<String, String>> finaldata ;
-    private ArrayList<Map<String, String>> likedata ;
-    private ArrayList<Map<String, String>> recentdata ;
-    private ArrayList<Integer> pos =  new ArrayList<>();
-    private boolean isPlay = false ;
+    private ArrayList<Map<String, String>> data;
+    private ArrayList<Map<String, String>> finaldata;
+    private ArrayList<Map<String, String>> likedata;
+    private ArrayList<Map<String, String>> recentdata;
+    private ArrayList<Integer> pos = new ArrayList<>();
+    private boolean isPlay = false;
     private File[] files;
     private int seekBarMax;
     private boolean isSeekBarTouch = false;
     private String bottomTitle;
-    private int position = 0 ;
+    private int position = 0;
     private int progress;
     private String bottomSinger;
     private File file;
@@ -53,7 +53,7 @@ public class MyApplication  extends Application{
         return isShow;
     }
 
-    public void setShow(boolean isShow){
+    public void setShow(boolean isShow) {
         this.isShow = isShow;
     }
 
@@ -62,7 +62,7 @@ public class MyApplication  extends Application{
         return isDeleteAll;
     }
 
-    public void setDeleteAll(boolean isDeleteAll){
+    public void setDeleteAll(boolean isDeleteAll) {
         this.isDeleteAll = isDeleteAll;
     }
 
@@ -154,50 +154,50 @@ public class MyApplication  extends Application{
         this.position = position;
     }
 
-    public void setBottomTitle(String bottomTitle){
+    public void setBottomTitle(String bottomTitle) {
         this.bottomTitle = bottomTitle;
     }
 
-    public void setSeekBarMax(int seekBarMax){
+    public void setSeekBarMax(int seekBarMax) {
         this.seekBarMax = seekBarMax;
     }
 
 
-    public void setIsPlay(boolean isPlay){
+    public void setIsPlay(boolean isPlay) {
         this.isPlay = isPlay;
     }
 
 
-    public void setIsSeekBarTouch(boolean isSeekBarTouch){
+    public void setIsSeekBarTouch(boolean isSeekBarTouch) {
         this.isSeekBarTouch = isSeekBarTouch;
     }
 
-    public void setData(ArrayList<Map<String, String>> data){
+    public void setData(ArrayList<Map<String, String>> data) {
         this.data = data;
     }
 
 
-    public static MyApplication getApplication(){
+    public static MyApplication getApplication() {
         return myApplication;
     }
 
-    public  ArrayList<Map<String, String>> getData(){
+    public ArrayList<Map<String, String>> getData() {
         return data;
     }
 
-    public boolean isPlay(){
+    public boolean isPlay() {
         return isPlay;
     }
 
-    public boolean isSeekBarTouch(){
+    public boolean isSeekBarTouch() {
         return isSeekBarTouch;
     }
 
-    public int getSeekBarMax(){
+    public int getSeekBarMax() {
         return seekBarMax;
     }
 
-    public String getBottomTitle(){
+    public String getBottomTitle() {
         return bottomTitle;
     }
 

@@ -49,18 +49,18 @@ public class FragRecent extends Fragment {
         if (cursor.moveToLast()) {
             int i = 1;
             do {
-               if( new File(cursor.getString(cursor.getColumnIndex("data"))).exists()) {
-                   Map<String, String> map = new HashMap<>();
-                   map.put("singer", cursor.getString(cursor.getColumnIndex("singer")));
-                   map.put("title", cursor.getString(cursor.getColumnIndex("title")));
-                   map.put("duration", cursor.getString(cursor.getColumnIndex("duration")));
-                   map.put("data", cursor.getString(cursor.getColumnIndex("data")));
-                   map.put("isChecked", "false");
-                   data.add(map);
-                   if (i++ == 20) {
-                       break;   //最多截取20首
-                   }
-               }
+                if (new File(cursor.getString(cursor.getColumnIndex("data"))).exists()) {
+                    Map<String, String> map = new HashMap<>();
+                    map.put("singer", cursor.getString(cursor.getColumnIndex("singer")));
+                    map.put("title", cursor.getString(cursor.getColumnIndex("title")));
+                    map.put("duration", cursor.getString(cursor.getColumnIndex("duration")));
+                    map.put("data", cursor.getString(cursor.getColumnIndex("data")));
+                    map.put("isChecked", "false");
+                    data.add(map);
+                    if (i++ == 20) {
+                        break;   //最多截取20首
+                    }
+                }
             } while (cursor.moveToPrevious());
 
         }
@@ -82,7 +82,6 @@ public class FragRecent extends Fragment {
 
         return view;
     }
-
 
 
 }

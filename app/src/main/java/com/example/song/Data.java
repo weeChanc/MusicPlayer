@@ -6,9 +6,9 @@ package com.example.song;
 
 public class Data {
 
-        private ListGetter data;
+    private ListGetter data;
 
-        public ListGetter getData() {
-                return data;
-        }
+    public ListGetter getData() {
+        return data;
+    }
 }

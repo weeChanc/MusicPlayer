@@ -30,19 +30,19 @@ public class SongGetter {
     static Gson gson = new Gson();
     static Response response;
 
-    public static List<Hash> getAllSong(String name){
+    public static List<Hash> getAllSong(String name) {
 
-        String ListURL = "http://songsearch.kugou.com/song_search_v2?callback=jQuery191013413509052461192_1491829959432&keyword="+name
-                +"&page=1&pagesize=30&userid=-1&clientver=&platform=WebFilter&tag=em&filter=2&iscorrection=1&privilege_filter=0&_=1491829959434";
-        Data data =null;
+        String ListURL = "http://songsearch.kugou.com/song_search_v2?callback=jQuery191013413509052461192_1491829959432&keyword=" + name
+                + "&page=1&pagesize=30&userid=-1&clientver=&platform=WebFilter&tag=em&filter=2&iscorrection=1&privilege_filter=0&_=1491829959434";
+        Data data = null;
 
         try {
-        Request request = new Request.Builder().url(ListURL).build();
-        gson = new Gson();
+            Request request = new Request.Builder().url(ListURL).build();
+            gson = new Gson();
 
             response = client.newCall(request).execute();
             String dataFromJason = response.body().string();
-            data = gson.fromJson(dataFromJason.substring(dataFromJason.indexOf('{'),dataFromJason.lastIndexOf('}')+1),Data.class);
+            data = gson.fromJson(dataFromJason.substring(dataFromJason.indexOf('{'), dataFromJason.lastIndexOf('}') + 1), Data.class);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -52,27 +52,27 @@ public class SongGetter {
         return data.getData().getHashList();
     }
 
-    public static String download(String hash){
+    public static String download(String hash) {
         try {
-        String MessageURL = "http://www.kugou.com/yy/index.php?r=play/getdata&hash="+hash+"&album_id=&_=1491830054690";
-        Request request = new Request.Builder().url(MessageURL).build();
+            String MessageURL = "http://www.kugou.com/yy/index.php?r=play/getdata&hash=" + hash + "&album_id=&_=1491830054690";
+            Request request = new Request.Builder().url(MessageURL).build();
 
             response = client.newCall(request).execute();
             SongDataGetter songdata = gson.fromJson(response.body().string(), SongDataGetter.class);
 
             String path = MyApplication.getApplication().getFile().getPath() + "/" + songdata.getData().getAudio_name() + ".mp3";
             File file = new File(path);
-            if (!file.exists()){
-            String download = songdata.getData().getPlay_url();
-            request = new Request.Builder().url(download).build();
-            response = client.newCall(request).execute();
-            byte[] song = response.body().bytes();
+            if (!file.exists()) {
+                String download = songdata.getData().getPlay_url();
+                request = new Request.Builder().url(download).build();
+                response = client.newCall(request).execute();
+                byte[] song = response.body().bytes();
                 file.createNewFile();
                 FileOutputStream fos = new FileOutputStream(file);
-            fos.write(song);
-            fos.close();
+                fos.write(song);
+                fos.close();
 
-            }else{
+            } else {
                 return "exist";
             }
 
@@ -86,13 +86,13 @@ public class SongGetter {
 
     }
 
-    public static SongDataGetter getSongData(String hash){
+    public static SongDataGetter getSongData(String hash) {
         SongDataGetter songdata = null;
         try {
-            String MessageURL = "http://www.kugou.com/yy/index.php?r=play/getdata&hash="+hash+"&album_id=&_=1491830054690";
+            String MessageURL = "http://www.kugou.com/yy/index.php?r=play/getdata&hash=" + hash + "&album_id=&_=1491830054690";
             Request request = new Request.Builder().url(MessageURL).build();
             response = client.newCall(request).execute();
-             songdata   = gson.fromJson(response.body().string(), SongDataGetter.class);
+            songdata = gson.fromJson(response.body().string(), SongDataGetter.class);
 
         } catch (Exception e) {
             e.printStackTrace();
