@@ -3,7 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/MusicPlayer.iml" filepath="$PROJECT_DIR$/MusicPlayer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/MusicPlayer.iml" filepath="$PROJECT_DIR$/MusicPlayer.iml" />
       <module fileurl="file://$PROJECT_DIR$/Mylatouttest.iml" filepath="$PROJECT_DIR$/Mylatouttest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
