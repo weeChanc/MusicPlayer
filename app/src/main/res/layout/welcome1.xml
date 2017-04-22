@@ -10,11 +10,4 @@
         android:id="@+id/imageView"
         android:layout_width="320dp"
         android:layout_height="320dp"
-        android:layout_marginTop="40dp"
-        app:srcCompat="@drawable/w"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />"
-        android:textStyle="bold" />下"
-        android:textAlignment="center"
-        android:textSize="14sp" />
-</RelativeLayout>
+        android:l
