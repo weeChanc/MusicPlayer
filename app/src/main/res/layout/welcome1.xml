@@ -6,8 +6,6 @@
     android:background="@android:color/background_light"
     android:orientation="vertical">
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="320dp"
+    <Iwidth="320dp"
         android:layout_height="320dp"
         android:l
